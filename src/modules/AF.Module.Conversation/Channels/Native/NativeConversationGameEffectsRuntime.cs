@@ -1069,6 +1069,9 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 
 		}
 
+		// Native openings carry empty playerText; only a real player reply may resolve camp matters.
+		FieldCampOrderTags.Consume(!string.IsNullOrWhiteSpace(playerText), targetAgentIndex, ref result);
+
 		if (targetHero != null)
 
 		{

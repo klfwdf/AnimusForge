@@ -4,6 +4,34 @@
     <tag language="English" />
   </tags>
   <strings>
+    <string id="AF_UI_KingdomIndependence_NotAuthorized" text="Peaceful independence is no longer current or authorized for kingdom founding." />
+    <string id="AF_UI_KingdomIndependence_CreatedPending" text="The new kingdom has been created. Authorized clan transfers and peace still require confirmation." />
+    <string id="AF_UI_KingdomIndependence_CreationPending" text="Independent kingdom founding is not yet confirmed; the authorized operation remains pending." />
+    <string id="AF_UI_KingdomIndependence_NamingTitle" text="Preparing peaceful kingdom founding" />
+    <string id="AF_UI_KingdomIndependence_NamingBody" text="The LLM is preparing the name and description for the authorized peaceful kingdom founding. No kingdom will be founded until the result is ready and validated." />
+    <string id="AF_UI_KingdomIndependence_ChoiceTitle" text="Choose how to become independent" />
+    <string id="AF_UI_KingdomIndependence_ChoiceBody" text="The ruler has granted peaceful independence. Leave the kingdom while keeping the agreed clans and fiefs, or ask the LLM to name and found a new kingdom for them. No kingdom will be founded unless you choose LLM founding." />
+    <string id="AF_UI_KingdomIndependence_Found" text="LLM founding" />
+    <string id="AF_UI_KingdomIndependence_Leave" text="Leave kingdom" />
+    <string id="AF_DIP_UI_CivilWar_ActionSendUltimatum" text="Send ultimatum" />
+    <string id="AF_KINGDOM_CW_Ultimatum_LeaderOnly" text="Only the player leader can send an ultimatum for their formed faction." />
+    <string id="AF_KINGDOM_CW_Ultimatum_NotReady" text="The ultimatum can be sent after {A}." />
+    <string id="AF_KINGDOM_CW_Ultimatum_WarPaused" text="Ultimatums are paused while another civil war is in progress." />
+    <string id="AF_KINGDOM_CW_Ultimatum_Consequence" text="Send the faction's demand to the king now. The king may accept, delay or refuse; this does not start a rebellion automatically." />
+    <string id="AF_KINGDOM_CW_Ultimatum_Sent" text="You sent the faction's ultimatum to the king." />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualNote" text="Use Send ultimatum when ready; it will not be sent automatically." />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualReady" text="Awaiting you" />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualStage" text="Formed · awaiting your manual ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedManualNote" text="A faction you lead sends ultimatums only when you choose to. Rebellion also requires manual confirmation and the strength threshold." />
+    <string id="AF_KINGDOM_CW_Fulfillment_Choice" text="Accepted · choose departure or LLM kingdom founding in the popup" />
+    <string id="AF_KINGDOM_CW_Fulfillment_PeaceRejected" text="The peace agenda was rejected or cancelled; the faction remains." />
+    <string id="AF_KINGDOM_CW_Fulfillment_FoundingFailed" text="The independent kingdom could not be founded; the faction has been retained." />
+    <string id="AF_KINGDOM_CW_Fulfillment_Pending" text="The demand has been accepted and is awaiting kingdom founding or the peace vote. The faction remains until fulfillment is confirmed." />
+    <string id="AF_KINGDOM_CW_Fulfillment_Locked" text="An accepted demand is awaiting fulfillment; faction actions are locked until it is settled." />
+    <string id="AF_KINGDOM_CW_Fulfillment_ValuePending" text="Pending" />
+    <string id="AF_KINGDOM_CW_Fulfillment_RetryManual" text="Fulfillment failed or the vote was rejected; the faction remains. The ruler may try a new concession after the cooldown." />
+    <string id="AF_KINGDOM_CW_Fulfillment_Founding" text="Accepted · awaiting LLM naming and confirmed kingdom independence" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Voting" text="Accepted · awaiting both kingdoms' peace votes; peace is not yet confirmed" />
     <string id="AF_DIP_UI_LobbyistRegistered_DeclareWar" text="{RULER}, ruler of {KINGDOM}, has committed to declaring war on {TARGET}." />
     <string id="AF_DIP_UI_LobbyistRegistered_Peace" text="{RULER}, ruler of {KINGDOM}, has committed to proposing peace to {TARGET}." />
     <string id="AF_DIP_UI_LobbyistRegistered_Alliance" text="{RULER}, ruler of {KINGDOM}, has committed to proposing an alliance to {TARGET}." />
@@ -700,9 +728,9 @@
     <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="The coup rebels were eliminated; the rebellion ends." />
     <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="The former royal clan has not joined the rebels, or the restoration identity/original kingdom name is missing; registration is postponed." />
     <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="The former ruler's kingdom was eliminated; the coup outcome is recognized." />
-    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Recognize autonomy for this faction's fiefs" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Let this faction leave with its fiefs, optionally founding an LLM-named kingdom" />
     <string id="AF_KINGDOM_CW_Demand_continue_war" text="Do not make peace with {TARGET}" />
-    <string id="AF_KINGDOM_CW_Demand_make_peace" text="End the war with {TARGET} and negotiate peace" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="Submit peace with {TARGET} to both kingdoms' votes" />
     <string id="AF_KINGDOM_CW_Demand_redress" text="Pay compensation and hold those responsible to account" />
     <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="Repeal {TARGET}" />
     <string id="AF_KINGDOM_CW_Demand_unknown" text="Pursue the faction's demand" />

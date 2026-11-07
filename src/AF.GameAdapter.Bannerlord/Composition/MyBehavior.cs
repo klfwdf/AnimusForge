@@ -1140,6 +1140,8 @@ internal struct PatienceSnapshot
 
 		public string CivilWarFactionId;
 
+		public string IndependenceOperationId;
+
 		public RebelKingdomNamingResult NamingResult;
 	}
 
@@ -1168,6 +1170,9 @@ internal struct PatienceSnapshot
 	internal sealed class ApiCallResult
 	{
 		public bool Success;
+
+		// Auxiliary request/response failures may use domain retry/fallback; unknown faults must preserve source data.
+		public bool IsRequestFailure;
 
 		public string Content;
 

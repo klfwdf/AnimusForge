@@ -1,0 +1,398 @@
+// Recording substitutes only for game objects/actions, presentation, save transport and unrelated subsystems.
+// Production API, bilateral outcomes/queue/final effect, SyncData, exact bindings and takeover gates
+// are extracted verbatim by FactionPeaceAgendaReplay.py. This is not a Harmony or .sav integration test.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Election;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
+using TaleWorlds.Library;
+
+namespace TaleWorlds.Library { public class MBList<T> : List<T> { } }
+namespace TaleWorlds.CampaignSystem
+{
+    public interface IFaction { string StringId { get; } }
+    public class Kingdom : IFaction
+    {
+        public static List<Kingdom> All = new();
+        public string StringId { get; set; }
+        public string Name => StringId;
+        public Clan RulingClan;
+        public bool IsEliminated;
+        public List<Kingdom> AlliedKingdoms = new();
+        public MBList<KingdomDecision> UnresolvedDecisions = new();
+        public int AddCalls;
+        public void AddDecision(KingdomDecision decision, bool ignoreInfluenceCost)
+        {
+            AddCalls++;
+            // Invoke the actual extracted production takeover prefix.
+            if (!AnimusForge.WorldDiplomacyBehavior.Admit(this, decision, ignoreInfluenceCost)) return;
+            if (!ignoreInfluenceCost) decision.ProposerClan.Influence -= decision.GetInfluenceCost(decision.ProposerClan);
+            CampaignEventDispatcher.Instance.OnKingdomDecisionAdded(decision, false);
+            if (!Campaign.DropFirst) UnresolvedDecisions.Add(decision);
+        }
+        public void RemoveDecision(KingdomDecision decision) => UnresolvedDecisions.Remove(decision);
+    }
+    public class Clan { public static Clan PlayerClan; public string StringId; public Kingdom Kingdom; public Hero Leader; public bool IsEliminated, IsUnderMercenaryService; public float Influence = 100; }
+    public class Hero { public bool IsAlive = true; public bool IsHumanPlayerCharacter; }
+    public readonly struct CampaignTime
+    {
+        public static CampaignTime Now => new();
+        public double ToDays => 500;
+        public float ElapsedDaysUntilNow => 0;
+    }
+    public abstract class CampaignBehaviorBase { public abstract void SyncData(IDataStore store); }
+    public interface IDataStore { bool IsSaving { get; } bool IsLoading { get; } void SyncData<T>(string key, ref T value); }
+    public class Campaign
+    {
+        public static Campaign Current = new();
+        public static bool DropFirst;
+        public ModelSet Models = new();
+        public T GetCampaignBehavior<T>() where T : class => typeof(T) == typeof(AnimusForge.VoteDealBehavior) ? AnimusForge.VoteDealBehavior.Instance as T : null;
+    }
+    public class ModelSet { public DiplomacyModel DiplomacyModel = new(); public TradeModel TradeAgreementModel = new(); public AllianceModel AllianceModel = new(); }
+    public class DiplomacyModel { public int GetInfluenceCostOfProposingPeace(Clan clan) => 10; }
+    public class TradeModel { public CampaignTime GetTradeAgreementDurationInYears(Kingdom a, Kingdom b) => new(); }
+    public class AllianceModel { public int MaxNumberOfAlliances = 3; }
+    public static class FactionManager
+    {
+        public static bool War = true;
+        public static bool IsAtWarAgainstFaction(IFaction a, IFaction b) => War;
+    }
+    public class CampaignEventDispatcher
+    {
+        public static CampaignEventDispatcher Instance = new();
+        public static bool LastPlayerInvolved;
+        public void OnKingdomDecisionAdded(KingdomDecision d, bool player)
+        {
+            LastPlayerInvolved = player;
+            if (CampaignSave.DropReview && d is MakePeaceKingdomDecision p && p.Review)
+                d.Kingdom.UnresolvedDecisions = null;
+        }
+    }
+}
+namespace TaleWorlds.CampaignSystem.CampaignBehaviors
+{
+    public interface IAllianceCampaignBehavior { bool IsAllyWithKingdom(Kingdom a, Kingdom b); void StartAlliance(Kingdom a, Kingdom b); }
+    public interface ITradeAgreementsCampaignBehavior { void MakeTradeAgreement(Kingdom a, Kingdom b, CampaignTime duration); }
+}
+namespace TaleWorlds.CampaignSystem.Election
+{
+    public class Supporter
+    {
+        public Clan Clan;
+        public bool IsPlayer;
+        public enum SupportWeights { StayNeutral, SlightlyFavor, StronglyFavor, FullyPush }
+    }
+    public class DecisionOutcome { }
+    public class KingdomDecision
+    {
+        public Clan ProposerClan;
+        public Kingdom Kingdom => ProposerClan?.Kingdom;
+        public virtual Clan DetermineChooser() => Kingdom?.RulingClan;
+        public virtual IEnumerable<Supporter> DetermineSupporters() => new[] { new Supporter { Clan = ProposerClan, IsPlayer = ProposerClan == Clan.PlayerClan } };
+        public bool IsPlayerParticipant => ProposerClan == Clan.PlayerClan;
+        public virtual bool IsAllowed() => !DecisionSettings.Disallowed;
+        public int GetInfluenceCost(Clan c) => 10;
+    }
+    public static class DecisionSettings { public static bool Disallowed; }
+    public class MakePeaceKingdomDecision : KingdomDecision
+    {
+        public IFaction FactionToMakePeaceWith;
+        public int DailyTributeToBePaid, DailyTributeDurationInDays;
+        public bool Review;
+        public MakePeaceKingdomDecision(Clan proposer, IFaction target, int tribute = 0, int days = 0, bool apply = true, bool review = false)
+        { ProposerClan = proposer; FactionToMakePeaceWith = target; DailyTributeToBePaid = tribute; DailyTributeDurationInDays = days; Review = review; }
+        public class Outcome : DecisionOutcome { public bool ShouldPeaceBeDeclared; }
+    }
+    public class DeclareWarDecision : KingdomDecision { public IFaction FactionToDeclareWarOn; }
+    public class StartAllianceDecision : KingdomDecision { public Kingdom KingdomToStartAllianceWith; public StartAllianceDecision(Clan c, Kingdom k) { ProposerClan = c; KingdomToStartAllianceWith = k; } }
+    public class TradeAgreementDecision : KingdomDecision { public Kingdom TargetKingdom; public TradeAgreementDecision(Clan c, Kingdom k) { ProposerClan = c; TargetKingdom = k; } }
+    public class ProposeCallToWarAgreementDecision : KingdomDecision { }
+    public class AcceptCallToWarAgreementDecision : KingdomDecision { }
+}
+namespace TaleWorlds.CampaignSystem.Actions
+{
+    public static class MakePeaceAction
+    {
+        public static int Calls, AuthorizedCalls;
+        public static bool Block;
+        public static void ApplyByKingdomDecision(Kingdom a, Kingdom b, int tribute, int days)
+        {
+            Calls++;
+            if (!AnimusForge.WorldDiplomacyBehavior.PeaceAllowed(a, b)) return;
+            AuthorizedCalls++;
+            if (!Block) FactionManager.War = false;
+        }
+    }
+}
+namespace HarmonyLib
+{
+    public class Traverse
+    {
+        private object value;
+        private Traverse(object o) { value = o; }
+        public static Traverse Create(object o) => new(o);
+        public Traverse Field(string name)
+        {
+            if (name != "_unresolvedDecisions") throw new Exception("Unexpected reflection " + name);
+            value = ((Kingdom)value).UnresolvedDecisions; return this;
+        }
+        public T GetValue<T>() => (T)value;
+    }
+}
+namespace AnimusForge.Refactor.Modules
+{
+    internal static class TeamModuleServices
+    {
+        internal static CivilWarPort CivilWar = new();
+        internal sealed class CivilWarPort
+        {
+            internal int Notifications;
+            internal List<string> StatesAtNotice = new();
+            internal void NotifyPoliticalChange(Kingdom kingdom, string source)
+            {
+                if (source != "faction_peace_vote") throw new Exception("Wrong political source");
+                Notifications++;
+                StatesAtNotice.Add(AnimusForge.VoteDealBehavior.InspectState());
+            }
+        }
+    }
+}
+namespace AnimusForge.Refactor.Domain
+{
+    // Admission policy is unrelated to this explicit-operation exception. Deny all ordinary peace.
+    internal static class DiplomacyNativeAdmissionRules
+    {
+        internal static bool AllowsPeace(bool a, bool b, bool c, bool d, object live, string first, string second) => false;
+    }
+    internal static class WorldDiplomacyLiveRoundRules { internal static object Live(object storage) => null; }
+}
+namespace AnimusForge
+{
+    internal static class Logger { internal static void Log(string category, string message) { } }
+    internal static class VassalageBehavior { internal static bool IsApplyingVassalageDiplomacy; }
+    internal static class MyBehavior { internal static bool QuietPeaceActive; }
+    internal static class MeetingBattleRuntime { internal static void RunWithDiplomaticSideEffectsUnlocked(string source, Action action) => action(); }
+    internal static class DiplomacyRecentPeaceBridge { internal static void RegisterPeace(Kingdom a, Kingdom b, string source) { } }
+    internal static class DiplomacyUiLocalization
+    {
+        internal static string Text(string key, string fallback) => fallback;
+        internal static string Format(string key, string fallback, params (string, object)[] args) => fallback;
+    }
+    internal static class CampaignSaveChunkHelper
+    {
+        internal sealed class PersistenceIntegrityException : Exception { internal PersistenceIntegrityException(string key, string reason) : base(key + ":" + reason) { } }
+        internal static Dictionary<string,string> FlattenStringDictionary(Dictionary<string,string> input, string key, string owner) => new(input);
+        internal static Dictionary<string,string> RestoreStringDictionary(Dictionary<string,string> input, string owner) => input == null ? new() : new(input);
+    }
+    public partial class VoteDealBehavior : CampaignBehaviorBase
+    {
+        public static VoteDealBehavior Instance;
+        private const char RecordDelimiter = '\x01';
+        private List<VoteDealRecord> _activeDeals = new();
+        private Dictionary<string,string> _serializedDeals = new(), _serializedBilateralDiplomacy = new(), _dialogueProposalDecisionKeys = new(), _shownRequiredAgendaVoteKeys = new();
+        private List<BilateralDiplomacyRecord> _bilateralDiplomacyRecords = new();
+        private HashSet<KingdomDecision> _agendaDeadlineReminderShown = new();
+        internal static KingdomDecision s_pendingRequiredAgendaDecision;
+        internal static bool IsWorldDiplomacyTakeoverEnabled() => true;
+        private static string GenerateBilateralDiplomacyId() => Guid.NewGuid().ToString("N");
+        private static string BuildVoteDealDecisionKey(KingdomDecision decision, bool includeProposer) => "unused-dialogue-key";
+        private void ResetAgendaMapNotificationRuntime() { }
+        private void CleanupRequiredAgendaVotePromptKeys() { }
+        private static bool IsLegacySerializedDirection(string value) => false;
+        private void ForgetAgendaMapNotification(KingdomDecision decision) { }
+        private void UnregisterDialogueProposedDecision(KingdomDecision decision) { }
+        private void MergeBilateralDiplomacyParticipants(BilateralDiplomacyRecord r, KingdomDecision d) { }
+        private static void MarkBilateralDiplomacyMemoryHandled(KingdomDecision decision) { }
+        private void RecordBilateralDiplomacyMemory(BilateralDiplomacyRecord r, KingdomDecision d, string state) { }
+        private static string GetKingdomName(string id) => id;
+        private static string GetBilateralDiplomacyKindDisplayText(BilateralDiplomacyRecord r) => r.Kind;
+        private static void DisplayBilateralDiplomacyMessage(string text, uint color) { }
+        private static string GetSafeDecisionTitle(KingdomDecision decision) => "peace";
+        private static bool HasTradeAgreementCompat(ITradeAgreementsCampaignBehavior b, Kingdom a, Kingdom c) => false;
+        private static void RegisterAgendaDelaySnapshot(KingdomDecision d, Kingdom k, float days) { }
+        private static void SetDecisionTriggerTime(KingdomDecision d, float days) { }
+        private static class KingdomAgendaVM { internal static List<object> _snapshots = new(); }
+        internal static string InspectState() => Instance?._bilateralDiplomacyRecords.LastOrDefault()?.OperationState;
+        internal static void Vote(KingdomDecision decision, bool approved)
+        {
+            bool vanilla = Patch_BilateralDiplomacy_ApplyChosenOutcome_Prefix(decision,
+                new MakePeaceKingdomDecision.Outcome { ShouldPeaceBeDeclared = approved });
+            if (vanilla) throw new Exception("Production hook fell through to native unilateral peace");
+            decision.Kingdom.RemoveDecision(decision);
+        }
+        internal static void Cancel(KingdomDecision decision)
+        { decision.Kingdom.RemoveDecision(decision); Instance.OnKingdomDecisionCancelled(decision, false); }
+        internal static bool HiddenByAgendaUi(KingdomDecision decision) => IsWorldDiplomacyControlledAgendaDecision(decision);
+        internal static bool RoyalSupportsPeace(KingdomDecision decision, Clan clan) => Instance.IsFactionPeaceRoyalProposer(decision, clan);
+    }
+    internal interface IWorldDiplomacyNativeDecisionPort
+    {
+        IEnumerable<IReadOnlyList<int>> Queues(); WorldDiplomacyNativeDecisionSnapshot Capture(int token);
+        string Reason(int token, bool incomingPlayerOffer, string action); void Remove(int token); string Describe(int token); void Log(string message);
+    }
+    internal sealed class WorldDiplomacyNativeDecisionSnapshot
+    {
+        internal bool HasHost, HasTarget, SameTargetHost, HostIsPlayer, HostEliminated, TargetEliminated, ProposerEliminated;
+        internal string HostId, TargetId, ProposerKingdomId, Action;
+    }
+    public partial class WorldDiplomacyBehavior
+    {
+        [ThreadStatic] private static Stack<(Kingdom first, Kingdom second)> _eventPeaceScopes;
+        private static int _internalDiplomaticActionDepth;
+        private object _storage;
+        private static WorldDiplomacyBehavior Instance = new();
+        internal bool IsPersistenceAvailable = true;
+        private static bool AidTakeoverActive => false;
+        private static bool CaptureNativeAidDecision(Kingdom k, KingdomDecision d) => false;
+        private static bool IsWorldDiplomacyEnabled() => true;
+        private static WorldDiplomacyBehavior ResolveInstance() => Instance;
+        private static bool IsPlayerKingdom(Kingdom k) => false;
+        private static bool IsNativeDiplomacyDecision(KingdomDecision d) => d is MakePeaceKingdomDecision;
+        private static string BuildNativeDecisionReason(Kingdom first, Kingdom second, KingdomDecision d, string action) => action;
+        private bool CaptureNativeDiplomacyDecision(Kingdom k, KingdomDecision d) => new NativeDecisionPort(k,d).Capture(0) != null;
+        private static void Log(string message) { }
+        internal static bool Admit(Kingdom k, KingdomDecision d, bool ignore) => Patch_Kingdom_AddDecision_Prefix(k,d,ignore);
+        internal static bool PeaceAllowed(Kingdom first, Kingdom second) => AllowsNativePeace(first,second);
+        internal static void Sanitize()
+        {
+            var port = new NativeDecisionPort();
+            foreach (var queue in port.Queues()) foreach (int token in queue) if (port.Capture(token) != null) port.Remove(token);
+        }
+    }
+}
+
+// A fake SaveSystem remaps each native decision to a newly materialized instance, then
+// production SyncData restores those exact references. No original object remains in queues.
+internal sealed class CampaignSave : IDataStore
+{
+    internal static bool DropReview;
+    internal Dictionary<string,object> Values = new();
+    internal bool Saving = true;
+    public bool IsSaving => Saving;
+    public bool IsLoading => !Saving;
+    public void SyncData<T>(string key, ref T value)
+    {
+        if (Saving)
+        {
+            if (value is Dictionary<string,string> map) Values[key] = new Dictionary<string,string>(map);
+            else if (value is List<KingdomDecision> refs) Values[key] = new List<KingdomDecision>(refs);
+            else Values[key] = value;
+        }
+        else value = Values.TryGetValue(key,out var stored) ? (T)stored : default;
+    }
+    internal Dictionary<KingdomDecision,KingdomDecision> Rematerialize()
+    {
+        var map = new Dictionary<KingdomDecision,KingdomDecision>();
+        var refs = (List<KingdomDecision>)Values["_vdFactionPeaceDecisionRefs"];
+        foreach (KingdomDecision old in refs)
+        {
+            if (old == null || map.ContainsKey(old)) continue;
+            var p = (MakePeaceKingdomDecision)old;
+            map.Add(old,new MakePeaceKingdomDecision(p.ProposerClan,p.FactionToMakePeaceWith,p.DailyTributeToBePaid,p.DailyTributeDurationInDays,true,p.Review));
+        }
+        Values["_vdFactionPeaceDecisionRefs"] = refs.Select(d => d == null ? null : map[d]).ToList();
+        foreach (Kingdom k in Kingdom.All)
+            for (int i=0;i<k.UnresolvedDecisions.Count;i++)
+                if (map.TryGetValue(k.UnresolvedDecisions[i],out var replacement)) k.UnresolvedDecisions[i]=replacement;
+        Saving=false;
+        return map;
+    }
+}
+
+internal static class Replay
+{
+    private static int assertions;
+    private static Kingdom home, target;
+    private static Clan proposer;
+    private static void Check(bool ok,string message) { assertions++; if (!ok) throw new Exception("FAIL " + message); }
+    private static void Setup()
+    {
+        Kingdom.All.Clear(); FactionManager.War=true; MakePeaceAction.Calls=0; MakePeaceAction.AuthorizedCalls=0;
+        MakePeaceAction.Block=false; Campaign.DropFirst=false; CampaignSave.DropReview=false; DecisionSettings.Disallowed=false;
+        AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar = new();
+        home=new Kingdom{StringId="home"}; target=new Kingdom{StringId="target"};
+        proposer=new Clan{StringId="proposer",Kingdom=home,Leader=new Hero()}; home.RulingClan=proposer;
+        target.RulingClan=new Clan{StringId="target_ruler",Kingdom=target,Leader=new Hero()};
+        Kingdom.All.Add(home); Kingdom.All.Add(target); Clan.PlayerClan=proposer;
+        AnimusForge.VoteDealBehavior.Instance=new();
+    }
+    private static string Query(string id="op") => AnimusForge.VoteDealBehavior.GetOrSubmitFactionPeaceAgenda(id,"antiwar",home,target,proposer,out _);
+    private static KingdomDecision First => home.UnresolvedDecisions.Single();
+    private static KingdomDecision Review => target.UnresolvedDecisions.Single();
+    private static void Reload()
+    {
+        var save=new CampaignSave(); AnimusForge.VoteDealBehavior.Instance.SyncData(save);
+        var old = new List<KingdomDecision>(home.UnresolvedDecisions.Concat(target.UnresolvedDecisions));
+        save.Rematerialize(); AnimusForge.VoteDealBehavior.Instance=new(); AnimusForge.VoteDealBehavior.Instance.SyncData(save);
+        foreach (var d in old) Check(!AnimusForge.VoteDealBehavior.IsFactionPeaceDecision(d),"old object does not acquire restored admission");
+    }
+    public static void Main()
+    {
+        Setup(); Check(Query()=="pending","submit first"); var first=First;
+        Check(proposer.Influence==90 && home.AddCalls==1,"first costs exactly once");
+        Check(Query()=="pending" && home.AddCalls==1 && proposer.Influence==90,"duplicate operation submits/charges once");
+        Check(!AnimusForge.VoteDealBehavior.RoyalSupportsPeace(First,proposer),"player ruler retains explicit voting control");
+        Clan.PlayerClan=null;
+        Check(AnimusForge.VoteDealBehavior.RoyalSupportsPeace(First,proposer),"AI ruler promise is bound to the exact tracked first peace decision");
+        Check(!AnimusForge.VoteDealBehavior.RoyalSupportsPeace(new MakePeaceKingdomDecision(proposer,target),proposer),"promise cannot force an unrelated peace agenda");
+        Clan.PlayerClan=proposer;
+        var unrelated=new MakePeaceKingdomDecision(proposer,target);
+        Check(!AnimusForge.WorldDiplomacyBehavior.Admit(home,unrelated,false),"ordinary native add blocked");
+        Check(AnimusForge.VoteDealBehavior.HiddenByAgendaUi(unrelated),"ordinary native agenda hidden");
+        Check(!AnimusForge.VoteDealBehavior.HiddenByAgendaUi(first),"bound first agenda visible");
+        home.UnresolvedDecisions.Add(unrelated); AnimusForge.WorldDiplomacyBehavior.Sanitize();
+        Check(home.UnresolvedDecisions.Count==1 && ReferenceEquals(First,first),"sanitizer removes ordinary native but retains bound first");
+        MakePeaceAction.ApplyByKingdomDecision(home,target,0,0);
+        Check(FactionManager.War && MakePeaceAction.AuthorizedCalls==0,"ordinary native final action blocked");
+        MakePeaceAction.Calls=0;
+        Reload(); Check(Query()=="pending" && AnimusForge.VoteDealBehavior.IsFactionPeaceDecision(First),"first refs restored by production SyncData");
+        first=First; AnimusForge.VoteDealBehavior.Vote(first,true); var review=Review;
+        AnimusForge.VoteDealBehavior.Vote(first,true);
+        Check(target.UnresolvedDecisions.Count==1 && proposer.Influence==90,"replayed first approval cannot duplicate review or charge");
+        Check(Query()=="pending" && FactionManager.War && MakePeaceAction.Calls==0,"first approval only queues review");
+        Check(target.RulingClan.Influence==100 && proposer.Influence==90,"review has no proposal charge");
+        Check(AnimusForge.WorldDiplomacyBehavior.Admit(target,review,true) && !AnimusForge.VoteDealBehavior.HiddenByAgendaUi(review),"review add gate and UI permitted");
+        AnimusForge.WorldDiplomacyBehavior.Sanitize(); Check(target.UnresolvedDecisions.Contains(review),"review survives native sanitization");
+        Reload(); Check(Query()=="pending" && AnimusForge.VoteDealBehavior.IsFactionPeaceDecision(Review),"review exact refs restored");
+        review=Review; AnimusForge.VoteDealBehavior.Vote(review,true);
+        Check(Query()=="completed" && !FactionManager.War && MakePeaceAction.Calls==1 && MakePeaceAction.AuthorizedCalls==1,"final bilateral approval uses authorized actual peace");
+        Check(AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.Notifications==1
+            && AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.StatesAtNotice.Single()=="completed","terminal receipt precedes political notification");
+        AnimusForge.VoteDealBehavior.Vote(review,true); Check(Query()=="completed" && MakePeaceAction.Calls==1,"duplicate final callback cannot reapply");
+        Reload(); Check(Query()=="completed" && home.AddCalls==1,"terminal persisted, never resubmitted");
+        foreach(bool second in new[]{false,true})
+        {
+            Setup(); Query(); if(second) AnimusForge.VoteDealBehavior.Vote(First,true);
+            AnimusForge.VoteDealBehavior.Vote(second?Review:First,false);
+            Check(Query()=="rejected" && FactionManager.War && MakePeaceAction.Calls==0,"first/review rejection never makes peace");
+            Check(AnimusForge.Refactor.Modules.TeamModuleServices.CivilWar.Notifications==1,"rejection notifies owner");
+            Reload(); Check(Query()=="rejected" && home.AddCalls==1,"rejected tombstone survives reload");
+        }
+        foreach(bool second in new[]{false,true})
+        {
+            Setup(); Query(); if(second) AnimusForge.VoteDealBehavior.Vote(First,true);
+            AnimusForge.VoteDealBehavior.Cancel(second?Review:First);
+            Check(Query()=="failed" && FactionManager.War && MakePeaceAction.Calls==0,"first/review cancellation fails without peace");
+            Reload(); Check(Query()=="failed" && home.AddCalls==1,"cancelled operation never auto-resubmits");
+        }
+        Setup(); Query(); AnimusForge.VoteDealBehavior.Vote(First,true); MakePeaceAction.Block=true;
+        AnimusForge.VoteDealBehavior.Vote(Review,true); Check(Query()=="failed" && FactionManager.War,"blocked actual effect cannot report completed");
+        Setup(); Query(); FactionManager.War=false; Check(Query()=="failed","external peace cannot complete operation");
+        Setup(); Query();
+        var damaged=new CampaignSave(); AnimusForge.VoteDealBehavior.Instance.SyncData(damaged);
+        damaged.Values["_vdFactionPeaceDecisionRefs"]=new List<KingdomDecision>(); damaged.Saving=false;
+        AnimusForge.VoteDealBehavior.Instance=new(); AnimusForge.VoteDealBehavior.Instance.SyncData(damaged);
+        Check(Query()=="failed" && !AnimusForge.VoteDealBehavior.IsFactionPeaceDecision(First),"missing saved refs fail closed without pair-based adoption");
+        Setup(); proposer.Influence=0; Check(Query()=="failed" && home.AddCalls==0,"insufficient influence fails before submit");
+        proposer.Influence=100; Check(Query()=="failed" && home.AddCalls==0,"failed operation cannot be reused");
+        Setup(); DecisionSettings.Disallowed=true; Check(Query()=="failed" && home.AddCalls==0,"IsAllowed enforced");
+        Setup(); Campaign.DropFirst=true; Check(Query()=="failed" && home.AddCalls==1,"not retained is explicit failure");
+        Setup(); Query(); Check(AnimusForge.VoteDealBehavior.GetOrSubmitFactionPeaceAgenda("op","other",home,target,proposer,out _)=="failed","operation identity cannot be repurposed");
+        Check(Query()=="pending" && home.AddCalls==1,"identity mismatch does not mutate original operation");
+        Console.WriteLine("PASS faction peace production control-flow replay: " + assertions + " assertions; Harmony and TaleWorlds SaveSystem NOT-RUN");
+    }
+}

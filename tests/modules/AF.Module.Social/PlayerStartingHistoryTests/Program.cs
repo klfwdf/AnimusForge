@@ -61,7 +61,6 @@ internal static class Program
     private static bool CampaignPrefix(ref object __result) { __result = _campaign; return false; }
     private static bool OptionsPrefix(ref object __result) { __result = _options; return false; }
     private static bool NoLog() => false;
-    private static bool InvalidSummary(ref Task<string> __result) { __result = Task.FromResult("invalid fixture"); return false; }
     private static bool PromptLimit(ref int __result) { __result = 120; return false; }
     private static bool PlayerName(ref string __result) { __result = "Ada"; return false; }
     private static bool CurrentName(ref string __result) { __result = _fixtureName; return false; }
@@ -146,13 +145,20 @@ internal static class Program
         // normalization/truncation, otherwise the canonical line becomes inert.
         harmony.Patch(host.GetMethod("GetMajorPromptChars", All), prefix: new HarmonyMethod(typeof(Program), nameof(PromptLimit)));
         harmony.Patch(host.GetMethod("BuildSummaryPlayerDisplayName", All), prefix: new HarmonyMethod(typeof(Program), nameof(PlayerName)));
-        harmony.Patch(af.GetType("AnimusForge.MyBehavior", true).GetMethod("CallAuxiliaryApiTextForExternal", All), prefix: new HarmonyMethod(typeof(Program), nameof(InvalidSummary)));
         object compact = NewOwner();
         Record(compact, "trader");
         string newest = "NEWEST-" + new string('x', 293);
-        Set(State(compact), "MajorSummary", Token("trader") + "\n" + newest);
-        Set(State(compact), "SummaryRetryCount", 2);
-        ((Task)Call(host, compact, "ProcessSummaryAsync")).GetAwaiter().GetResult();
+        string compactSource = Token("trader") + "\n" + newest;
+        Set(State(compact), "MajorSummary", compactSource);
+        Type runType = host.GetNestedType("PlayerSummaryRun", All);
+        object compactRun = Activator.CreateInstance(runType, true);
+        Set(compactRun, "OriginalSummary", compactSource);
+        Set(compactRun, "PlayerName", "Ada");
+        Set(compactRun, "PromptChars", 120);
+        Type materialList = typeof(List<>).MakeGenericType(host.GetNestedType("PlayerHistoryMaterial", All));
+        Set(compactRun, "Sources", Activator.CreateInstance(materialList));
+        Set(compactRun, "Materials", Activator.CreateInstance(materialList));
+        Call(host, compact, "ApplySummaryFallback", compactRun);
         string compacted = (string)Field(State(compact), "MajorSummary");
         string expandedMerchant = string.Format(prompt["player_start_trader"], "Ada");
         Check(compacted.Length <= 120 && !compacted.Contains("AF_PLAYER_START_V1") && compacted.EndsWith(new string('x', 100), StringComparison.Ordinal),

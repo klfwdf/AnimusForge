@@ -33,7 +33,7 @@ namespace AnimusForge
         internal class NpcDataPacket { public int AgentIndex=7; public string Name="npc",UnnamedKey="unnamed",PromptGivenName,PromptDisplayName; }
         internal class SceneSummonPromptTarget { }
         internal class SceneGuidePromptTarget { }
-        internal class SceneSpeechPlaybackInfo { }
+        internal class SceneSpeechPlaybackInfo { internal bool TtsAccepted,WaitForPlaybackFinished; internal Action<string,bool> OnPresented; internal string ImmediatePresentedText; internal Func<bool> CanNotifyPresented; internal void NotifyPresented(string text,bool final=true,int index=0)=>OnPresented?.Invoke(text,final); }
         @@ITEM@@
         internal static bool CanPublishImmediateSceneReaction(Func<bool> predicate)=>predicate?.Invoke()!=false;
         internal static bool ContainsOpenLordsHallActionTag(string text)=>false;

@@ -9,7 +9,7 @@ namespace AnimusForge
 internal sealed class ConversationGameThreadDispatcher {}
 internal sealed class SceneMovementController {}
 internal static class SceneActionDirectiveController {internal static void Reset(){}}
-internal sealed class NpcDataPacket {internal string Name="npc";}
+internal sealed class NpcDataPacket {internal string Name="npc",UnnamedKey="",TroopId="";}
 internal sealed class Hero {}
 internal sealed class CharacterObject {internal Hero HeroObject;}
 internal sealed class Agent {internal static Agent Main=new();internal int Index=3;internal CharacterObject Character=new();internal bool Active=true;}
@@ -36,7 +36,9 @@ internal sealed class SceneConversationSessionPorts
     internal bool RecordResponseForAllNearbySafe(List<NpcDataPacket> all,int index,string name,string text){ExecutionProbe.Game();ExecutionProbe.History++;return true;}
     internal bool PersistNpcSpeechToNamedHeroes(int index,string name,string text,List<NpcDataPacket> all){ExecutionProbe.Game();ExecutionProbe.Memory++;return true;}
     internal void EnqueueSpeechLine(NpcDataPacket npc,string text,List<NpcDataPacket> all,bool skipHistory,bool suppressStare,Func<bool> canStillPublish){ExecutionProbe.Game();ExecutionProbe.Speech++;}
-    internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc,string content,List<NpcDataPacket> allNpcData,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> sceneSummonTargets=null,List<SceneGuidePromptTarget> sceneGuideTargets=null,string afterSpeechInfoMessage=null,TaskCompletionSource<bool> completionSource=null,float interactionTimeoutSeconds=-1f,int interactionParticipantCount=1,Func<bool> canStillPublish=null,string playerDirectedActionText=null,string playerDirectedNpcReplyText=null){ExecutionProbe.Game();ExecutionProbe.Speech++;completionSource?.TrySetResult(true);}
+    internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc,string content,List<NpcDataPacket> allNpcData,bool commitHistory,bool suppressStare,bool allowPlayerDirectedActions,int requiredConversationEpoch,List<SceneSummonPromptTarget> sceneSummonTargets=null,List<SceneGuidePromptTarget> sceneGuideTargets=null,string afterSpeechInfoMessage=null,TaskCompletionSource<bool> completionSource=null,float interactionTimeoutSeconds=-1f,int interactionParticipantCount=1,Func<bool> canStillPublish=null,string playerDirectedActionText=null,string playerDirectedNpcReplyText=null,Action<string,bool> onPresented=null){ExecutionProbe.Game();ExecutionProbe.Speech++;if(DeferPresentation){PendingPresentation=()=>onPresented?.Invoke(content,true);completionSource?.TrySetResult(true);}else{onPresented?.Invoke(content,true);completionSource?.TrySetResult(true);}}
+    internal bool DeferPresentation;
+    internal Action PendingPresentation;
     internal bool PreserveVisibleBubbles;
     internal void RetireRelayInteractionWaits(){}
     internal void DeactivateMultiSceneMovementSuppression(){}
@@ -49,6 +51,7 @@ internal sealed class SceneConversationSessionPorts
 internal static class ShoutBehavior
 {
     internal const int ScenePostprocessGateWaitTimeoutMilliseconds=80;
+    internal const int NativeConversationMainThreadPreprocessTimeoutMs=80;
     internal static bool IsBannerlordMainThreadForNativeActions()=>Thread.CurrentThread.ManagedThreadId==ExecutionProbe.MainThread;
     internal static Agent ResolvePrimaryAgentForShoutTargetingContext(ShoutTargetingContext c,List<Agent> agents)=>agents.FirstOrDefault(a=>a.Index==c.PrimaryAgentIndex);
 }
@@ -58,6 +61,8 @@ internal static class InformationManager {internal static int Count;internal sta
 internal sealed class SceneSummonPromptTarget {}
 internal sealed class SceneGuidePromptTarget {}
 internal sealed class DetachedPromptSections {}
+internal sealed class GptSoVitsLanguage {}
+internal sealed class ConversationPromptCache {internal sealed class Request:IDisposable {internal List<object> Messages;public void Accept(string text){}public void Dispose(){} } internal static Request Begin(List<object> messages,string channel,long generation,int session,string key)=>new(){Messages=messages}; }
 internal sealed class PostprocessRuleEntry {}
 internal sealed class RewardSystemBehavior {internal sealed class DuelStakeOption{}}
 internal sealed class EmptyLease:IDisposable {public void Dispose(){}}
@@ -117,6 +122,8 @@ internal sealed partial class SceneConversationSessionRuntime
     internal void InterruptForGate(){BeginNewPlayerDrivenSceneConversationEpoch(preserveVisibleBubbles:true);ResumeForGate();}
     internal bool PreservesBubblesForGate()=>_ports.PreserveVisibleBubbles;
     internal void PumpGate(){while(_ports.Queue.TryDequeue(out var action))action();}
+    internal void DeferDisplay()=>_ports.DeferPresentation=true;
+    internal void DisplayPending()=>_ports.PendingPresentation?.Invoke();
     internal static bool CanPublishImmediateSceneReaction(Func<bool> test)=>test==null||test();
     internal ImmediateSceneReactionRequest Add(long id,int agent,Action<bool> completion=null,Action noSpeech=null)
     {
@@ -150,6 +157,14 @@ internal static class Program
                 while(queue.TryDequeue(out var action))action();Require(task.Result==success&&result==success&&completed==1&&ExecutionProbe.Network==1,"actual-result-once");int expected=success?1:0;Require(ExecutionProbe.Effects==expected&&ExecutionProbe.History==expected&&ExecutionProbe.Memory==expected&&ExecutionProbe.Speech==expected&&r.PendingImmediateCount==0,"actual-effects-history-speech-once");
                 r.RequestLifetime.Retire();var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;Require((int)r.RequestLifetime.GetType().GetField("_workers",flags).GetValue(r.RequestLifetime)==0,"real-worker-lease-released");var lease=r.RequestLifetime.GetType().GetField("_lease",flags).GetValue(r.RequestLifetime);Require(lease.GetType().GetField("_source",flags).GetValue(lease)==null,"real-cancellation-resource-retired");});
         }
+        Case("actual-presentation-receipt-cancel-rejects-late-display",()=>{
+            ExecutionProbe.Reset();var r=New();r.DeferDisplay();using var cancellation=new CancellationTokenSource();int receipts=0;
+            var q=r.Add(1,3);q.TargetNpc=new();q.AllNpcData=new(){q.TargetNpc};q.OwnerCancellationToken=cancellation.Token;q.OnPresented=()=>receipts++;
+            var queue=new System.Collections.Concurrent.ConcurrentQueue<Action>();var task=r.ExecuteActual(q,queue);
+            Require(!task.IsCompleted&&ExecutionProbe.History==0&&receipts==0,"acceptance-not-display");
+            cancellation.Cancel();r.DisplayPending();r.Settle(q,false,false);
+            Require(receipts==0&&ExecutionProbe.History==0&&ExecutionProbe.Memory==0&&r.PendingImmediateCount==0,"cancelled-opening-no-late-receipt");
+        });
         Actual("actual-unified-prepare-worker-request-game-effects-history-speech",null,true);
         Actual("actual-reset-while-network-stale-no-effects",r=>{r.RequestLifetime.Retire();r.ResetImmediateReactions();},false);
         Actual("actual-target-disappears-before-action-no-effects",r=>Mission.Current.Agents[0].Active=false,false);

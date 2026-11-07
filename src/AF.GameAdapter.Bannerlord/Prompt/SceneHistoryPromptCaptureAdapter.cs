@@ -3687,6 +3687,7 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 		// Relay lines addressed to another NPC keep that addressee in the overheard text.
 		bool npcAddressee = targetAgentIndex >= 0 && targetAgentIndex != speakerAgentIndex;
 		string addresseeLabel = npcAddressee ? SceneAgentIdentityPromptCaptureAdapter.ResolveSceneTargetNameForPrompt(targetAgentIndex, targetName, nearbyData) : "";
+		string ownLine = npcAddressee ? AdapterPromptCaptureTexts.PcapFormat("SceneHistory_AddressedToTarget", "(to {TARGET}) ", ("TARGET", addresseeLabel)) + response : response;
 		string OverheardLine(int listenerAgentIndex)
 		{
 			string prefix = AdapterPromptCaptureTexts.PcapCompat("SceneHistoryCompat_e8876b7571b1") + text + ": ";
@@ -3700,7 +3701,10 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 
 		bool accepted = true;
 
-		foreach (NpcDataPacket nearbyDatum in nearbyData)
+		IEnumerable<NpcDataPacket> persistenceOrder = nearbyData
+			.Where(item => item != null && item.AgentIndex == speakerAgentIndex)
+			.Concat(nearbyData.Where(item => item != null && item.AgentIndex != speakerAgentIndex));
+		foreach (NpcDataPacket nearbyDatum in persistenceOrder)
 
 		{
 
@@ -3712,7 +3716,7 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 
 				{
 
-					string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : OverheardLine(nearbyDatum.AgentIndex);
+					string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? ownLine : OverheardLine(nearbyDatum.AgentIndex);
 
 					if (requireMemoryReceipt)
 
@@ -3740,7 +3744,7 @@ internal bool PersistNpcSpeechToNamedHeroes(int speakerAgentIndex, string speake
 
 			{
 
-				string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? response : OverheardLine(nearbyDatum.AgentIndex);
+				string aiText = nearbyDatum.AgentIndex == speakerAgentIndex ? ownLine : OverheardLine(nearbyDatum.AgentIndex);
 
 				if (requireMemoryReceipt)
 

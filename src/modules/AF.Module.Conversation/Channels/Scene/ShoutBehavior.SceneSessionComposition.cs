@@ -71,7 +71,7 @@ public partial class ShoutBehavior
         ClearQueuedSceneSpeech = ClearQueuedSceneSpeech,
         DeactivateMultiSceneMovementSuppression = DeactivateMultiSceneMovementSuppression,
         EnqueueSpeechLine = EnqueueSpeechLine,
-        EnqueueSpeechLineWithOptions = EnqueueSpeechLineWithOptions,
+        EnqueueSpeechLineWithOptions = EnqueueSceneSpeechWithPresentation,
         EnsurePersonaForCandidatesAsync = EnsurePersonaForCandidatesAsync,
         ExtendStaringHoldForPlayerDrivenSceneRound = ExtendStaringHoldForPlayerDrivenSceneRound,
         GetAgentsForShoutTargetingContext = GetAgentsForShoutTargetingContext,

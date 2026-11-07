@@ -38,6 +38,24 @@ internal static class FieldCampOrderTags
 		return camp != null && camp.IsMainPartyMember(speakerAgentIndex);
 	}
 
+	internal static bool CanSpeakerMediate(FieldCampIssues.Issue issue, int speakerAgentIndex)
+	{
+		if (!CanSpeakerTakeCampOrders(speakerAgentIndex) || issue == null) return false;
+		Hero first = Hero.Find(issue.Subject), second = Hero.Find(issue.Subject2);
+		if (first == null || second == null || !first.IsAlive || !second.IsAlive || first.IsPrisoner || second.IsPrisoner
+			|| first.PartyBelongedTo != TaleWorlds.CampaignSystem.Party.MobileParty.MainParty
+			|| second.PartyBelongedTo != TaleWorlds.CampaignSystem.Party.MobileParty.MainParty) return false;
+		foreach (Agent agent in Mission.Current.Agents)
+		{
+			if (agent?.Index == speakerAgentIndex && agent.IsActive())
+			{
+				Hero speaker = (agent.Character as CharacterObject)?.HeroObject;
+				return speaker == first || speaker == second;
+			}
+		}
+		return false;
+	}
+
 	internal static List<PostprocessRuleEntry> BuildRuntimePostprocessRules(bool replyIsDirectPlayerResponse, int speakerAgentIndex)
 	{
 		var rules = new List<PostprocessRuleEntry>();
@@ -65,6 +83,7 @@ internal static class FieldCampOrderTags
 				continue;
 			}
 			HashSet<string> allowed = AllowedResolutions(FieldCampBehavior.Instance, issues[i]);
+			if (issues[i].IsCompanionIssue && !CanSpeakerMediate(issues[i], speakerAgentIndex)) allowed.Remove("GRANT");
 			if (allowed.Count == 0)
 			{
 				continue;
@@ -101,7 +120,7 @@ internal static class FieldCampOrderTags
 	/// Main-prompt block listing the camp's issues (runtime context of a camp speaker).
 	/// Empty outside the camp mission.
 	/// </summary>
-	internal static string BuildIssuePromptBlock(int speakerAgentIndex)
+	internal static string BuildIssuePromptBlock(int speakerAgentIndex, Hero speaker = null)
 	{
 		FieldCampMissionLogic camp = FieldCampMissionLogic.Current;
 		FieldCampBehavior behavior = FieldCampBehavior.Instance;
@@ -120,7 +139,8 @@ internal static class FieldCampOrderTags
 			var options = new List<string>();
 			for (int r = 0; r < AllResolutions.Length; r++)
 			{
-				if (!behavior.CanChoose(issues[i], AllResolutions[r]))
+				if (!behavior.CanChoose(issues[i], AllResolutions[r])
+					|| (issues[i].IsCompanionIssue && AllResolutions[r] == FieldCampIssues.Resolution.Grant && !CanSpeakerMediate(issues[i], speakerAgentIndex)))
 				{
 					continue;
 				}
@@ -141,11 +161,10 @@ internal static class FieldCampOrderTags
 				("TEXT", FieldCampText.IssuePromptText(issues[i])),
 				("OPTIONS", string.Join(" / ", options))));
 		}
-		if (sb.Length == 0)
-		{
-			return ConversationRuntimeTexts.Prompt("AF_FC_IssuePromptNone");
-		}
-		return (ConversationRuntimeTexts.Prompt("AF_FC_IssuePromptHeader") + "\n" + sb.ToString()).Trim();
+		string pending = sb.Length == 0 ? ConversationRuntimeTexts.Prompt("AF_FC_IssuePromptNone")
+			: ConversationRuntimeTexts.Prompt("AF_FC_IssuePromptHeader") + "\n" + sb;
+		string handled = behavior.BuildHandledCompanionPrompt(speaker);
+		return string.IsNullOrEmpty(handled) ? pending.Trim() : (pending + "\n" + handled).Trim();
 	}
 
 	internal static string NormalizePostprocessTags(string content, List<PostprocessRuleEntry> allowedRules)
@@ -193,6 +212,19 @@ internal static class FieldCampOrderTags
 		return string.Empty;
 	}
 
+	/// <summary>Removes only camp tags without checking game state or executing actions.</summary>
+	internal static string StripOnly(string content)
+	{
+		if (string.IsNullOrEmpty(content))
+		{
+			return content ?? string.Empty;
+		}
+		content = Strip(Strip(content, AssembleTag), DismissTag);
+		return content.IndexOf(ResolvePrefix, StringComparison.OrdinalIgnoreCase) >= 0
+			? ResolveTagRegex.Replace(content, "")
+			: content;
+	}
+
 	/// <summary>Strips camp tags from the reply and executes them (main thread, idempotent per issue).</summary>
 	internal static void Consume(bool allowPlayerDirectedActions, int speakerAgentIndex, ref string content)
 	{
@@ -225,11 +257,11 @@ internal static class FieldCampOrderTags
 		}
 		for (int i = 0; hasResolve && i < resolves.Count; i++)
 		{
-			ExecuteResolve(resolves[i]);
+			ExecuteResolve(resolves[i], speakerAgentIndex);
 		}
 	}
 
-	private static void ExecuteResolve(Match match)
+	private static void ExecuteResolve(Match match, int speakerAgentIndex)
 	{
 		FieldCampBehavior behavior = FieldCampBehavior.Instance;
 		if (behavior == null
@@ -251,7 +283,7 @@ internal static class FieldCampOrderTags
 				ResolveTroopMemory(issue.Subject2, out memoryB, out nameB);
 			}
 		}
-		string fact = behavior.Resolve(index, resolution);
+		string fact = behavior.Resolve(index, resolution, speakerAgentIndex);
 		Logger.Log("FieldCamp", "resolve tag issue=" + number + " resolution=" + resolution + " executed=" + (fact != null));
 		if (fact == null || issue == null)
 		{

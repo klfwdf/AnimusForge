@@ -291,16 +291,25 @@ internal sealed class PendingNpcBubbleEntry
 
 		public string NpcName;
 
-		public float FallbackDurationSeconds;
-	}
+			public float FallbackDurationSeconds;
+			internal SceneSpeechPlaybackInfo PlaybackInfo;
+			internal bool IsFinalSegment=true;
+			internal int SegmentIndex;
+			internal Mission SourceMission;
+			internal long RuntimeGeneration;
+			internal int ConversationEpoch;
+		}
 internal sealed class PendingSceneDialogueFeedEntry
 	{
  public Mission SourceMission; public long RuntimeGeneration; public int ConversationEpoch=-1;
-		public string SpeakerLabel;
+			public string SpeakerLabel;
+			internal SceneSpeechPlaybackInfo PlaybackInfo;
+			internal int SegmentIndex;
+			internal bool FinalSegment=true;
 
-		public string Content;
+			public string Content;
 
-		public Color Color;
+			public Color Color;
 
 		public bool WaitForPlaybackFinished;
 

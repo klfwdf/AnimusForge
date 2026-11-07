@@ -37,6 +37,7 @@ namespace TaleWorlds.CampaignSystem
         public int Tier = 3;
         public float Influence = 500;
         public float CurrentTotalStrength = 50;
+        public List<IFaction> FactionsAtWarWith = new();
         public List<Settlement> Settlements = new();
     }
     public class Hero
@@ -165,6 +166,15 @@ namespace AnimusForge
         internal static CivilWarTuning BuildCivilWarTuning() => new() { WorldMaxWars = WorldMaxWars, DiscontentThreshold = DiscontentThreshold, PlayerDetonationStrengthPercent = PlayerDetonationStrengthPercent };
     }
     internal static class PlayerKingdomRebellionImmunity { internal static bool Protected; internal static bool ShouldProtectKingdom(Kingdom k) => Protected; }
+    internal static class VoteDealBehavior
+    {
+        internal static string AgendaStatus = "pending";
+        internal static HashSet<string> Submitted = new();
+        internal static string GetOrSubmitFactionPeaceAgenda(string operationId, string factionId, Kingdom home, Kingdom target, Clan proposer, out string reason)
+        {
+            reason = ""; Submitted.Add(operationId); return AgendaStatus;
+        }
+    }
     internal static class DiplomacyConversationBridge { internal static void ApplyExternalPrestigeDelta(string id,int delta,string reason) { } }
     internal static class WorldDiplomacyBehavior { internal static void RunAuthorizedEventPeace(Kingdom first, Kingdom second, Action apply) => apply(); internal static void ApplyExternalPrestigeDelta(string id, int delta, string reason) { } }
     internal partial class CivilWarCampaignBehavior

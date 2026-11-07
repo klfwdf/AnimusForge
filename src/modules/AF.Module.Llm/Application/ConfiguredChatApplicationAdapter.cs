@@ -332,9 +332,13 @@ internal static class ConfiguredChatApplicationAdapter
 				retryWithoutThinkingOnBadRequest: !forceThinkingDisabled,
 				thinkingEnabled: thinkingEnabled,
 				reasoningEffort: reasoningEffort);
-			LlmGenerateResult generated = await gateway.GenerateAsync(
+			ConfiguredChatGenerationExchange exchange = await gateway.GenerateExchangeAsync(
 				new LlmGenerateRequest(trace, provider, prompt, InteractionStage.MainReply),
+				streamResponse: false,
+				onDelta: null,
 				CancellationToken.None).ConfigureAwait(false);
+			LlmGenerateResult generated = exchange.Result;
+			legacyResult.IsRequestFailure = exchange.FailureException is HttpRequestException;
 			if (SaveRuntimeGuard.IsStale(runtimeGeneration, "auxiliary_gateway_response:" + (source ?? "summary")))
 			{
 				legacyResult.ErrorMessage = SaveRuntimeGuard.BuildStaleRequestErrorText();
@@ -349,12 +353,20 @@ internal static class ConfiguredChatApplicationAdapter
 			legacyResult.IsRequestsPerMinuteLimit = metadata.IsRequestsPerMinuteLimit;
 			legacyResult.IsQuotaLimit = metadata.IsQuotaLimit;
 			legacyResult.RetryAfterSeconds = metadata.RetryAfterSeconds;
+			legacyResult.IsRequestFailure = legacyResult.IsRequestFailure
+				|| metadata.StatusCode.HasValue
+				|| generated?.Status == LlmResultStatus.RetryableFailure
+				|| generated?.Status == LlmResultStatus.Cancelled
+				|| generated?.Status == LlmResultStatus.EmptyResponse
+				|| generated?.Status == LlmResultStatus.InvalidResponse;
 			Logger.Log("Logic", "[AuxiliaryGateway] source=" + (source ?? "summary") + " route=" + resolvedRoute + " status=" + (metadata.StatusCode?.ToString(CultureInfo.InvariantCulture) ?? "unknown") + " success=" + legacyResult.Success + " error=" + (legacyResult.ErrorMessage ?? ""));
 			return legacyResult;
 		}
 		catch (Exception ex)
 		{
-			legacyResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(ex.Message, legacyResult.Content, "");
+			legacyResult.Success = false;
+			legacyResult.IsRequestFailure = false;
+			legacyResult.ErrorMessage = ex.GetType().Name + ": " + LlmRetryPrompt.BuildFailureDetail(ex.Message, legacyResult.Content, "");
 			return legacyResult;
 		}
 	}

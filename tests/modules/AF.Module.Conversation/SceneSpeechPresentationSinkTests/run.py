@@ -8,12 +8,21 @@ out=new_run_root(ROOT,'scene-speech-presentation-sink',args.run_root)
 old=ROOT/'tests/modules/AF.Module.Conversation/ScenePresentationLifecycleTests'
 project=ET.parse(old/'ScenePresentationLifecycleTests.csproj').getroot()
 manifest={}
+spec=importlib.util.spec_from_file_location('extractor',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py')
+extractor=importlib.util.module_from_spec(spec);spec.loader.exec_module(extractor)
+playback_path=ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs'
+playback_source=playback_path.read_text(encoding='utf-8-sig')
+playback_type=extractor.declaration(playback_source,'internal sealed class SceneSpeechPlaybackInfo')
 for node in project.iter('Compile'):
  path=(old/node.attrib['Include']).resolve();target=out/path.name
  data=subprocess.check_output(['git','show','44510c91f:'+path.relative_to(ROOT).as_posix()],cwd=ROOT) if args.baseline else path.read_bytes()
  target.write_bytes(data);manifest[path.relative_to(ROOT).as_posix()]=hashlib.sha256(data).hexdigest()
 for name in ['Stubs.cs','SceneSpeechOutputOracle.cs','SceneSpeechOutputContract.cs','SceneInteractionContract.cs','SceneAudienceSettingsStubs.cs','SceneAudienceToggleCases.cs']:
  text=(old/name).read_text(encoding='utf-8-sig')
+ if name=='SceneSpeechOutputOracle.cs' and not args.baseline:
+  fixture_type=extractor.declaration(text,'internal sealed class SceneSpeechPlaybackInfo')
+  text=text.replace(fixture_type,playback_type,1)
+  manifest[playback_path.relative_to(ROOT).as_posix()]=hashlib.sha256(playback_path.read_bytes()).hexdigest()
  if args.baseline and name=='SceneSpeechOutputContract.cs':
   text='\n'.join(line for line in text.splitlines() if 'PublishFeedImmediately=' not in line)
  if name=='Stubs.cs':

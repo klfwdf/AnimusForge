@@ -1690,7 +1690,8 @@ internal sealed class SceneAudioLipSyncController
 				}
 				if (hasBubble && bubble != null)
 				{
-					_ports.ShowBubble(bubble.Agent, bubble.UiContent, typingDuration);
+						if (_ports.ShowBubble(bubble.Agent, bubble.UiContent, typingDuration))
+							bubble.PlaybackInfo?.NotifyPresented(bubble.UiContent, bubble.FinalSegment, bubble.SegmentIndex);
 					if (hasInteractionToken)
 					{
 						_ports.ScheduleInteractionTimeout(agentIndex, interactionToken, (typingDuration > 0f) ? typingDuration : _ports.EstimateTypingDuration(bubble.UiContent));
@@ -1757,7 +1758,7 @@ internal sealed class SceneAudioLipSyncPort
  internal Action<int> UnmarkPlaybackStarted;
  internal Func<int, SceneAudioFailureOutput> FailureOutput;
  internal Action<int, float> ConvertDialogueFeed, FlushFailedSpeechEffects;
- internal Action<Agent, string, float> ShowBubble;
+ internal Func<Agent, string, float, bool> ShowBubble;
  internal Action<int, long, float> ScheduleInteractionTimeout;
  internal Func<string, float> EstimateTypingDuration;
  internal Action<int> Finished, ClearAgentPending, ClearAgentInteraction, ClearOrphanDuration, MarkPlaybackStarted;
@@ -1783,6 +1784,9 @@ internal sealed class SceneAudioFailureOutput
  internal Agent Agent;
  internal string UiContent;
  internal float TypingDuration;
+ internal ShoutBehavior.SceneSpeechPlaybackInfo PlaybackInfo;
+ internal bool FinalSegment;
+ internal int SegmentIndex;
 }
 
 internal struct SceneAudioResourceSnapshot { internal bool Speaking, HasSound, HasWav, HasXml; }

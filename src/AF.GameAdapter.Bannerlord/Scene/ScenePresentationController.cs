@@ -148,7 +148,10 @@ internal sealed class ScenePresentationController
 						{
 							port.EnqueueCompletionToken(num, interactionToken);
 						}
-						port.EnqueueBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds);
+						port.EnqueueBubble(num, liveAgent, text, npcDisplayName, sceneSpeechPlaybackInfo.VisualDurationSeconds, sceneSpeechPlaybackInfo, true, int.MaxValue);
+                        sceneSpeechPlaybackInfo.QueuedSegmentIndex = int.MaxValue;
+                        sceneSpeechPlaybackInfo.QueuedFinalSegment = true;
+                        sceneSpeechPlaybackInfo.QueuedNotify = true;
 						port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
                         }, segment =>
                         {
@@ -159,7 +162,13 @@ internal sealed class ScenePresentationController
                             sceneSpeechPlaybackInfo.VisualDurationSeconds = segment.DurationSeconds;
                             if (interactionToken != 0L && segment.Index == segment.Count - 1)
                                 port.EnqueueCompletionToken(num, interactionToken);
-                            port.EnqueueBubble(num, liveAgent, sentence, npcDisplayName, segment.DurationSeconds);
+                            bool finalPresentation = segment.PreserveOriginalText || segment.Index == segment.Count - 1;
+                            int presentationIndex = segment.PreserveOriginalText ? int.MaxValue : segment.Index;
+                            port.EnqueueBubble(num, liveAgent, sentence, npcDisplayName, segment.DurationSeconds,
+                                sceneSpeechPlaybackInfo, finalPresentation, presentationIndex);
+                            sceneSpeechPlaybackInfo.QueuedSegmentIndex = presentationIndex;
+                            sceneSpeechPlaybackInfo.QueuedFinalSegment = finalPresentation;
+                            sceneSpeechPlaybackInfo.QueuedNotify = true;
                             port.ScheduleFeed(num, npcDisplayName, sentence, sceneSpeechPlaybackInfo);
                         });
 					}, localSpeech, pendingLocalSpeech);
@@ -191,12 +200,14 @@ internal sealed class ScenePresentationController
 		}
         // Text fallback must be visible even while mission time is paused or the
         // speaker's head is outside the camera. Audio acceptance keeps its timing.
-        if (!flag || !bubbleShown)
-        {
-            port.PublishFeedImmediately(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
-        }
+        if (bubbleShown) sceneSpeechPlaybackInfo.ImmediatePresentedText = text;
+		if (!flag || !bubbleShown)
+		{
+			port.PublishFeedImmediately(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
+		}
         else
         {
+            sceneSpeechPlaybackInfo.ImmediatePresentedText = text;
             port.ScheduleFeed(num, npcDisplayName, text, sceneSpeechPlaybackInfo);
         }
 		MeetingBattleLockMissionBehavior.ReapplyMeetingLockForAgentIfNeeded(liveAgent, recaptureAnchor: false, preserveFacing: true);
@@ -828,7 +839,7 @@ internal sealed class SceneSpeechOutputPort
  internal Action<string,int,string> Report;
  internal Action<int,bool> ClearPendingBubble;
  internal Action<int,long> EnqueueCompletionToken;
- internal Action<int,Agent,string,string,float> EnqueueBubble;
+ internal Action<int,Agent,string,string,float,SceneSpeechPlaybackInfo,bool,int> EnqueueBubble;
  internal Action<int,string,string,SceneSpeechPlaybackInfo> ScheduleFeed;
  internal Action<int,string,string,SceneSpeechPlaybackInfo> PublishFeedImmediately;
  internal Func<Agent,string,float,bool> ShowBubble;

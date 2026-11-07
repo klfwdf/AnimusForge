@@ -4940,7 +4940,7 @@ internal static string BuildSceneUserRuntimeContextForSingle(RoleIntroCapturePor
 	SplitSceneNpcRoleIntroSections(fullIntro, hero != null, out var _, out var runtimeIntro);
 
 	// Field camp: the camp's open issues join every camp speaker's runtime context (empty elsewhere).
-	string fieldCampIssues = FieldCampOrderTags.BuildIssuePromptBlock(npc?.AgentIndex ?? -1);
+	string fieldCampIssues = FieldCampOrderTags.BuildIssuePromptBlock(npc?.AgentIndex ?? -1, hero);
 
 	return string.IsNullOrEmpty(fieldCampIssues) ? runtimeIntro : (runtimeIntro + "\n" + fieldCampIssues).Trim();
 
@@ -4998,7 +4998,9 @@ internal static string BuildCompactSceneUserRuntimeContextForShortReply(RoleIntr
 
 	}
 
-	return string.Join("\n", keptLines).Trim();
+	string compact = string.Join("\n", keptLines).Trim();
+	string fieldCampIssues = FieldCampOrderTags.BuildIssuePromptBlock(npc?.AgentIndex ?? -1, hero);
+	return string.IsNullOrEmpty(fieldCampIssues) ? compact : (compact + "\n" + fieldCampIssues).Trim();
 
 }
 

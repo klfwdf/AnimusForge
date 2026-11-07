@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.Core;
@@ -38,7 +37,8 @@ internal static class FieldCampIssues
 		Granted,
 		Refused,
 		Disciplined,
-		Ignored
+		Ignored,
+		Withdrawn
 	}
 
 	internal enum Resolution
@@ -78,7 +78,7 @@ internal static class FieldCampIssues
 	private const int DefeatMemoryDays = 7;
 
 	/// <summary>Judges the camp's issues once; suppressed kinds are skipped.</summary>
-	internal static List<Issue> Judge(MobileParty main, double nowHours, double lastRestHours, double lastDefeatHours, ICollection<string> suppressed)
+	internal static List<Issue> Judge(MobileParty main, double nowHours, double lastRestHours, double lastDefeatHours, ICollection<string> suppressed, Func<Hero, Hero, int, bool> canRaiseCompanionFeud = null)
 	{
 		var found = new List<(int Severity, Issue Issue)>();
 		TroopRoster roster = main.MemberRoster;
@@ -131,7 +131,7 @@ internal static class FieldCampIssues
 		{
 			Add(40, Kind.CultureFriction, a.StringId, b.StringId);
 		}
-		if (TryFindCompanionFeud(roster, out Hero first, out Hero second))
+		if (TryFindCompanionFeud(roster, canRaiseCompanionFeud, out Hero first, out Hero second))
 		{
 			Add(45, Kind.CompanionFeud, first.StringId, second.StringId);
 		}
@@ -181,13 +181,17 @@ internal static class FieldCampIssues
 		return best;
 	}
 
-	private const int FeudRelation = -10;
+	internal const int FeudRelation = -10;
+	internal const int FeudRenewalRelationLoss = 5;
 
-	/// <summary>
-	/// Worst companion pair in the main party: relation at most -10, or opposite Honor/Mercy
-	/// (a trait clash counts as relation -5 when ranking). Pairs of at most ~20 heroes, once per camp.
-	/// </summary>
-	private static bool TryFindCompanionFeud(TroopRoster roster, out Hero first, out Hero second)
+	internal static string CompanionPairKey(string first, string second)
+		=> string.CompareOrdinal(first, second) <= 0 ? first + "|" + second : second + "|" + first;
+
+	internal static bool CanRaiseCompanionFeud(int relation, int? handledRelation)
+		=> relation <= FeudRelation && (!handledRelation.HasValue || relation <= handledRelation.Value - FeudRenewalRelationLoss);
+
+	/// <summary>Worst eligible pair by actual relation; traits alone are not evidence of a feud. Once per camp.</summary>
+	private static bool TryFindCompanionFeud(TroopRoster roster, Func<Hero, Hero, int, bool> canRaise, out Hero first, out Hero second)
 	{
 		first = null;
 		second = null;
@@ -209,7 +213,8 @@ internal static class FieldCampIssues
 				try
 				{
 					int relation = heroes[a].GetRelation(heroes[b]);
-					score = relation <= FeudRelation ? relation : (TraitsClash(heroes[a], heroes[b]) ? -5 : 0);
+					if (!CanRaiseCompanionFeud(relation, null) || canRaise?.Invoke(heroes[a], heroes[b], relation) == false) continue;
+					score = relation;
 				}
 				catch
 				{
@@ -225,14 +230,6 @@ internal static class FieldCampIssues
 		}
 		return first != null;
 	}
-
-	private static bool TraitsClash(Hero a, Hero b)
-	{
-		return Opposite(a.GetTraitLevel(DefaultTraits.Honor), b.GetTraitLevel(DefaultTraits.Honor))
-			|| Opposite(a.GetTraitLevel(DefaultTraits.Mercy), b.GetTraitLevel(DefaultTraits.Mercy));
-	}
-
-	private static bool Opposite(int x, int y) => (x > 0 && y < 0) || (x < 0 && y > 0);
 
 	/// <summary>Two cultures each holding at least 30% of the regulars (threshold tuned in play).</summary>
 	private static bool TryFindCultureFriction(TroopRoster roster, out CharacterObject first, out CharacterObject second)

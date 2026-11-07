@@ -13,7 +13,7 @@ namespace AnimusForge;
 
 // Ambient (player-idle) scene chat: NPC-to-NPC lines generated one speaker at a time.
 // Runs only after the ShoutBehavior probe admitted the session on the main thread.
-// Each line: shared prompt context -> main reply -> history -> speech queue. No
+// Each line: shared prompt context -> main reply -> speech queue -> history. No
 // postprocess, so no game-mechanism tag can execute; a player shout bumps the epoch and
 // every stage below observes it and stops.
 internal sealed partial class SceneConversationSessionRuntime
@@ -28,6 +28,7 @@ internal sealed partial class SceneConversationSessionRuntime
         internal int ConversationEpoch;
         internal Func<bool> CanContinue;            // main-thread distance/combat check
         internal Action<int, int> RegisterAddressee;
+        internal Action OnLinePresented;
         internal Action<AmbientChatResult> OnFinished;
     }
 
@@ -154,17 +155,11 @@ internal sealed partial class SceneConversationSessionRuntime
     private async Task<bool> PublishAmbientLineAsync(NpcDataPacket speaker, NpcDataPacket addressee, string line, AmbientChatRequest request,
         long generation, int session, int epoch, Func<bool> current)
     {
-        string historyText = PrepareSceneHistorySpeechText(line);
-        if (string.IsNullOrWhiteSpace(historyText)) return false;
-        bool recorded = await _dispatcher.RunAsync("ambient_history", speaker.Name, speaker.AgentIndex, () =>
-        {
-            if (!current() || !request.CanContinue()) return false;
-            // Short-term scene history only; persistence is one summary per participant at the end.
-            return _ports.RecordResponseForAllNearbySafe(request.Audience, speaker.AgentIndex, speaker.Name, historyText, false,
-                addressee.AgentIndex, addressee.Name);
-        }, false);
-        if (!recorded) return false;
+        if (string.IsNullOrWhiteSpace(PrepareSceneHistorySpeechText(line))) return false;
         var spoken = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var presented = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        bool presentationOpen = true;
+        bool CanPresent() => presentationOpen && current() && request.CanContinue();
         bool queued = await _dispatcher.RunAsync("ambient_speech", speaker.Name, speaker.AgentIndex, () =>
         {
             if (!current()) return false;
@@ -172,14 +167,35 @@ internal sealed partial class SceneConversationSessionRuntime
             // Empty player text marks an NPC-directed line: no player patience/mood settlement.
             _ports.EnqueueSpeechLineWithOptions(speaker, line, request.Audience, commitHistory: false, suppressStare: false,
                 allowPlayerDirectedActions: false, requiredConversationEpoch: epoch, completionSource: spoken,
-                canStillPublish: () => current() && request.CanContinue(),
-                playerDirectedActionText: string.Empty, playerDirectedNpcReplyText: line);
+                canStillPublish: CanPresent,
+                playerDirectedActionText: string.Empty, playerDirectedNpcReplyText: line,
+                onPresented: (visible, finalSegment) =>
+                {
+                    // Actual presentation and both history writes share one game-thread turn.
+                    if (!CanPresent() || !SaveRuntimeGuard.IsCurrentGeneration(generation) || session != _ports.SceneSessionId() || !_ports.IsOwnerCurrent())
+                    { presented.TrySetResult(false); return; }
+                    string heard = PrepareSceneHistorySpeechText(visible);
+                    bool saved = true;
+                    if (!string.IsNullOrWhiteSpace(heard))
+                    {
+                        _ports.RecordResponseForAllNearbySafe(request.Audience, speaker.AgentIndex, speaker.Name, heard, false,
+                            addressee.AgentIndex, addressee.Name);
+                        saved = _ports.PersistNpcSpeechToNamedHeroes(speaker.AgentIndex, speaker.Name, heard, request.Audience, false,
+                            addressee.AgentIndex, addressee.Name);
+                        request.OnLinePresented?.Invoke();
+                    }
+                    if (finalSegment || !saved) presented.TrySetResult(saved);
+                });
             return true;
         }, false);
         if (!queued) return false;
         // Bounded: a cleared queue may drop the item without completing it.
         Task done = await Task.WhenAny(spoken.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
-        return done == spoken.Task && spoken.Task.Result && current();
+        if (done != spoken.Task || !spoken.Task.Result) { presentationOpen = false; return false; }
+        Task shown = await Task.WhenAny(presented.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
+        bool completed = shown == presented.Task && presented.Task.Result && current();
+        presentationOpen = false;
+        return completed;
     }
 
     private static Agent FindAgentByIndex(int agentIndex)

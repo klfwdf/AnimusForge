@@ -74,10 +74,16 @@ internal string BuildRebelKingdomNamingUserPrompt(Clan clan, Kingdom oldKingdom,
 		});
 	}
 
-internal void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt, IReadOnlyCollection<string> existingNames = null)
+internal void BuildRebelKingdomNamingRequest(Clan clan, Kingdom oldKingdom, int weekIndex, IEnumerable<Clan> followerClans, out string systemPrompt, out string userPrompt, IReadOnlyCollection<string> existingNames = null, bool peacefulIndependence = false)
 	{
 		systemPrompt = BuildRebelKingdomNamingSystemPrompt();
 		userPrompt = BuildRebelKingdomNamingUserPrompt(clan, oldKingdom, weekIndex, followerClans, existingNames);
+		if (peacefulIndependence)
+		{
+			string context = AdapterPromptCaptureTexts.PcapText("kingdom_peaceful_independence_naming");
+			systemPrompt += "\n\n" + context;
+			userPrompt += "\n\n" + context;
+		}
 	}
 
 internal static string[] CaptureRebellionExistingNames()
@@ -167,19 +173,33 @@ internal bool TryExecuteKingdomRebellion(Clan clan, Kingdom kingdom, int weekInd
     return false;
 }
 
-internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, int relationToKing, int townCount, int castleCount, RebelKingdomNamingResult rebelKingdomNamingResult, List<Clan> followerClans, out string message, string civilWarFactionId = null)
+internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, int weekIndex, bool forceTrigger, int relationToKing, int townCount, int castleCount, RebelKingdomNamingResult rebelKingdomNamingResult, List<Clan> followerClans, out string message, string civilWarFactionId = null, string independenceOperationId = null)
     {
         // Physical founding is shared with faction wars. An untracked legacy request has no authority.
-        if (string.IsNullOrWhiteSpace(civilWarFactionId) || !TeamModuleServices.CivilWar.IsRebellionRequestActive(civilWarFactionId))
-        {
-            message = LegacyRebellionRetiredMessage;
-            return false;
-        }
+		bool peacefulIndependence = !string.IsNullOrWhiteSpace(independenceOperationId);
+		if (string.IsNullOrWhiteSpace(civilWarFactionId)
+			|| (peacefulIndependence && !TeamModuleServices.CivilWar.IsPeacefulIndependenceRequest(civilWarFactionId))
+			|| (!peacefulIndependence && (TeamModuleServices.CivilWar.IsPeacefulIndependenceRequest(civilWarFactionId) || !TeamModuleServices.CivilWar.IsRebellionRequestActive(civilWarFactionId))))
+		{
+			message = LegacyRebellionRetiredMessage;
+			return false;
+		}
 
-        message = "";
-		string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"));
+		if (peacefulIndependence)
+		{
+			string operationId = independenceOperationId;
+			if (string.IsNullOrWhiteSpace(operationId) || TeamModuleServices.CivilWar.GetIndependenceChoice(civilWarFactionId, operationId) != "found"
+				|| !TeamModuleServices.CivilWar.IsIndependenceRequestCurrent(civilWarFactionId, operationId, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom), MemoryEntityIdentityBannerlordAdapter.GetClanId(clan)))
+			{
+				message = KingdomUiText.T("AF_UI_KingdomIndependence_NotAuthorized", "Peaceful independence is no longer current or authorized for kingdom founding.");
+				return false;
+			}
+		}
+
+		message = "";
+			string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"));
 		string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan);
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+		if (!peacefulIndependence && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
 			message = KingdomUiText.F("AF_UI_KingdomRebellion_ExecutionSkippedPlayerImmune", "{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this stability rebellion was skipped.", ("KINGDOM", kingdomDisplayName));
 			Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked execution. kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan) + " forced=" + forceTrigger);
@@ -200,12 +220,14 @@ internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, i
 			Logger.Log("KingdomRebellion", "[ERROR] Rebel kingdom creation blocked by invalid naming result. clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan) + " formal=" + text + " short=" + text2);
 			return false;
 		}
-		if (Campaign.Current?.KingdomManager == null || clan == null || clan.Kingdom != kingdom || clan.IsEliminated || clan.Leader == null || !clan.Leader.IsAlive)
+		if (Campaign.Current?.KingdomManager == null || clan == null || (clan.Kingdom != kingdom && !(peacefulIndependence && clan.Kingdom == null)) || clan.IsEliminated || clan.Leader == null || !clan.Leader.IsAlive)
 		{
 			message = KingdomUiText.T("AF_UI_KingdomRebellion_ExecutionPreconditionChanged", "Pre-founding conditions changed; the clan did not leave the original kingdom.");
 			return false;
 		}
-		ClanVisualSnapshot clanVisualSnapshot = KingdomRebellionGameAdapter.CaptureClanVisualSnapshot(clan);
+			if (peacefulIndependence)
+				return ExecutePeacefulIndependence(clan, kingdom, text, text2, text3, civilWarFactionId, independenceOperationId, out message);
+			ClanVisualSnapshot clanVisualSnapshot = KingdomRebellionGameAdapter.CaptureClanVisualSnapshot(clan);
 		ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: true);
 		KingdomRebellionGameAdapter.RestoreClanVisualSnapshot(clan, clanVisualSnapshot);
 		RebelFactionColorChoice rebelFactionColorChoice = KingdomRebellionGameAdapter.BuildRandomUniqueRebelFactionColors(clan, kingdom, clanVisualSnapshot);
@@ -269,6 +291,45 @@ internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, i
 		_game().TryDiscontinueLandlessKingdom(kingdom, "rebellion_old_kingdom:" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan), requireKnownModRebelKingdom: false, allowPlayerKingdom: true);
 		Logger.Log("KingdomRebellion", "[EXECUTE] week=" + weekIndex + " kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan) + " forced=" + forceTrigger + " relation=" + relationToKing + " towns=" + townCount + " castles=" + castleCount + " newKingdomName=" + text + " namingAttempts=" + (rebelKingdomNamingResult?.AttemptsUsed ?? 0) + " followerCount=" + list.Count + " followers=" + string.Join("|", list) + " bgColor=0x" + rebelFactionColorChoice.BackgroundColor.ToString("X8") + " iconColor=0x" + rebelFactionColorChoice.IconColor.ToString("X8"));
 		return true;
+	}
+
+private static bool ExecutePeacefulIndependence(Clan clan, Kingdom home, string formal, string shortName, string lore, string factionId, string operationId, out string message)
+	{
+		// Owner retains the authorized member snapshot and resumes follower transfer after creation.
+		// Never call PacifyInheritedRebelWars here: it also clears unrelated wars.
+		Kingdom created = null;
+		try
+		{
+			TeamModuleServices.CivilWar.NoteIndependenceNamingReady(factionId, operationId, formal, shortName, lore);
+			if (clan.Kingdom == home)
+			{
+				var visuals = KingdomRebellionGameAdapter.CaptureClanVisualSnapshot(clan);
+				try { ChangeKingdomAction.ApplyByLeaveWithRebellionAgainstKingdom(clan, showNotification: false); }
+				finally { KingdomRebellionGameAdapter.RestoreClanVisualSnapshot(clan, visuals); }
+			}
+			if (clan.Kingdom != null) throw new InvalidOperationException("Authorized independence departure was not confirmed.");
+			try
+			{
+				Campaign.Current.KingdomManager.CreateKingdom(new TextObject(formal), new TextObject(shortName), clan.Culture ?? home.Culture, clan, null, new TextObject(lore), new TextObject(formal), null);
+			}
+			finally
+			{
+				created = clan.Kingdom;
+				if (created != null && created != home && !created.IsEliminated)
+					TeamModuleServices.CivilWar.NoteIndependentKingdomCreated(factionId, operationId, created);
+			}
+			if (created == null || created == home || created.IsEliminated) throw new InvalidOperationException("Independent kingdom creation was not confirmed.");
+			// The owner reconciles its saved structural-war snapshot before declaring fulfillment.
+		}
+		catch (Exception ex)
+		{
+			Logger.Log("KingdomCivilWar", "[WARN] independence physical founding interrupted. faction=" + factionId + " operation=" + operationId + " error=" + ex.Message);
+		}
+		bool confirmed = created != null && created != home && !created.IsEliminated && clan.Kingdom == created;
+		message = confirmed
+			? KingdomUiText.T("AF_UI_KingdomIndependence_CreatedPending", "The new kingdom has been created. Authorized clan transfers and peace still require confirmation.")
+			: KingdomUiText.T("AF_UI_KingdomIndependence_CreationPending", "Independent kingdom founding is not yet confirmed; the authorized operation remains pending.");
+		return confirmed;
 	}
 
 internal void TryProcessWeeklyKingdomRebellions(int weekIndex)
@@ -365,7 +426,10 @@ internal void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult re
 		{
 			return;
 		}
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(result.Kingdom))
+			bool peacefulIndependence = TeamModuleServices.CivilWar.IsPeacefulIndependenceRequest(civilWarFactionId);
+			string operationId = peacefulIndependence ? TeamModuleServices.CivilWar.GetIndependenceOperationId(civilWarFactionId) : "";
+			if (peacefulIndependence && (string.IsNullOrWhiteSpace(operationId) || !TeamModuleServices.CivilWar.IsIndependenceRequestCurrent(civilWarFactionId, operationId, MemoryEntityIdentityBannerlordAdapter.GetKingdomId(result.Kingdom), MemoryEntityIdentityBannerlordAdapter.GetClanId(result.SelectedClan)))) return;
+			if (!peacefulIndependence && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(result.Kingdom))
 		{
 			Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked automatic queue. kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(result.Kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(result.SelectedClan));
 			return;
@@ -383,7 +447,8 @@ internal void QueueAutomaticKingdomRebellion(KingdomRebellionResolutionResult re
 			CastleCount = kingdomRebellionCandidateInfo?.CastleCount ?? 0,
 			FollowerClanIds = (result.SelectedFollowerClans ?? new List<Clan>()).Where((Clan x) => x != null && x != result.SelectedClan).Select(MemoryEntityIdentityBannerlordAdapter.GetClanId).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList()
 			,
-			CivilWarFactionId = civilWarFactionId ?? ""
+			CivilWarFactionId = civilWarFactionId ?? "",
+			IndependenceOperationId = operationId
 		};
 		_pump.Automatic().Enqueue(item);
 	}
@@ -420,22 +485,24 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
 			_pump.CompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, false, KingdomUiText.T("AF_UI_KingdomRebellion_AutomaticTargetChanged", "This week's automatic rebellion was triggered, but the target kingdom or clan changed; execution cannot continue."));
 			return;
 		}
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked queued automatic rebellion before naming. kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan));
+			if (EnsureIndependenceChoice(pendingAutomaticKingdomRebellionContext)) return;
+			if (!IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+			{
+				Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked queued automatic rebellion before naming. kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan));
 			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonPlayerImmune", "player-kingdom stability rebellion immunity is enabled"));
 			ContinueAutomaticKingdomRebellionFlow();
 			return;
 		}
-		string[] rebellionExistingNames = CaptureRebellionExistingNames();
-		long namingRequestVersion = _pump.Automatic().BeginNaming();
-        if (clan == Clan.PlayerClan && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
+			if (RestoreIndependenceNaming(pendingAutomaticKingdomRebellionContext)) return;
+			string[] rebellionExistingNames = CaptureRebellionExistingNames();
+			long namingRequestVersion = _pump.Automatic().BeginNaming();
+        if (clan == Clan.PlayerClan && !IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
         {
             ShowPlayerRebelKingdomNamingInquiry(pendingAutomaticKingdomRebellionContext, namingRequestVersion, clan, kingdom, rebellionExistingNames);
             return;
         }
-		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
-		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames, IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext));
+		ShowNamingProgress(IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext), false);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "Automatic rebellion kingdom naming - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate
@@ -451,8 +518,21 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
-				if (_pump.Automatic().CompleteNaming(namingRequestVersion, pendingAutomaticKingdomRebellionContext))
-					pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
+					if (IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && !IsIndependenceNamingCurrent(pendingAutomaticKingdomRebellionContext))
+					{
+						if (_pump.Automatic().CompleteNaming(namingRequestVersion, pendingAutomaticKingdomRebellionContext)
+							&& _pump.Automatic().TryTakeReady(out var _))
+						{
+							InformationManager.HideInquiry();
+							ContinueAutomaticKingdomRebellionFlow();
+						}
+						return;
+					}
+					if (_pump.Automatic().CompleteNaming(namingRequestVersion, pendingAutomaticKingdomRebellionContext))
+					{
+						pendingAutomaticKingdomRebellionContext.NamingResult = namingResult;
+						PersistIndependenceNaming(pendingAutomaticKingdomRebellionContext, namingResult);
+					}
 			}, "automatic_rebellion_naming");
 		});
 	}
@@ -485,12 +565,13 @@ internal void ProcessPendingAutomaticKingdomRebellionResult()
 			ContinueAutomaticKingdomRebellionFlow();
 			return;
 		}
-		if (kingdom == null || clan == null)
+		if (IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && EnsureIndependenceChoice(pendingAutomaticKingdomRebellionContext)) return;
+		if (kingdom == null || clan == null || (IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && !IsIndependenceNamingCurrent(pendingAutomaticKingdomRebellionContext)))
 		{
 			success = false;
 			executionMessage = KingdomUiText.T("AF_UI_KingdomRebellion_AutomaticTargetChangedAfterNaming", "The rebel kingdom name was generated, but the target kingdom or clan changed; execution cannot continue.");
 		}
-		else if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+		else if (!IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext) && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
 			success = false;
 			executionMessage = KingdomUiText.F("AF_UI_KingdomRebellion_AutomaticPlayerImmune", "{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this automatic stability rebellion was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom"))));
@@ -505,7 +586,7 @@ internal void ProcessPendingAutomaticKingdomRebellionResult()
             WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId);
             try
             {
-			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage, pendingAutomaticKingdomRebellionContext.CivilWarFactionId);
+			success = TryExecuteKingdomRebellionWithNaming(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, forceTrigger: false, pendingAutomaticKingdomRebellionContext.RelationToKing, pendingAutomaticKingdomRebellionContext.TownCount, pendingAutomaticKingdomRebellionContext.CastleCount, pendingAutomaticKingdomRebellionContext.NamingResult, list, out executionMessage, pendingAutomaticKingdomRebellionContext.CivilWarFactionId, pendingAutomaticKingdomRebellionContext.IndependenceOperationId);
             }
             finally { WorldBulletinEventCaptureAdapter.CivilWarRebellionExecuting = false; }
 			if (success && !string.IsNullOrWhiteSpace(pendingAutomaticKingdomRebellionContext.CivilWarFactionId))
@@ -514,8 +595,17 @@ internal void ProcessPendingAutomaticKingdomRebellionResult()
 			}
             else if (success) TeamModuleServices.CivilWar.NoteKingdomRebellion(kingdom);
 		}
-		if (!success) NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, executionMessage);
-		_pump.CompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success, executionMessage);
+			if (IsPeacefulIndependence(pendingAutomaticKingdomRebellionContext))
+			{
+				// A structural leave/create can have partially succeeded. Owner owns recovery and completion.
+				if (!success) NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, executionMessage);
+				InformationManager.HideInquiry();
+				InformationManager.DisplayMessage(new InformationMessage(executionMessage));
+				ContinueAutomaticKingdomRebellionFlow();
+				return;
+			}
+			if (!success) NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, executionMessage);
+			_pump.CompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, success, executionMessage);
 	}
 
 private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellionContext context, long namingRequestVersion, Clan clan, Kingdom oldKingdom, string[] existingNames)
@@ -552,10 +642,83 @@ private void ShowPlayerRebelKingdomNamingInquiry(PendingAutomaticKingdomRebellio
 		InformationManager.ShowTextInquiry(new TextInquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingTitle", "Name the new kingdom"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingConfirm", "Found kingdom"), KingdomUiText.T("AF_UI_KingdomRebellion_PlayerNamingDefault", "Use default name"), Complete, () => Complete(""), shouldInputBeObfuscated: false, condition, "", fallback), pauseGameActiveState: true);
 	}
 
+private static void ShowNamingProgress(bool peacefulIndependence, bool retry)
+	{
+		string title = peacefulIndependence
+			? KingdomUiText.T("AF_UI_KingdomIndependence_NamingTitle", "Preparing peaceful kingdom founding")
+			: retry ? KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingTitle", "Regenerating rebel kingdom name") : KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name");
+		string body = peacefulIndependence
+			? KingdomUiText.T("AF_UI_KingdomIndependence_NamingBody", "The LLM is preparing the name and description for the authorized peaceful kingdom founding. No kingdom will be founded until the result is ready and validated.")
+			: retry ? KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingBody", "The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes.") : KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically.");
+		InformationManager.ShowInquiry(new InquiryData(title, body, false, false, "", "", null, null), pauseGameActiveState: true);
+	}
+
+private static bool IsPeacefulIndependence(PendingAutomaticKingdomRebellionContext context)
+		=> !string.IsNullOrWhiteSpace(context?.IndependenceOperationId);
+
+	private static bool IsIndependenceNamingCurrent(PendingAutomaticKingdomRebellionContext context)
+		=> TeamModuleServices.CivilWar.GetIndependenceChoice(context.CivilWarFactionId, context.IndependenceOperationId) == "found"
+			&& TeamModuleServices.CivilWar.IsIndependenceRequestCurrent(context.CivilWarFactionId, context.IndependenceOperationId, context.KingdomId, context.ClanId);
+
+	private bool RestoreIndependenceNaming(PendingAutomaticKingdomRebellionContext context)
+	{
+		if (!IsPeacefulIndependence(context) || !IsIndependenceNamingCurrent(context)) return false;
+		if (!TeamModuleServices.CivilWar.GetIndependenceNaming(context.CivilWarFactionId, context.IndependenceOperationId, out string formal, out string shortName, out string lore)) return false;
+		context.NamingResult = new RebelKingdomNamingResult { Success = true, FormalName = formal, ShortName = shortName, EncyclopediaText = lore };
+		long version = _pump.Automatic().BeginNaming();
+		_pump.Automatic().CompleteNaming(version, context);
+		return true;
+	}
+
+	private static void PersistIndependenceNaming(PendingAutomaticKingdomRebellionContext context, RebelKingdomNamingResult result)
+	{
+		if (IsPeacefulIndependence(context) && IsRebelKingdomNamingSuccess(result) && IsIndependenceNamingCurrent(context))
+			TeamModuleServices.CivilWar.NoteIndependenceNamingReady(context.CivilWarFactionId, context.IndependenceOperationId, result.FormalName, result.ShortName, result.EncyclopediaText);
+	}
+
+	// No answer is inferred from closing the inquiry.
+	private bool EnsureIndependenceChoice(PendingAutomaticKingdomRebellionContext context)
+	{
+		if (!IsPeacefulIndependence(context)) return false;
+		string choice = TeamModuleServices.CivilWar.GetIndependenceChoice(context.CivilWarFactionId, context.IndependenceOperationId);
+		if (choice == "found") return false;
+		if (choice == "leave")
+		{
+			ContinueAutomaticKingdomRebellionFlow();
+			return true;
+		}
+		long generation = SaveRuntimeGuard.CaptureGeneration();
+		long requestVersion = _pump.Automatic().BeginNaming();
+		bool answered = false;
+		void Answer(bool found)
+		{
+			if (answered || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return;
+			if (!_pump.Automatic().CompleteNaming(requestVersion, context) || !_pump.Automatic().TryTakeReady(out var _)) return;
+			answered = true;
+			if (IsStaleCivilWarRebellion(context)) { ContinueAutomaticKingdomRebellionFlow(); return; }
+			if (!TeamModuleServices.CivilWar.AnswerIndependenceChoice(context.CivilWarFactionId, context.IndependenceOperationId, found)) { ContinueAutomaticKingdomRebellionFlow(); return; }
+			if (found) RetryAutomaticKingdomRebellionNamingAsync(context);
+			else ContinueAutomaticKingdomRebellionFlow();
+		}
+		InformationManager.ShowInquiry(new InquiryData(
+			KingdomUiText.T("AF_UI_KingdomIndependence_ChoiceTitle", "Choose how to become independent"),
+			KingdomUiText.T("AF_UI_KingdomIndependence_ChoiceBody", "The ruler has granted peaceful independence. Leave the kingdom while keeping the agreed clans and fiefs, or ask the LLM to name and found a new kingdom for them. No kingdom will be founded unless you choose LLM founding."),
+			true, true,
+			KingdomUiText.T("AF_UI_KingdomIndependence_Found", "LLM founding"),
+			KingdomUiText.T("AF_UI_KingdomIndependence_Leave", "Leave kingdom"),
+			() => Answer(true), () => Answer(false)), pauseGameActiveState: true);
+		return true;
+	}
+
 internal static bool IsStaleCivilWarRebellion(PendingAutomaticKingdomRebellionContext context)
 	{
 		string factionId = context?.CivilWarFactionId;
-		if (!string.IsNullOrWhiteSpace(factionId) && TeamModuleServices.CivilWar.IsRebellionRequestActive(factionId)) return false;
+			if (IsPeacefulIndependence(context))
+			{
+				if (TeamModuleServices.CivilWar.IsIndependenceRequestCurrent(factionId, context.IndependenceOperationId, context.KingdomId, context.ClanId)
+					&& TeamModuleServices.CivilWar.GetIndependenceChoice(factionId, context.IndependenceOperationId) != "leave") return false;
+			}
+			else if (!string.IsNullOrWhiteSpace(factionId) && !TeamModuleServices.CivilWar.IsPeacefulIndependenceRequest(factionId) && TeamModuleServices.CivilWar.IsRebellionRequestActive(factionId)) return false;
 		Logger.Log("KingdomCivilWar", "[SKIP] stale civil war rebellion request faction=" + factionId);
 		return true;
 	}
@@ -598,16 +761,18 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 			_pump.CompletionPopup(context, kingdom, clan, list, false, KingdomUiText.T("AF_UI_KingdomRebellion_RetryTargetChanged", "The target kingdom or clan changed before the rebellion naming retry could run."));
 			return;
 		}
-		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-		{
-			NotifyCivilWarRebellionFailed(context, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonPlayerImmune", "player-kingdom stability rebellion immunity is enabled"));
+			if (EnsureIndependenceChoice(context)) return;
+			if (RestoreIndependenceNaming(context)) return;
+			if (!IsPeacefulIndependence(context) && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
+			{
+				NotifyCivilWarRebellionFailed(context, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonPlayerImmune", "player-kingdom stability rebellion immunity is enabled"));
 			_pump.CompletionPopup(context, kingdom, clan, list, false, KingdomUiText.F("AF_UI_KingdomRebellion_AutomaticPlayerImmune", "{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this automatic stability rebellion was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom")))));
 			return;
 		}
 		string[] rebellionExistingNames = CaptureRebellionExistingNames();
-		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
+		BuildRebelKingdomNamingRequest(clan, kingdom, context.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames, IsPeacefulIndependence(context));
 		long namingRequestVersion = _pump.Automatic().BeginNaming();
-		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingTitle", "Regenerating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingBody", "The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
+		ShowNamingProgress(IsPeacefulIndependence(context), true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
 		string logTarget = "Automatic rebellion kingdom naming retry - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate
@@ -623,8 +788,17 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 			}
 			EnqueueKingdomRebellionNamingMainThreadAction(runtimeGeneration, delegate
 			{
-				if (_pump.Automatic().CompleteNaming(namingRequestVersion, context))
-					context.NamingResult = namingResult;
+					if (IsPeacefulIndependence(context) && !IsIndependenceNamingCurrent(context))
+					{
+						if (_pump.Automatic().CompleteNaming(namingRequestVersion, context) && _pump.Automatic().TryTakeReady(out var _))
+						ContinueAutomaticKingdomRebellionFlow();
+					return;
+					}
+					if (_pump.Automatic().CompleteNaming(namingRequestVersion, context))
+					{
+						context.NamingResult = namingResult;
+						PersistIndependenceNaming(context, namingResult);
+					}
 			}, "automatic_rebellion_naming_retry");
 		});
 	}

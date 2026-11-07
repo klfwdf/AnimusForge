@@ -10,6 +10,8 @@
   "CW_Catalog_Source_broken_pledge": "broken royal pledges",
   "CW_Catalog_Source_demand_refused": "refused demands",
   "CW_Catalog_Source_royal_suppression": "royal suppression",
+  "CW_Catalog_Demand_autonomy_founding": "let this faction leave with its fiefs, with a choice to found one independent kingdom named by the LLM",
+  "CW_Catalog_Demand_make_peace_agenda": "submit a peace agenda with {target}, making peace only after both kingdoms approve it",
   "CW_Catalog_Demand_make_peace": "end the war with {target} and make peace",
   "CW_Catalog_Demand_continue_war": "make no peace in the war with {target}",
   "CW_Catalog_Demand_revoke_policy": "repeal {target}",

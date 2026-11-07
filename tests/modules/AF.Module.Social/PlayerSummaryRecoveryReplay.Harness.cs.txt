@@ -1,0 +1,386 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using TaleWorlds.CampaignSystem;
+using AnimusForge;
+using AnimusForge.Refactor.Adapters;
+
+// Fake game/config/render/HTTP leaves. Production scheduling, parsing, source validation,
+// fallback, save normalization and editor/load invalidation compile unchanged in Production.cs.
+namespace AnimusForge
+{
+    internal static class FakeSummaryClock
+    {
+        internal const long Frequency = 1000;
+        internal static long Now;
+        internal static long GetTimestamp() => Now;
+        internal static void Advance(int seconds) => Now += seconds * Frequency;
+    }
+    internal static class Fixture
+    {
+        internal static int MainThread, Day = 90224, Limit = 300, Interval = 3;
+        internal static string Identity = "Ada/v1";
+        internal static bool Chinese;
+        internal static void MainOnly()
+        {
+            if (Thread.CurrentThread.ManagedThreadId != MainThread) throw new InvalidOperationException("off-thread game/state access");
+        }
+    }
+    internal static class PromptLanguage { internal static bool IsChinese => Fixture.Chinese; }
+    internal static class SaveRuntimeGuard
+    {
+        internal static long Generation = 1;
+        internal static long CaptureGeneration() => Generation;
+        internal static bool IsCurrentGeneration(long generation) => generation == Generation;
+    }
+    internal static class Logger
+    {
+        internal static readonly List<string> Lines = new();
+        internal static void Log(string category, string text) { Fixture.MainOnly(); Lines.Add(text); }
+    }
+    internal sealed class DuelSettings
+    {
+        internal int PlayerNotorietySummaryIntervalDays => Fixture.Interval;
+        internal int PlayerNotorietyMajorPromptChars => Fixture.Limit;
+        internal static DuelSettings GetSettings() { Fixture.MainOnly(); return new(); }
+    }
+    internal sealed class TextObject { internal TextObject(string value) { } }
+    internal sealed class InformationMessage { internal InformationMessage(string value) { } }
+    internal static class InformationManager { internal static void DisplayMessage(InformationMessage message) => Fixture.MainOnly(); }
+    internal static class SocialSourceTexts { internal const string Colon = ": "; }
+    internal static class PlayerStartingHistoryRecord
+    {
+        internal static bool ContainsToken(string value) => false;
+        internal static IEnumerable<string> RecognizedTokens(string value) => Array.Empty<string>();
+    }
+    internal static class CampaignSaveChunkHelper
+    {
+        internal sealed class PersistenceIntegrityException : Exception { }
+        internal static int GetUtf8ByteCountForDiagnostics(string text) => Encoding.UTF8.GetByteCount(text);
+        internal static void LogRawJsonSaveStats(string key, string owner, string json, string detail) => Fixture.MainOnly();
+        internal static void SaveChunkedString(IDataStore store, string key, string json, string owner) => ((Store)store).Json = json;
+        internal static string LoadChunkedString(IDataStore store, string key, string owner) => ((Store)store).Json;
+    }
+    internal sealed class Store : IDataStore
+    {
+        public bool IsSaving { get; set; }
+        public bool IsLoading => !IsSaving;
+        internal string Json;
+    }
+    internal static class LlmApiCompat
+    {
+        internal static void ApplyAuthenticationHeaders(HttpRequestMessage request, string endpoint, string apiKey) { }
+    }
+    internal sealed class MyBehavior
+    {
+        internal sealed class ApiCallResult
+        {
+            public bool Success;
+            public string Content, ErrorMessage;
+            public int? RetryAfterSeconds;
+            public bool IsRequestFailure;
+        }
+    }
+    public sealed partial class PlayerNotorietyBehavior
+    {
+        private const string StorageKey = "_af_player_notoriety_state_v1";
+        private const int SummaryBatchSize = 24, MaxSummaryRetries = 3, MaxSummarizedMaterialKeys = 512;
+        private const int MaxMajorMaterials = 180, MaxRecentActions = 96;
+        private PlayerNotorietyState _state = new();
+        private readonly HashSet<string> _soldPrisonerDonationSkipKeys = new();
+        private sealed class PlayerActionEntry { public string Text = ""; public int Day, Sequence; }
+        private static PlayerActionEntry NormalizeActionEntry(PlayerActionEntry entry, bool repair) => entry;
+        private static double ClampPercentDouble(double value) => ClampDouble(value, 0, 100);
+        private static string NormalizeHeroId(string value) => value;
+        private static string NormalizeCultureId(string value) => (value ?? "").Trim();
+        private static List<string> NormalizeCultureList(IEnumerable<string> values) => values.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+        private static string RepairLegacyVillageRaidDefenseHistoryMaterialText(PlayerHistoryMaterial entry) => entry.Text;
+        private void PrepareNotorietyConversationOutcomeStorageForSave() { }
+        private void ActivateNotorietyConversationOutcomeStorageAfterLoad() { }
+        private void ResetNotorietyConversationOutcomeStorageAfterFailedLoad() { }
+        private void PruneRecentActions() { }
+        private void FinalizeStaleActiveConversations() { }
+        private readonly Dictionary<string, string> _activeConversationStates = new();
+        private static int GetCurrentGameDayIndex() { Fixture.MainOnly(); return Fixture.Day; }
+        private static string NormalizePlayerDisplayName(string text) => text;
+        private static string BuildSummaryPlayerDisplayName() { Fixture.MainOnly(); return "Ada"; }
+        private static string BuildPlayerHistoryDisplayName() { Fixture.MainOnly(); return "Ada"; }
+        private static string CaptureMemorySummaryHistoryRenderingIdentity() { Fixture.MainOnly(); return Fixture.Identity; }
+        private static string BuildSummarySystemPrompt(string name) { Fixture.MainOnly(); return "system:" + name; }
+        private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials, string name)
+        { Fixture.MainOnly(); return _state.MajorSummary + "\n" + string.Join("\n", materials.Select(x => x.Text)); }
+        private static string RenderPlayerHistoryTextForPrompt(string text, string name) { Fixture.MainOnly(); return text ?? ""; }
+        private static string BuildEditedMajorHistoryForStorage(string input, string existing, string name) => input;
+        private static string UiText(string id, string fallback) => fallback;
+        private static void LogDebug(string text) => Logger.Log("PlayerNotoriety", text);
+        private void AddWorldNotoriety(double delta, string reason) { Fixture.MainOnly(); _state.WorldNotoriety += delta; }
+        private void AddCultureNotoriety(string culture, double delta, string reason)
+        { Fixture.MainOnly(); _state.CultureNotoriety.TryGetValue(culture, out double old); _state.CultureNotoriety[culture] = old + delta; }
+        private void OnSessionLaunchedForStartingHistory() { }
+        private void OnNativeConversationEnded() { }
+        private void OnHeroPrisonerReleased() { }
+        private void OnPlayerPrisonersReleased() { }
+        private void OnPlayerPrisonersSold() { }
+        private void OnMainPartyPrisonerRecruited() { }
+        private void OnPlayerPrisonersDonatedToSettlement() { }
+        private void OnPlayerSettlementEnteredForRecentAction() { }
+        private void OnPlayerSettlementLeftForRecentAction() { }
+        private void OnPlayerTroopRecruitedForRecentAction() { }
+        private void OnTournamentFinishedForPlayerRecentAction() { }
+        private void OnPlayerBoardGameOverForRecentAction() { }
+        private void OnRansomOfferCancelledForPlayerRecentAction() { }
+        private void OnMarriageOfferCanceledForPlayerRecentAction() { }
+        private void OnVassalOrMercenaryOfferCanceledForPlayerRecentAction() { }
+        private void OnPartyLeaderChangeOfferCanceledForPlayerRecentAction() { }
+        private void OnPeaceOfferResolvedForPlayerRecentAction() { }
+        private void OnAlleyClearedByPlayerForRecentAction() { }
+
+        private static int checks;
+        private static void Check(bool value, string label) { checks++; if (!value) throw new Exception(label); }
+        private static PlayerHistoryMaterial Material(string key = "battle-a", string text = "Ada won the battle.", string kind = "battle")
+            => new() { StableKey = key, Text = text, SourceKind = kind, Day = Fixture.Day, GameDate = "1095", CultureIds = new() { "empire" }, CreatedUtcTicks = 1 };
+        private static PlayerNotorietyBehavior Owner(int count = 1)
+        {
+            ConfiguredChatApplicationAdapter.Reset(); Logger.Lines.Clear(); FakeSummaryClock.Now = 1000;
+            Fixture.Day = 90224; Fixture.Interval = 3; Fixture.Limit = 300; Fixture.Identity = "Ada/v1"; Fixture.Chinese = false;
+            var owner = new PlayerNotorietyBehavior(); owner.RegisterEvents();
+            owner._state.LastSummaryDay = Fixture.Day - 3;
+            owner._state.MajorSummary = "Earlier history.";
+            for (int i = 0; i < count; i++) owner._state.MajorMaterials.Add(Material("battle-" + i));
+            owner._summaryQueuedMode = 0;
+            return owner;
+        }
+        private static MyBehavior.ApiCallResult Ok(string text = "Ada won a new battle.", double delta = 2) => new()
+        { Success = true, Content = "{\"summary_content\":\"" + text + "\",\"notoriety_delta\":" + delta.ToString(System.Globalization.CultureInfo.InvariantCulture) + "}" };
+        private static MyBehavior.ApiCallResult Failed(int? retry = null) => new() { IsRequestFailure = true, ErrorMessage = "http_503", RetryAfterSeconds = retry };
+        private static void Complete(MyBehavior.ApiCallResult value)
+        {
+            var request = ConfiguredChatApplicationAdapter.Requests.Last();
+            Task.Run(() => request.Completion.SetResult(value)).GetAwaiter().GetResult();
+        }
+        private static void Tick(PlayerNotorietyBehavior owner) => owner.OnEngineTick();
+        public static void RunChecks()
+        {
+            Fixture.MainThread = Thread.CurrentThread.ManagedThreadId;
+            var owner = Owner(); owner.TryStartSummaryProcessing();
+            Check(!CampaignEvents.TickEvent.Registered.Contains(owner), "summary pump is not tied to pausable campaign Tick");
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1 && owner._summaryRun != null, "one real in-flight task started");
+            Check(!LlmNonStreamingTransport.CurrentOwnerCancellation.CanBeCanceled, "request cancellation scope does not leak into caller");
+            var first = ConfiguredChatApplicationAdapter.Requests[0];
+            Fixture.Day += 4;
+            for (int i = 0; i < 4; i++) owner.OnDailyTick();
+            owner.TryStartSummaryProcessing(true);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "cross-day daily checks and additions cannot overlap request");
+            Complete(Failed());
+            Check(owner._state.SummarizedMaterialKeys.Count == 0, "worker completion never writes state");
+            Tick(owner);
+            Check(owner._state.SummaryRetryCount == 1 && owner._summarySchedulePhase == "retry_wait", "failed attempt schedules retry");
+            Tick(owner); Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "retry respects monotonic delay");
+            FakeSummaryClock.Advance(2); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "retry starts without another game day or new material");
+            Check(ConfiguredChatApplicationAdapter.Requests[1].Prompt == first.Prompt, "same batch/input retained across retries");
+            Complete(Ok()); Tick(owner);
+            Check(owner._summaryRun == null && owner._state.MajorMaterials.Count == 0 && owner._state.SummarizedMaterialKeys.Count == 1, "successful main-thread commit consumes exact batch");
+            Check(owner._state.CultureNotoriety["empire"] == 2 && owner._state.LastSummaryDay == Fixture.Day, "success writes fame once and advances interval");
+            Tick(owner); Tick(owner);
+            Check(owner._state.CultureNotoriety["empire"] == 2 && ConfiguredChatApplicationAdapter.Requests.Count == 2, "repeated ticks cannot duplicate success");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); owner.SyncData(new Store { IsSaving = true });
+            Check(owner._summaryRun != null && !ConfiguredChatApplicationAdapter.Requests[0].Token.IsCancellationRequested, "saving does not cancel valid in-flight work");
+            Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 0 && owner._state.SummarizedMaterialKeys.Count == 1, "save normalization preserves source identities for eventual commit");
+
+            owner = Owner(); owner._state.MajorSummary = "OLD-" + new string('o', 290);
+            owner._state.MajorMaterials[0].Text = "NEWEST confirmed deed."; owner.TryStartSummaryProcessing();
+            Complete(Failed()); Tick(owner); FakeSummaryClock.Advance(2); Tick(owner);
+            Complete(new() { Success = true, Content = "not-json" }); Tick(owner); FakeSummaryClock.Advance(4); Tick(owner);
+            Complete(new() { Success = true, Content = "" }); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 3 && owner._summaryRun == null, "transport/format/empty failures share three-attempt budget");
+            Check(owner._state.MajorMaterials.Count == 0 && owner._state.SummarizedMaterialKeys.Count == 1, "fallback consumes only confirmed materials");
+            Check(owner._state.MajorSummary.Length <= Fixture.Limit && owner._state.MajorSummary.EndsWith("NEWEST confirmed deed."), "bounded fallback keeps newest facts");
+            Check(owner._state.CultureNotoriety.Count == 0 && owner._state.WorldNotoriety == 0, "fallback grants no model fame");
+            Check(owner._state.LastSummaryDay == Fixture.Day && owner._state.SummaryRetryCount == 0 && owner._state.LastSummaryError.Length > 0, "fallback records completion clock and retains real error");
+            Check(Logger.Lines.Any(x => x.Contains("summary_fallback")), "fallback clearly logged, not model success");
+            owner = Owner(); owner.TryStartSummaryProcessing(); Complete(Failed()); Tick(owner);
+            FakeSummaryClock.Advance(2); Tick(owner); Complete(Failed()); Tick(owner); FakeSummaryClock.Advance(4); Tick(owner);
+            owner._state.MajorMaterials.Add(Material("fallback-later", "A later deed.")); Complete(Failed()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && owner._state.MajorMaterials[0].StableKey == "fallback-later" && owner._state.SummarizedMaterialKeys.Count == 1, "fallback cannot consume materials appended after its snapshot");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); Complete(Failed(60)); Tick(owner);
+            FakeSummaryClock.Advance(59); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "provider Retry-After respected");
+            FakeSummaryClock.Advance(1); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "Retry-After deadline resumes autonomously");
+            owner = Owner(); owner.TryStartSummaryProcessing(); Complete(Failed(7200)); Tick(owner);
+            FakeSummaryClock.Advance(7199); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "long provider cooldown is not shortened by a local cap");
+            FakeSummaryClock.Advance(1); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "long Retry-After resumes at the requested deadline");
+
+            owner = Owner(); owner.TryStartSummaryProcessing();
+            Task.Run(() => ConfiguredChatApplicationAdapter.Requests[0].Completion.SetException(new HttpRequestException("network"))).GetAwaiter().GetResult();
+            Tick(owner); Check(owner._summarySchedulePhase == "retry_wait" && owner._state.SummaryRetryCount == 1, "faulted HTTP task counts as retryable failure");
+            FakeSummaryClock.Advance(2); Tick(owner);
+            ConfiguredChatApplicationAdapter.Requests.Last().Completion.SetCanceled(); Tick(owner);
+            Check(owner._state.SummaryRetryCount == 2, "current-owner transport cancellation counts as an attempt");
+
+            owner = Owner(); owner.TryStartSummaryProcessing();
+            var old = ConfiguredChatApplicationAdapter.Requests[0];
+            owner.ApplyPlayerMajorHistoryEditorInput("Player edited history.");
+            Check(old.Token.IsCancellationRequested && owner._summaryRun == null, "manual editor retires/cancels in-flight batch");
+            old.Completion.SetResult(Ok("STALE")); Tick(owner);
+            Check(owner._state.MajorSummary == "Player edited history." && owner._state.MajorMaterials.Count == 1, "late response cannot overwrite edit or consume pending material");
+            owner.TryStartSummaryProcessing();
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "manual edit retains normal interval gate");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); old = ConfiguredChatApplicationAdapter.Requests[0];
+            string json = JsonConvert.SerializeObject(owner._state);
+            owner.SyncData(new Store { Json = json });
+            Check(old.Token.IsCancellationRequested && owner._summaryRun == null, "same-instance load cancels runtime work");
+            old.Completion.SetResult(Ok("STALE SAVE")); Tick(owner);
+            Check(owner._state.MajorSummary == "Earlier history." && owner._state.MajorMaterials.Count == 1, "load rejects old result and resumes saved pending batch");
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "due saved backlog resumes on first Tick, no new event needed");
+            Complete(Ok()); Tick(owner);
+            Check(owner._state.SummarizedMaterialKeys.Count == 1, "new post-load result can commit");
+            owner = Owner(); owner.TryStartSummaryProcessing(); Complete(Failed()); Tick(owner);
+            FakeSummaryClock.Advance(2); Tick(owner); Complete(Failed()); Tick(owner);
+            json = JsonConvert.SerializeObject(owner._state); owner.SyncData(new Store { Json = json }); Tick(owner);
+            Check(owner._summaryRun.Attempts == 3, "load preserves already-failed attempts instead of granting a fresh retry budget");
+            Complete(Failed()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 0 && ConfiguredChatApplicationAdapter.Requests.Count == 3, "third failure after reload still reaches local fallback");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); old = ConfiguredChatApplicationAdapter.Requests[0];
+            SaveRuntimeGuard.Generation++; old.Completion.SetResult(Ok("STALE GEN")); Tick(owner);
+            Check(owner._state.MajorSummary == "Earlier history." && owner._state.MajorMaterials.Count == 1 && old.Token.IsCancellationRequested, "generation change rejects result and releases busy");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); old = ConfiguredChatApplicationAdapter.Requests[0];
+            var replacement = new PlayerNotorietyBehavior(); replacement.RegisterEvents(); old.Completion.SetResult(Ok("STALE OWNER")); Tick(owner);
+            Check(old.Token.IsCancellationRequested && owner._state.MajorMaterials.Count == 1 && replacement._state.MajorSummary == "", "owner replacement cannot write either owner");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); owner._state.MajorMaterials.Add(Material("new-during-request", "A second confirmed deed."));
+            Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && owner._state.MajorMaterials[0].StableKey == "new-during-request", "append during await is not marked consumed by old result");
+            Tick(owner); Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "remaining backlog starts next Tick rather than waiting another interval");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); owner._state.MajorSummary = "External edit.";
+            Complete(Ok("STALE SOURCE")); Tick(owner);
+            Check(owner._state.MajorSummary == "External edit." && owner._state.MajorMaterials.Count == 1, "same-generation source summary change rejects stale commit");
+            Tick(owner); Check(ConfiguredChatApplicationAdapter.Requests.Count == 2, "discarded due source can be recaptured");
+            owner._state.MajorMaterials[0].Text = "Changed material."; Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && owner._state.SummarizedMaterialKeys.Count == 0, "source material mutation rejects receipt");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); Complete(Failed()); Tick(owner);
+            var tokenBeforeRetry = ConfiguredChatApplicationAdapter.Requests[0].Token;
+            owner._state.MajorMaterials[0].Text = "Changed during backoff.";
+            FakeSummaryClock.Advance(2); Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1 && tokenBeforeRetry.IsCancellationRequested && owner._state.MajorMaterials.Count == 1, "retry revalidates source before sending, preserving changed material");
+            owner = Owner(); owner.TryStartSummaryProcessing();
+            owner._state.MajorMaterials[0] = Material("battle-0", "Replacement same identity."); Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && owner._state.SummarizedMaterialKeys.Count == 0, "replacement material object cannot be consumed by old snapshot");
+
+            owner = Owner(); owner.TryStartSummaryProcessing(); Fixture.Identity = "Ada/v2"; Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1, "player/render identity changes invalidate captured input");
+            owner = Owner(); owner.TryStartSummaryProcessing(); Fixture.Chinese = true; Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1, "game language changes cannot accept old prompt response");
+
+            owner = Owner(); owner.TryStartSummaryProcessing();
+            ConfiguredChatApplicationAdapter.Requests[0].Completion.SetException(new InvalidOperationException("fixture programmer fault")); Tick(owner);
+            Check(owner._summaryRun == null && owner._summarySchedulePhase == "faulted" && owner._state.MajorMaterials.Count == 1, "programming fault preserves material, does not fake fallback success");
+            for (int i = 0; i < 10; i++) owner.OnDailyTick();
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 1 && owner._state.SummaryRetryCount == 0, "programming fault never starts an unbounded retry loop");
+            Check(owner.BuildStorageDiagnostics().Contains("summaryPhase=faulted") && owner._state.LastSummaryError.Contains("InvalidOperationException"), "fault remains diagnosable");
+
+            foreach (string failure in new[] { "configured_gateway_InvalidOperationException", "provider_configuration_incomplete", "bridge.conversation_gateway_disabled" })
+            {
+                owner = Owner(); owner.TryStartSummaryProcessing(); Complete(new() { ErrorMessage = failure }); Tick(owner);
+                FakeSummaryClock.Advance(100); Tick(owner); owner.OnDailyTick();
+                Check(owner._summarySchedulePhase == "faulted" && owner._state.MajorMaterials.Count == 1
+                    && owner._state.SummarizedMaterialKeys.Count == 0 && ConfiguredChatApplicationAdapter.Requests.Count == 1,
+                    "unclassified/configuration failure preserves material without retry or fallback: " + failure);
+            }
+            owner = Owner(); owner.TryStartSummaryProcessing(); old = ConfiguredChatApplicationAdapter.Requests[0];
+            owner.RetireCampaignRuntime("game_end");
+            Check(Instance == null && old.Token.IsCancellationRequested && owner._summaryRun == null, "campaign retirement cancels work and clears current singleton");
+            old.Completion.SetResult(Ok("AFTER END")); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && owner._state.SummarizedMaterialKeys.Count == 0, "application ticks after retirement cannot commit late response");
+
+            owner = Owner(); owner._state.LastSummaryDay = Fixture.Day; owner.TryStartSummaryProcessing();
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 0 && owner._summarySchedulePhase == "waiting_interval", "normal three-day gate unchanged");
+            Fixture.Day += 2; owner.OnDailyTick(); Check(ConfiguredChatApplicationAdapter.Requests.Count == 0, "two days not due");
+            Fixture.Day++; owner.OnDailyTick(); Check(ConfiguredChatApplicationAdapter.Requests.Count == 1, "third day starts work");
+
+            owner = Owner(0); owner._state.MajorMaterials.Add(Material("reward_action:debt_recorded:legacy", "Private debt.", "debt_recorded"));
+            owner.TryStartSummaryProcessing(); string diagnostic = owner.BuildStorageDiagnostics();
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == 0, "legacy private debt is not sent to model");
+            Check(diagnostic.Contains("pendingMaterials=1") && diagnostic.Contains("eligiblePendingMaterials=0") && diagnostic.Contains("excludedPendingMaterials=1"), "diagnostic separates total pending from eligible and excluded");
+            Check(diagnostic.Contains("lastSummaryDay=") && diagnostic.Contains("summaryIntervalDays=3") && diagnostic.Contains("summaryProcessing=False"), "save diagnostic exposes scheduling gates");
+
+            owner = Owner(49); owner.TryStartSummaryProcessing();
+            Check(owner._summaryRun.Sources.Count == 24, "production batch cap is 24");
+            Complete(Ok()); Tick(owner); Check(owner._state.MajorMaterials.Count == 25 && ConfiguredChatApplicationAdapter.Requests.Count == 1, "one Tick cannot recursively drain backlog");
+            Tick(owner); Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 1 && ConfiguredChatApplicationAdapter.Requests.Count == 2, "second bounded batch progresses");
+            Tick(owner); Complete(Ok()); Tick(owner);
+            Check(owner._state.MajorMaterials.Count == 0 && owner._state.SummarizedMaterialKeys.Count == 49, "all batches complete exactly once");
+            int captures = ConfiguredChatApplicationAdapter.Requests.Count;
+            for (int i = 0; i < 1000; i++) Tick(owner);
+            Check(ConfiguredChatApplicationAdapter.Requests.Count == captures, "idle Tick never requests or scans sources");
+
+            owner = Owner(0); owner._state.MajorSummary = new string('x', 400); owner.TryStartSummaryProcessing();
+            for (int i = 0; i < 3; i++) { Complete(Failed()); Tick(owner); if (i < 2) { FakeSummaryClock.Advance(4); Tick(owner); } }
+            Check(owner._state.MajorSummary.Length == 300 && owner._state.SummarizedMaterialKeys.Count == 0 && owner._state.WorldNotoriety == 0, "compaction-only fallback keeps newest text with no fake material or fame");
+            Console.WriteLine("PASS " + checks + " production player-summary scheduling/parser/commit assertions; fake game clock/render/HTTP/save transport; no live game/provider.");
+        }
+    }
+}
+namespace AnimusForge.Refactor.Adapters
+{
+    internal static class ConfiguredChatApplicationAdapter
+    {
+        internal sealed class Request
+        {
+            internal string Prompt;
+            internal CancellationToken Token;
+            internal readonly TaskCompletionSource<MyBehavior.ApiCallResult> Completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        }
+        internal static readonly List<Request> Requests = new();
+        internal static void Reset() => Requests.Clear();
+        internal static Task<MyBehavior.ApiCallResult> CallAuxiliaryGatewayDetailed(string system, string user, string source, int maxTokens, bool disableThinking)
+        {
+            Fixture.MainOnly();
+            var request = new Request { Prompt = system + user, Token = LlmNonStreamingTransport.CurrentOwnerCancellation };
+            if (!request.Token.CanBeCanceled) throw new Exception("owner token missing");
+            Requests.Add(request);
+            return request.Completion.Task;
+        }
+    }
+}
+namespace TaleWorlds.CampaignSystem
+{
+    public interface IDataStore { bool IsSaving { get; } bool IsLoading { get; } }
+    public abstract class CampaignBehaviorBase { public abstract void RegisterEvents(); public abstract void SyncData(IDataStore store); }
+    internal sealed class Event
+    {
+        internal void AddNonSerializedListener(object owner, Action callback) { }
+    }
+    internal sealed class TickEvent
+    {
+        internal readonly List<object> Registered = new();
+        internal void AddNonSerializedListener(object owner, Action<float> callback) => Registered.Add(owner);
+    }
+    internal static class CampaignEvents
+    {
+        internal static readonly TickEvent TickEvent = new();
+        internal static readonly Event OnSessionLaunchedEvent = new(), DailyTickEvent = new(), ConversationEnded = new(),
+            HeroPrisonerReleased = new(), OnPrisonerReleasedEvent = new(), OnPrisonerSoldEvent = new(), OnMainPartyPrisonerRecruitedEvent = new(),
+            OnPrisonerDonatedToSettlementEvent = new(), AfterSettlementEntered = new(), OnSettlementLeftEvent = new(), OnTroopRecruitedEvent = new(),
+            TournamentFinished = new(), OnPlayerBoardGameOverEvent = new(), OnRansomOfferCancelledEvent = new(), OnMarriageOfferCanceledEvent = new(),
+            OnVassalOrMercenaryServiceOfferCanceledEvent = new(), OnPartyLeaderChangeOfferCanceledEvent = new(), OnPeaceOfferResolvedEvent = new(), AlleyClearedByPlayer = new();
+    }
+}
+internal static class Program { private static void Main() => PlayerNotorietyBehavior.RunChecks(); }

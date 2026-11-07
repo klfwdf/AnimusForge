@@ -28,7 +28,7 @@ internal static class AfCampaignRuntimeLifecycle
         // Game.Current/Campaign.Current may already be gone when OnGameEnd is delivered.
         foreach (CampaignBehaviorBase behavior in starter.CampaignBehaviors)
             if ((behavior is MyBehavior || behavior is ShoutBehavior || behavior is CourierDeliveryBehavior
-                    || behavior is WorldDiplomacyBehavior || behavior is VassalageBehavior)
+                    || behavior is WorldDiplomacyBehavior || behavior is VassalageBehavior || behavior is PlayerNotorietyBehavior)
                 && !Owners.Contains(behavior)) Owners.Add(behavior);
         // Constructors publish singleton references before AddBehavior returns.
         // Include them when registration failed after construction, while this Game is still current.
@@ -36,6 +36,7 @@ internal static class AfCampaignRuntimeLifecycle
         if (CourierDeliveryBehavior.Instance != null && !Owners.Contains(CourierDeliveryBehavior.Instance)) Owners.Add(CourierDeliveryBehavior.Instance);
         if (WorldDiplomacyBehavior.Instance != null && !Owners.Contains(WorldDiplomacyBehavior.Instance)) Owners.Add(WorldDiplomacyBehavior.Instance);
         if (VassalageBehavior.Instance != null && !Owners.Contains(VassalageBehavior.Instance)) Owners.Add(VassalageBehavior.Instance);
+        if (PlayerNotorietyBehavior.Instance != null && !Owners.Contains(PlayerNotorietyBehavior.Instance)) Owners.Add(PlayerNotorietyBehavior.Instance);
     }
 
     internal static void End(Game game) { RequireMainThread(); Lifetime.End(game); }
@@ -54,6 +55,7 @@ internal static class AfCampaignRuntimeLifecycle
                 else if (owner is CourierDeliveryBehavior courier) courier.RetireCampaignRuntime(reason);
                 else if (owner is WorldDiplomacyBehavior diplomacy) diplomacy.RetireCampaignRuntime(reason);
                 else if (owner is VassalageBehavior vassalage) vassalage.RetireCampaignRuntime(reason);
+                else if (owner is PlayerNotorietyBehavior notoriety) notoriety.RetireCampaignRuntime(reason);
             }
             catch (Exception error)
             {

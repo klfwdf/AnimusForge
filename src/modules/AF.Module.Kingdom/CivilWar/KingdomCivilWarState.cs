@@ -69,6 +69,7 @@ internal sealed class KingdomCivilWarFactionState
 	public string PendingConcessionRulerId = "";
 	public string PendingConcessionLeaderId = "";
 	public string RebellionOperationId = "";
+	public CivilWarPendingFulfillment Fulfillment;
 	public string Id = "";
 	public KingdomCivilWarStage Stage = KingdomCivilWarStage.FactionFormed;
 	public int StageWeek;
@@ -168,6 +169,23 @@ internal sealed class KingdomCivilWarStorage
 	public Dictionary<string, int> ProtectedClanUntilDay = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 	public Dictionary<string, CivilWarOperation> Operations = new Dictionary<string, CivilWarOperation>(StringComparer.Ordinal);
 	public Dictionary<string, KingdomCivilWarKingdomState> Kingdoms = new Dictionary<string, KingdomCivilWarKingdomState>(StringComparer.OrdinalIgnoreCase);
+}
+
+internal sealed class CivilWarPendingFulfillment
+{
+	public string Kind = "";
+	public string Choice = "";
+	public List<string> StructuralWarIds = new List<string>();
+	public string OperationId = "";
+	public string RulerClanId = "";
+	public string LeaderClanId = "";
+	public string TargetId = "";
+	public List<string> ClanIds = new List<string>();
+	public string KingdomId = "";
+	public string FormalName = "";
+	public string ShortName = "";
+	public string Lore = "";
+	public string Status = "pending";
 }
 
 internal sealed class CivilWarPendingResponse

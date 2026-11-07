@@ -1,7 +1,7 @@
 using System;using System.Collections.Generic;using TaleWorlds.CampaignSystem;using TaleWorlds.MountAndBlade;
 using SceneSpeechPlaybackInfo=AnimusForge.ShoutBehavior.SceneSpeechPlaybackInfo;
 namespace AnimusForge;
-public partial class ShoutBehavior { internal sealed class SceneSpeechPlaybackInfo { public bool TtsEnabled,TtsAccepted,WaitForPlaybackFinished;public float VisualDurationSeconds; } }
+public partial class ShoutBehavior { internal sealed class SceneSpeechPlaybackInfo { public bool TtsEnabled,TtsAccepted,WaitForPlaybackFinished;public float VisualDurationSeconds; internal Action<string,bool> OnPresented; internal string ImmediatePresentedText; internal Func<bool> CanNotifyPresented; internal int QueuedSegmentIndex; internal bool QueuedFinalSegment=true,QueuedNotify=true; private int last=-1; private string shown=""; internal void NotifyPresented(string text,bool final=true,int index=0){var callback=OnPresented;if(callback==null||index<=last||CanNotifyPresented?.Invoke()==false)return;string added=text??"";if(index==int.MaxValue&&shown.Length>0){int p=0,c=0;while(p<shown.Length){if(char.IsWhiteSpace(shown[p])){p++;continue;}while(c<added.Length&&char.IsWhiteSpace(added[c]))c++;if(c>=added.Length||shown[p++]!=added[c++])return;}added=added.Substring(c).TrimStart();}last=index;shown+=added;if(final)OnPresented=null;callback(added,final);} } }
 internal sealed class SceneSpeechOutputOracle {
  private readonly SceneSpeechOutputPort port;private readonly Func<Agent,bool> can;
  private readonly Dictionary<int,SpeechFixture.Session> _activeInteractionSessions;
@@ -25,7 +25,7 @@ internal sealed class SceneSpeechOutputOracle {
  private void ClearPendingTtsBubbleSyncForAgent(int i,bool clearInteractionToken)=>port.ClearPendingBubble(i,clearInteractionToken);
  private void ClearPendingSceneDialogueFeedForAgent(int i)=>port.ClearPendingFeed(i);
  private void EnqueuePendingSpeechCompletionToken(int i,long token)=>port.EnqueueCompletionToken(i,token);
- private void EnqueuePendingNpcBubble(int i,Agent a,string text,string name,float duration)=>port.EnqueueBubble(i,a,text,name,duration);
+ private void EnqueuePendingNpcBubble(int i,Agent a,string text,string name,float duration)=>port.EnqueueBubble(i,a,text,name,duration,null,true,0);
  private void ScheduleNpcSpeechToMessageFeed(int i,string name,string text,SceneSpeechPlaybackInfo info)=>port.ScheduleFeed(i,name,text,info);
  private bool TryShowNpcBubble(Agent a,string text,float duration)=>port.ShowBubble(a,text,duration);
  private void ScheduleInteractionTimeoutArm(int i,long token,float duration)=>port.ArmInteractionTimeout(i,token,duration);

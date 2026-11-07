@@ -53,7 +53,7 @@ internal sealed class SceneSpeechEnqueueAdapter
     private readonly SceneSpeechEnqueueAdapterPorts _ports;
     internal SceneSpeechEnqueueAdapter(SceneSpeechEnqueueAdapterPorts ports) { _ports = ports ?? throw new ArgumentNullException(nameof(ports)); }
 
-	internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsSpeech> pendingLocalSpeech = null)
+	internal void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsSpeech> pendingLocalSpeech = null, Action<string, bool> onPresented = null)
 	{
 		if (npc == null || string.IsNullOrWhiteSpace(content))
 		{
@@ -100,6 +100,7 @@ internal sealed class SceneSpeechEnqueueAdapter
 			RequiredConversationEpoch = requiredConversationEpoch,
 			AfterSpeechInfoMessage = afterSpeechInfoMessage,
 			CompletionSource = completionSource,
+			OnPresented = onPresented,
 			InteractionTimeoutSeconds = interactionTimeoutSeconds,
 			InteractionParticipantCount = Math.Max(1, interactionParticipantCount),
 			CanStillPublish = canStillPublish

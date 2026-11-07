@@ -79,6 +79,27 @@ internal static class PlayerFactionControlTests
         faction.WaitingForOtherWar = true; faction.UltimatumDay = 700; f.Owner.NotifyPoliticalChange(f.Home, "review_waiting"); Drain(f);
         Check(faction.Stage != KingdomCivilWarStage.OpenWar && !faction.WaitingForOtherWar, "legacy pending auto-war cannot ignite player-led faction");
 
+        f = Prewar(); f.Faction.UltimatumDay = 699; f.Faction.UltimatumWeek = 99;
+        f.Owner.NotifyPoliticalChange(f.Home, "daily"); Drain(f);
+        Check(f.Faction.Stage == KingdomCivilWarStage.FactionFormed && f.Faction.Refusals == 0, "overdue player-led faction never sends an automatic ultimatum");
+        Check(f.Owner.BuildPlayerKingdomPanel().Factions.Single().DeadlineNote.Contains("not be sent automatically"), "player panel describes manual dispatch");
+        f.Reload(); Drain(f);
+        Check(f.Faction.Stage == KingdomCivilWarStage.FactionFormed, "loading overdue player faction cannot auto-send ultimatum");
+        var send = Request(f, CivilWarAction.SendUltimatum);
+        Check(!f.Owner.Quote(send, f.Follower).Allowed && f.Owner.Quote(send, Clan.PlayerClan).Allowed, "only current player faction leader may send");
+        Check(f.Owner.Execute(send, Clan.PlayerClan).Status == CivilWarActionStatus.Applied, "manual ultimatum reaches king ruling");
+        int resultCount = MyBehavior.PoliticalResults.Count;
+        f.Owner.Execute(send, Clan.PlayerClan);
+        Check(MyBehavior.PoliticalResults.Count == resultCount, "receipt prevents duplicate dispatch and results");
+        f = Prewar(); faction = f.Faction;
+        applyRuling.Invoke(f.Owner, new object[] { f.Home, f.State, faction, CivilWarCatalog.FindDemand(faction.DemandId), Clan.PlayerClan, 100, DuelSettings.BuildCivilWarTuning(), (Action<Kingdom, int>)((_, _) => { }), forcedEscalation });
+        int refused = faction.Refusals;
+        CampaignTime.Day = faction.UltimatumDay + 1; f.Owner.NotifyPoliticalChange(f.Home, "daily"); Drain(f);
+        Check(f.Faction.Refusals == refused && f.Faction.Stage == KingdomCivilWarStage.FactionFormed, "next player ultimatum remains manual after refusal");
+        f = Prewar(false); f.Faction.UltimatumDay = 699;
+        f.Owner.NotifyPoliticalChange(f.Home, "daily"); Drain(f);
+        Check(f.State.Factions.Count == 0 || f.Faction.Stage != KingdomCivilWarStage.FactionFormed || f.Faction.GovernanceUntilDay > 700 || f.Faction.Fulfillment != null, "AI-led faction retains automatic ultimatum governance");
+
         f = Prewar(); var order = Request(f, CivilWarAction.ForceDissolve); f.Owner.Execute(order, f.Home.RulingClan);
         Clan.PlayerClan.CurrentTotalStrength = 0; var refuse = Request(f, CivilWarAction.Respond); refuse.Accept = false;
         Check(!f.Owner.Quote(refuse, Clan.PlayerClan).Allowed, "defying royal dissolution obeys strength gate");

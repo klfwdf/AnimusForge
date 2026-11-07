@@ -15,7 +15,8 @@ JSON reload, manual clearing, typed `AdvancedStartOptionsData` session capture,
 prompt reader and UI formatter, failed-summary compaction, proactive evidence
 budget/cache/rename and observer gate. UI translations are loaded into the
 managed localization dictionary as fixtures, independently of package choice.
-The provider is replaced with a completed invalid response for the fallback
-test. Game/current campaign getters and observer qualification are controlled
-fixtures; this is not live campaign, save-file, provider or Gauntlet acceptance.
+The fallback test invokes the production local-fallback method with a detached
+compaction batch; retry scheduling is covered by `../PlayerSummaryRecoveryReplay.py`.
+Game/current campaign getters and observer qualification are controlled fixtures;
+this is not live campaign, save-file, provider or Gauntlet acceptance.
 No installed module or player configuration is written.

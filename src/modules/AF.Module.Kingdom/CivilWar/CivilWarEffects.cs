@@ -47,6 +47,9 @@ internal sealed class CivilWarEffectContext
 	internal int Week;
 	internal ICivilWarHost Host;
 	internal bool RetryableFailure;
+	internal bool AwaitingCompletion;
+	internal Func<CivilWarEffectContext, bool> FulfillIndependence;
+	internal Func<CivilWarEffectContext, bool> FulfillPeaceAgenda;
 	internal readonly List<string> Notes = new List<string>();
 
 	// Display identity of a refused or failed effect: a stable code plus at most two dynamic values.
@@ -179,6 +182,7 @@ internal static class CivilWarEffects
 	{
 		reason = "";
 		ctx.RetryableFailure = false;
+		ctx.AwaitingCompletion = false;
 		ctx.FailureCode = "";
 		ctx.FailureArg = "";
 		ctx.FailureArg2 = "";
@@ -283,14 +287,15 @@ internal sealed class MakePeaceWithTargetEffect : ICivilWarEffect
 	public bool CanApply(CivilWarEffectContext ctx, out string reason)
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction?.TargetId);
-		if (CivilWarWorld.IsAlive(target) && ctx.Kingdom.IsAtWarWith(target)) { reason = ""; return true; }
+		if (CivilWarWorld.IsAlive(target) && (ctx.Kingdom.IsAtWarWith(target) || ctx.Faction?.Fulfillment?.Kind == "peace")) { reason = ""; return true; }
 		return CivilWarEffects.Refuse(ctx, "PeaceTargetNotAtWar", KingdomCivilWarTexts.Raw("KW_Raw_041"), out reason);
 	}
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
 		Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction.TargetId);
-		CivilWarEffects.RequirePeace(ctx.Kingdom, target, "civil_war_make_peace");
+		if (ctx.FulfillPeaceAgenda == null) throw new InvalidOperationException("Faction peace agenda owner is unavailable.");
+		if (!ctx.FulfillPeaceAgenda(ctx)) { ctx.AwaitingCompletion = true; return; }
 		ctx.Note("PeaceMade", KingdomCivilWarTexts.Tidy(CivilWarWorld.KingdomName(ctx.Kingdom) + KingdomCivilWarTexts.W("KW_Raw_042") + CivilWarWorld.KingdomName(target) + KingdomCivilWarTexts.W("KW_Raw_043")), CivilWarWorld.KingdomName(ctx.Kingdom), CivilWarWorld.KingdomName(target));
 	}
 }
@@ -376,21 +381,16 @@ internal sealed class GrantPrivilegesEffect : ICivilWarEffect
 		return CivilWarEffects.Refuse(ctx, "KingGone", KingdomCivilWarTexts.Raw("KW_Raw_053"), out reason);
 	}
 
-	// Autonomy = the faction clans leave the kingdom keeping their fiefs, as independent clans. Vanilla LeaveKingdom
-	// hands fiefs to the king, so the host leaves by the fief-keeping rebellion detail and ends the wars it starts.
 	public void Apply(CivilWarEffectContext ctx)
 	{
-		List<Clan> leaving = ctx.FactionClans().Where(x => x.Kingdom == ctx.Kingdom && x != ctx.Kingdom.RulingClan).ToList();
-		bool failed = false;
-		foreach (Clan clan in leaving)
+		if (ctx.FulfillIndependence == null) throw new InvalidOperationException("Faction independence owner is unavailable.");
+		if (!ctx.FulfillIndependence(ctx)) { ctx.AwaitingCompletion = true; return; }
+		if (ctx.Faction.Fulfillment?.Choice == "leave")
 		{
-			try { ctx.Host.LeaveKingdomKeepingFiefs(clan); }
-			catch (Exception ex) { Logger.Log("KingdomCivilWar", "[WARN] autonomy leave failed clan=" + clan.StringId + " error=" + ex.Message); }
-			if (clan.Kingdom == ctx.Kingdom) failed = true;
+			ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_055")), CivilWarWorld.ClanName(ctx.LeaderClan));
+			return;
 		}
-		// Re-run is safe: clans that already left are skipped by the kingdom filter above.
-		if (failed) throw new CivilWarRetryableEffectException(KingdomCivilWarTexts.Raw("KW_Raw_036"), "RebelClansNotHome");
-		ctx.Note("PrivilegesGranted", KingdomCivilWarTexts.Tidy(CivilWarWorld.ClanName(ctx.LeaderClan) + KingdomCivilWarTexts.W("KW_Raw_055")), CivilWarWorld.ClanName(ctx.LeaderClan));
+		ctx.Note("Seceded", KingdomCivilWarTexts.Tidy(CivilWarWorld.KingdomName(ctx.RebelKingdom) + KingdomCivilWarTexts.W("KW_Raw_064") + CivilWarWorld.KingdomName(ctx.Kingdom)), CivilWarWorld.KingdomName(ctx.RebelKingdom), CivilWarWorld.KingdomName(ctx.Kingdom));
 	}
 }
 
@@ -465,16 +465,16 @@ internal sealed class ConcessionEffect : ICivilWarEffect
 
 	public void Apply(CivilWarEffectContext ctx)
 	{
-		CivilWarEffects.ReturnRebels(ctx, ctx.WarClans(), 5, true);
-		// Coerce wars were fought for the original demand; usurp/secede compromises fall back to privileges.
+		// A territorial compromise retains the existing kingdom rather than dissolving it and founding again.
 		string demandEffect = ctx.Demand?.AcceptEffectId ?? "";
 		bool throneOrLand = demandEffect == CivilWarEffectIds.Abdicate || demandEffect == CivilWarEffectIds.GrantPrivileges || demandEffect.Length == 0;
 		string effect = throneOrLand ? CivilWarEffectIds.GrantPrivileges : demandEffect;
+		if (!throneOrLand) CivilWarEffects.ReturnRebels(ctx, ctx.WarClans(), 5, true);
 		// The original demand may already have been fulfilled during the war.
 		if (effect == CivilWarEffectIds.MakePeaceWithTarget)
 		{
 			Kingdom target = CivilWarWorld.FindKingdom(ctx.Faction.TargetId);
-			if (!CivilWarWorld.IsAlive(target) || !ctx.Kingdom.IsAtWarWith(target)) { ctx.Note("WarAlreadyEnded", KingdomCivilWarTexts.Raw("KW_Raw_066")); return; }
+			if (ctx.Faction.Fulfillment == null && (!CivilWarWorld.IsAlive(target) || !ctx.Kingdom.IsAtWarWith(target))) { ctx.Note("WarAlreadyEnded", KingdomCivilWarTexts.Raw("KW_Raw_066")); return; }
 		}
 		if (effect == CivilWarEffectIds.RevokeTargetPolicy && !ctx.Kingdom.ActivePolicies.Any(x => x.StringId == ctx.Faction.TargetId))
 		{ ctx.Note("PolicyAlreadyRevoked", KingdomCivilWarTexts.Raw("KW_Raw_067")); return; }

@@ -17,15 +17,22 @@ namespace AnimusForge;
 public sealed partial class FieldCampBehavior
 {
 	internal const float MoraleGainCap = 20f;
+	internal const int MaxEnvoyVisitsPerIssue = 2;
 
 	// Save fields (approved 2026-10-30).
 	private List<string> _issues = new List<string>();
 	private float _moraleGained;
 	private List<string> _suppressedKinds = new List<string>();
 	private double _lastDefeatHours = -1;
+	private Dictionary<string, int> _handledCompanionRelations = new Dictionary<string, int>();
+	private Dictionary<string, string> _handledCompanionStates = new Dictionary<string, string>();
+	private Dictionary<string, string> _handledCompanionSources = new Dictionary<string, string>();
+	private List<int> _issueEnvoyVisits = new List<int>();
+	private int _companionIssueRulesVersion;
 
 	private readonly List<FieldCampIssues.Issue> _issueCache = new List<FieldCampIssues.Issue>();
 	private bool _issueCacheValid;
+	private Dictionary<string, List<string>> _handledPairsByHero;
 
 	private void SyncIssueData(IDataStore dataStore)
 	{
@@ -37,11 +44,21 @@ public sealed partial class FieldCampBehavior
 		dataStore.SyncData("_afFieldCamp_moraleGained_v1", ref _moraleGained);
 		dataStore.SyncData("_afFieldCamp_suppressed_v1", ref _suppressedKinds);
 		dataStore.SyncData("_afFieldCamp_lastDefeatHours_v1", ref _lastDefeatHours);
+		dataStore.SyncData("_afFieldCamp_handledCompanionRelations_v1", ref _handledCompanionRelations);
+		dataStore.SyncData("_afFieldCamp_handledCompanionStates_v1", ref _handledCompanionStates);
+		dataStore.SyncData("_afFieldCamp_handledCompanionSources_v1", ref _handledCompanionSources);
+		dataStore.SyncData("_afFieldCamp_issueEnvoyVisits_v1", ref _issueEnvoyVisits);
+		dataStore.SyncData("_afFieldCamp_companionIssueRulesVersion_v1", ref _companionIssueRulesVersion);
 		if (dataStore.IsLoading)
 		{
 			_issues = _issues ?? new List<string>();
 			_suppressedKinds = _suppressedKinds ?? new List<string>();
+			_handledCompanionRelations = _handledCompanionRelations ?? new Dictionary<string, int>();
+			_handledCompanionStates = _handledCompanionStates ?? new Dictionary<string, string>();
+			_handledCompanionSources = _handledCompanionSources ?? new Dictionary<string, string>();
+			_issueEnvoyVisits = _issueEnvoyVisits ?? new List<int>();
 			_issueCacheValid = false;
+			_handledPairsByHero = null;
 		}
 	}
 
@@ -83,7 +100,9 @@ public sealed partial class FieldCampBehavior
 
 	private void JudgeIssues()
 	{
-		List<FieldCampIssues.Issue> judged = FieldCampIssues.Judge(MobileParty.MainParty, NowHours, _lastRestHours, _lastDefeatHours, _suppressedKinds);
+		_companionIssueRulesVersion = 1;
+		List<FieldCampIssues.Issue> judged = FieldCampIssues.Judge(MobileParty.MainParty, NowHours, _lastRestHours, _lastDefeatHours, _suppressedKinds, CanRaiseCompanionFeud);
+		_issueEnvoyVisits.Clear();
 		_issueCache.Clear();
 		_issueCache.AddRange(judged);
 		_issueCacheValid = true;
@@ -97,7 +116,111 @@ public sealed partial class FieldCampBehavior
 		_issueCache.Clear();
 		_issueCacheValid = true;
 		_suppressedKinds.Clear();
+		_issueEnvoyVisits.Clear();
 		_moraleGained = 0f;
+		// ResetAll clears the handled records before calling this shared cleanup.
+		if (_handledCompanionStates.Count == 0) _handledCompanionSources.Clear();
+	}
+
+	internal int EnvoyVisits(int index) => index >= 0 && index < _issueEnvoyVisits.Count ? _issueEnvoyVisits[index] : 0;
+
+	internal void MarkEnvoyPresented(int index)
+	{
+		if (index < 0 || index >= Issues.Count || !Issues[index].IsOpen) return;
+		while (_issueEnvoyVisits.Count <= index) _issueEnvoyVisits.Add(0);
+		_issueEnvoyVisits[index] = Math.Min(MaxEnvoyVisitsPerIssue, _issueEnvoyVisits[index] + 1);
+	}
+
+	private bool CanRaiseCompanionFeud(Hero first, Hero second, int relation)
+	{
+		string key = FieldCampIssues.CompanionPairKey(first.StringId, second.StringId);
+		return FieldCampIssues.CanRaiseCompanionFeud(relation,
+			_handledCompanionRelations.TryGetValue(key, out int handled) ? handled : (int?)null);
+	}
+
+	private void RestoreCompanionIssueState()
+	{
+		// Version 1 may contain either migrated or newly resolved records; missing provenance
+		// cannot identify which. Only this version-0 migration can establish a Legacy source.
+		if (_companionIssueRulesVersion >= 1) return;
+		// Adopt the first observed relation once; preserve the old state separately from its
+		// unconfirmed handling semantics, without replaying rewards or facts.
+		foreach (FieldCampIssues.Issue issue in Issues)
+		{
+			if (!issue.IsCompanionIssue) continue;
+			Hero first = Hero.Find(issue.Subject), second = Hero.Find(issue.Subject2);
+			if (first == null || second == null) continue;
+			if (!issue.IsOpen && issue.State != FieldCampIssues.State.Ignored && issue.State != FieldCampIssues.State.Withdrawn)
+			{
+				string key = FieldCampIssues.CompanionPairKey(issue.Subject, issue.Subject2);
+				if (!_handledCompanionRelations.ContainsKey(key))
+				{
+					_handledCompanionRelations[key] = first.GetRelation(second);
+					_handledCompanionStates[key] = issue.State.ToString();
+					_handledCompanionSources[key] = "Legacy";
+					_handledPairsByHero = null;
+				}
+			}
+			else if (issue.IsOpen && !CanRaiseCompanionFeud(first, second, first.GetRelation(second)))
+			{
+				issue.State = FieldCampIssues.State.Withdrawn;
+				Logger.Log(LogSource, "companion issue withdrawn without effects subject=" + issue.Subject + " other=" + issue.Subject2);
+			}
+		}
+		_companionIssueRulesVersion = 1;
+		FlushIssues();
+	}
+
+	private void RememberCompanionResolution(FieldCampIssues.Issue issue)
+	{
+		if (!issue.IsCompanionIssue) return;
+		Hero first = Hero.Find(issue.Subject), second = Hero.Find(issue.Subject2);
+		if (first == null || second == null) return;
+		string key = FieldCampIssues.CompanionPairKey(issue.Subject, issue.Subject2);
+		_handledCompanionRelations[key] = first.GetRelation(second);
+		_handledCompanionStates[key] = issue.State.ToString();
+		_handledCompanionSources[key] = "Resolution";
+		_handledPairsByHero = null;
+	}
+
+	// Captured only for prompt construction; never scanned from a tick.
+	internal string BuildHandledCompanionPrompt(Hero speaker)
+	{
+		if (speaker == null) return "";
+		if (_handledPairsByHero == null)
+		{
+			_handledPairsByHero = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+			foreach (string key in _handledCompanionStates.Keys)
+			{
+				string[] ids = key.Split('|');
+				if (ids.Length != 2) continue;
+				foreach (string id in ids)
+				{
+					if (!_handledPairsByHero.TryGetValue(id, out List<string> keys)) _handledPairsByHero[id] = keys = new List<string>();
+					keys.Add(key);
+				}
+			}
+		}
+		if (!_handledPairsByHero.TryGetValue(speaker.StringId, out List<string> ownPairs)) return "";
+		var lines = new System.Text.StringBuilder();
+		foreach (string key in ownPairs)
+		{
+			string[] pair = key.Split('|');
+			Hero other = Hero.Find(pair[0] == speaker.StringId ? pair[1] : pair[0]);
+			if (other == null || !other.IsAlive) continue;
+			bool reopened = false;
+			foreach (FieldCampIssues.Issue issue in Issues)
+			{
+				if (issue.IsOpen && issue.IsCompanionIssue && FieldCampIssues.CompanionPairKey(issue.Subject, issue.Subject2) == key)
+				{ reopened = true; break; }
+			}
+			if (reopened) continue;
+			if (!Enum.TryParse(_handledCompanionStates[key], out FieldCampIssues.State state) || state == FieldCampIssues.State.Open || state == FieldCampIssues.State.Ignored || state == FieldCampIssues.State.Withdrawn) continue;
+			bool legacy = _handledCompanionSources.TryGetValue(key, out string source) && source == "Legacy";
+			lines.AppendLine(FieldCampText.HandledCompanionPrompt(state, legacy,
+				speaker.Name?.ToString() ?? "", other.Name?.ToString() ?? ""));
+		}
+		return lines.ToString().Trim();
 	}
 
 	/// <summary>Strike or encounter: unanswered issues cost a little morale ("left unanswered").</summary>
@@ -143,7 +266,7 @@ public sealed partial class FieldCampBehavior
 	/// Returns a short AFEF fact body on success, or null when the request is invalid
 	/// (no such open issue, or the player cannot afford a paid option).
 	/// </summary>
-	internal string Resolve(int issueIndex, FieldCampIssues.Resolution resolution)
+	internal string Resolve(int issueIndex, FieldCampIssues.Resolution resolution, int speakerAgentIndex)
 	{
 		if (_state != (int)CampState.Camped)
 		{
@@ -154,9 +277,12 @@ public sealed partial class FieldCampBehavior
 		{
 			return null;
 		}
+		if (!Enum.IsDefined(typeof(FieldCampIssues.Resolution), resolution)) return null;
 		FieldCampIssues.Issue issue = issues[issueIndex];
 		MobileParty main = MobileParty.MainParty;
-		if (!CanChoose(issue, resolution))
+		if (!CanChoose(issue, resolution)
+			|| (issue.IsCompanionIssue && resolution == FieldCampIssues.Resolution.Grant
+				&& !FieldCampOrderTags.CanSpeakerMediate(issue, speakerAgentIndex)))
 		{
 			return null;
 		}
@@ -206,6 +332,7 @@ public sealed partial class FieldCampBehavior
 		{
 			main.RecentEventsMorale += morale;
 		}
+		RememberCompanionResolution(issue);
 		FlushIssues();
 		AnimusForgeQuickInfo.Show(FieldCampText.IssueResolved(resolution, morale, cost, dismissed));
 		Logger.Log(LogSource, "issue resolved index=" + issueIndex + " kind=" + issue.Kind + " resolution=" + resolution + " morale=" + morale.ToString("0.0") + " cost=" + cost + " dismissed=" + dismissed + " relationLoss=" + relationLoss);

@@ -24,12 +24,10 @@ public sealed partial class FieldCampMissionLogic
 	private const float EnvoyWalkTimeoutSeconds = 35f;
 	private const float EnvoyArriveDistance = 2.4f;
 	private const float EnvoyReleaseGraceSeconds = 4f;
-	private const int EnvoyMaxVisits = 2;
 
 	private enum EnvoyStage { None, Walking, Talking }
 
 	private readonly List<int> _envoyQueue = new List<int>();
-	private readonly Dictionary<int, int> _envoyVisits = new Dictionary<int, int>();
 	private CampAgent _envoy;
 	private int _envoyIssue = -1;
 	private EnvoyStage _envoyStage;
@@ -43,7 +41,6 @@ public sealed partial class FieldCampMissionLogic
 	private void QueueEnvoys()
 	{
 		_envoyQueue.Clear();
-		_envoyVisits.Clear();
 		FieldCampBehavior behavior = FieldCampBehavior.Instance;
 		if (behavior == null || behavior.State != FieldCampBehavior.CampState.Camped)
 		{
@@ -52,7 +49,7 @@ public sealed partial class FieldCampMissionLogic
 		IReadOnlyList<FieldCampIssues.Issue> issues = behavior.Issues;
 		for (int i = 0; i < issues.Count; i++)
 		{
-			if (issues[i].IsOpen)
+			if (issues[i].IsOpen && behavior.EnvoyVisits(i) < FieldCampBehavior.MaxEnvoyVisitsPerIssue)
 			{
 				_envoyQueue.Add(i);
 			}
@@ -185,7 +182,7 @@ public sealed partial class FieldCampMissionLogic
 			if (!ReferenceEquals(_envoy, envoy) || _envoyIssue != issue || _envoyPresented ||
 				!ReferenceEquals(Mission.Current, Mission) || Mission.IsMissionEnding) return;
 			_envoyPresented = true;
-			_envoyVisits[issue] = (_envoyVisits.TryGetValue(issue, out int visits) ? visits : 0) + 1;
+			FieldCampBehavior.Instance?.MarkEnvoyPresented(issue);
 		}
 
 	private void DropEnvoy(bool sendHome)
@@ -210,7 +207,8 @@ public sealed partial class FieldCampMissionLogic
 
 	private void Requeue(int index)
 	{
-		if (OpenIssue(index) != null && !_envoyQueue.Contains(index) && (!_envoyVisits.TryGetValue(index, out int visits) || visits < EnvoyMaxVisits))
+		if (OpenIssue(index) != null && !_envoyQueue.Contains(index)
+			&& FieldCampBehavior.Instance.EnvoyVisits(index) < FieldCampBehavior.MaxEnvoyVisitsPerIssue)
 		{
 			_envoyQueue.Add(index);
 		}

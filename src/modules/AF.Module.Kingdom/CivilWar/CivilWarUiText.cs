@@ -49,11 +49,11 @@ internal static class CivilWarUiText
         string id = demand?.Id ?? "unknown";
         string fallback = id switch
         {
-            "make_peace" => "End the war with {TARGET} and negotiate peace",
+            "make_peace" => "Submit peace with {TARGET} to both kingdoms' votes",
             "continue_war" => "Do not make peace with {TARGET}",
             "revoke_policy" => "Repeal {TARGET}",
             "redress" => "Pay compensation and hold those responsible to account",
-            "autonomy" => "Let this faction leave the kingdom with its fiefs",
+            "autonomy" => "Let this faction leave with its fiefs, optionally founding an LLM-named kingdom",
             CivilWarCatalog.UsurpDemandId => "The king abdicates and the faction leader succeeds",
             _ => "Pursue the faction's demand"
         };

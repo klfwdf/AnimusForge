@@ -79,6 +79,7 @@ internal sealed partial class SceneConversationSessionRuntime
 		public Action OnNoSpeech;
 
 		public Action<bool> OnCompleted;
+		internal Action OnPresented;
 
         public CancellationToken OwnerCancellationToken;
 
@@ -1413,13 +1414,13 @@ internal sealed partial class SceneConversationSessionRuntime
 		}
 	}
 
-	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null, CancellationToken ownerCancellationToken = default, Action<long> onRequestRegistered = null)
+	internal bool TriggerImmediateSceneBehaviorReaction(string factText, int targetAgentIndex, bool persistHeroPrivateHistory, bool suppressStare, float postSpeechLeaveSeconds = -1f, bool skipSceneFactRecord = false, bool returnSceneSummonOnTimeout = false, Action onNoSpeech = null, bool runSiegeReactionPostprocess = false, Func<bool> canStillPublish = null, Action<bool> onCompleted = null, CancellationToken ownerCancellationToken = default, Action<long> onRequestRegistered = null, Action onPresented = null)
 	{
 		if (!IsBannerlordMainThreadForNativeActions())
 		{
 			_ports.PostMainThread(delegate
 			{
-				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted, ownerCancellationToken, onRequestRegistered);
+				TriggerImmediateSceneBehaviorReaction(factText, targetAgentIndex, persistHeroPrivateHistory, suppressStare, postSpeechLeaveSeconds, skipSceneFactRecord, returnSceneSummonOnTimeout, onNoSpeech, runSiegeReactionPostprocess, canStillPublish, onCompleted, ownerCancellationToken, onRequestRegistered, onPresented);
 			});
 			return true;
 		}
@@ -1514,6 +1515,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			}
 			request.OnNoSpeech = onNoSpeech;
 			request.OnCompleted = onCompleted;
+			request.OnPresented = onPresented;
             request.OwnerCancellationToken = ownerCancellationToken;
 			if (!RegisterImmediateSceneReactionRequest(request))
 			{
@@ -1919,7 +1921,7 @@ internal sealed partial class SceneConversationSessionRuntime
 			Logger.Log("ShoutBehavior", "[ImmediateSceneReaction] discarded stale processed response request=" + request.RequestId + " targetAgentIndex=" + request.TargetAgentIndex);
 			return false;
 		}
-		if (!string.IsNullOrWhiteSpace(fullHistoryText))
+		if (request.OnPresented == null && !string.IsNullOrWhiteSpace(fullHistoryText))
 		{
 			_ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText);
 			_ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, fullHistoryText, request.AllNpcData);
@@ -1927,22 +1929,34 @@ internal sealed partial class SceneConversationSessionRuntime
         if (request.OwnerCancellationToken.CanBeCanceled || !string.IsNullOrEmpty(PlayerExperiencePrompt.Evidence(request.FactText)))
         {
             var presented = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            Func<bool> publicationGuard = request.OwnerCancellationToken.CanBeCanceled
-                ? () => CanPublishImmediateSceneReactionRequest(request) : request.CanStillPublish;
+            var displayed = request.OnPresented == null ? presented : new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Func<bool> publicationGuard = () => CanPublishImmediateSceneReactionRequest(request);
             _ports.EnqueueSpeechLineWithOptions(request.TargetNpc, text, request.AllNpcData, commitHistory: false,
                 suppressStare: request.SuppressStare, allowPlayerDirectedActions: true, requiredConversationEpoch: request.ConversationEpoch,
-                completionSource: presented, canStillPublish: publicationGuard);
-            if (!request.OwnerCancellationToken.CanBeCanceled) return await presented.Task;
-            using var cancellation = request.OwnerCancellationToken.Register(() => presented.TrySetResult(false));
-            Task completed = await Task.WhenAny(presented.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
-            if (completed != presented.Task)
+                completionSource: presented, canStillPublish: publicationGuard,
+                onPresented: request.OnPresented == null ? null : (visible, finalSegment) =>
+                {
+                    if (!publicationGuard() || !SaveRuntimeGuard.IsCurrentGeneration(request.RuntimeGeneration)
+                        || request.SceneHistorySessionId != _ports.SceneSessionId() || !ReferenceEquals(Mission.Current, request.SourceMission)) return;
+                    string heard = PrepareSceneHistorySpeechText(visible);
+                    if (!string.IsNullOrWhiteSpace(heard))
+                    {
+                        _ports.RecordResponseForAllNearbySafe(request.AllNpcData, request.TargetAgentIndex, request.TargetNpc?.Name, heard);
+                        _ports.PersistNpcSpeechToNamedHeroes(request.TargetAgentIndex, request.TargetNpc?.Name, heard, request.AllNpcData);
+                        request.OnPresented?.Invoke();
+                    }
+                    if (finalSegment) displayed.TrySetResult(true);
+                });
+            using var cancellation = request.OwnerCancellationToken.CanBeCanceled
+                ? request.OwnerCancellationToken.Register(() => { presented.TrySetResult(false); displayed.TrySetResult(false); }) : default;
+            Task completed = await Task.WhenAny(displayed.Task, Task.Delay(NativeConversationMainThreadPreprocessTimeoutMs));
+            if (completed != displayed.Task || !displayed.Task.Result)
             {
-                // Revoke the timed-out opening's queue publication before returning
-                // failure; a later queue dispatch must not resurrect the session.
+                // Revoke timed-out/cancelled speech so a late dispatch cannot resurrect it.
                 SettleImmediateSceneReaction(request, false, allowNoSpeech: false);
                 return false;
             }
-            return presented.Task.Result && CanPublishImmediateSceneReactionRequest(request);
+            return CanPublishImmediateSceneReactionRequest(request);
         }
 		_ports.EnqueueSpeechLine(request.TargetNpc, text, request.AllNpcData, skipHistory: true, suppressStare: request.SuppressStare, canStillPublish: request.CanStillPublish);
 		return true;

@@ -98,6 +98,63 @@ internal static class Program {
    if(Mission.Current!=null)Mission.Current.CurrentTime=1000;
    f.Output.UpdatePendingSceneDialogueFeeds();f.Output.FlushPendingSceneDialogueFeedAfterSpeech(23);Check(f.Messages==0,"old delayed feed cannot publish after "+drift);
   }
+  foreach(bool bubble in new[]{true,false}) {
+   var f=new SinkFixture(true,true,true,bubble);var seen=new List<string>();
+   var info=f.Show(20,'a');info.OnPresented=(text,final)=>seen.Add(text);
+   var request=TtsEngine.Instance.LastRequest;
+   Check(seen.Count==0,"TTS acceptance is not a presentation receipt");
+   f.Audio.PrepareTtsPlaybackRequest(request);Check(seen.Count==0,"TTS preparation is not a presentation receipt");
+   f.Output.TryDispatchPendingNpcBubbleForTts(23,true);
+   Check(seen.Count==1,"real bubble or fallback feed commits one presentation receipt");
+   f.Output.FlushPendingSceneDialogueFeedAfterSpeech(23);
+   Check(seen.Count==1,"later feed cannot duplicate already presented history");
+  }
+  {
+   var f=new SinkFixture(true,true,true);var seen=new List<string>();
+   var info=f.Show(20,'a');info.OnPresented=(text,final)=>seen.Add(text);
+   f.Audio.PrepareTtsPlaybackRequest(TtsEngine.Instance.LastRequest);f.Epoch++;
+   f.Output.TryDispatchPendingNpcBubbleForTts(23,true);f.Output.FlushPendingSceneDialogueFeedAfterSpeech(23);
+   Check(seen.Count==0,"stale queued bubble cannot commit history or visits");
+  }
+  {
+   var info=new Playback();var seen=new List<string>();info.OnPresented=(text,final)=>seen.Add(text);
+   info.NotifyPresented("first",false,0);info.NotifyPresented("first",false,0);
+   info.NotifyPresented("second",true,1);info.NotifyPresented("second",true,1);
+   Check(string.Join(",",seen)=="first,second","presented segments commit in order once each");
+  }
+  {
+   var info=new Playback();var seen=new List<string>();info.OnPresented=(text,final)=>seen.Add(text);
+   info.NotifyPresented("visible first. ",false,0);
+   info.NotifyPresented("visible first. rest not played.",true,int.MaxValue);
+   Check(string.Concat(seen)=="visible first. rest not played.","full-text TTS fallback commits only previously unheard suffix");
+  }
+  {
+   var info=new Playback();var seen=new List<string>();info.OnPresented=(text,final)=>seen.Add(text);bool live=true;info.CanNotifyPresented=()=>live;
+   info.NotifyPresented("first",false,0);live=false;info.NotifyPresented("late",true,1);
+   Check(string.Join(",",seen)=="first","retired presentation owner rejects a new late segment");
+  }
+  {
+   var f=new SinkFixture(true,true,true);var seen=new List<string>();var info=f.Show(20,'a');info.OnPresented=(text,final)=>seen.Add(text);
+   var request=TtsEngine.Instance.LastRequest;request.SegmentCount=2;
+   f.Audio.PrepareTtsSpeechSegment(request,new TtsSpeechSegment{Text="translated speech",Index=0,Count=2,DurationSeconds=1,PreserveOriginalText=true});
+   f.Output.TryDispatchPendingNpcBubbleForTts(23,true);
+   Check(seen.Count==1&&seen[0]==new string('a',20),"translated first bubble commits visible original before later audio cancellation");
+   f.Audio.PrepareTtsSpeechSegment(request,new TtsSpeechSegment{Text="translated speech",Index=1,Count=2,DurationSeconds=1,PreserveOriginalText=true});
+   f.Output.TryDispatchPendingNpcBubbleForTts(23,true);Check(seen.Count==1,"translated repeated original bubble commits once");
+  }
+  {
+   var f=new SinkFixture(true,true,true);var seen=new List<string>();var info= f.Presentation.ShowNpcSpeechOutput(f.Port,f.Npc,f.Agent,"first. second.");info.OnPresented=(text,final)=>seen.Add(text);
+   var request=TtsEngine.Instance.LastRequest;request.SegmentCount=2;
+   f.Audio.PrepareTtsSpeechSegment(request,new TtsSpeechSegment{Text="first.",Index=0,Count=2,DurationSeconds=1});
+   f.Output.TryDispatchPendingNpcBubbleForTts(23,true);f.Audio.RestoreTtsSceneOutput(request);
+   var failure=f.Output.ResolveSceneAudioFailureOutput(23);
+   failure.PlaybackInfo?.NotifyPresented(failure.UiContent,failure.FinalSegment,failure.SegmentIndex);
+   Check(string.Join("|",seen)=="first.|second.","real restore callback commits only newly displayed fallback suffix");
+  }
+  {
+   var f=new SinkFixture(false,false,false);f.Agent.Active=false;var info=f.Show(20,'a');
+   Check(info.ImmediatePresentedText==null&&f.Bubbles==0&&f.Messages==0,"early-return playback has no fabricated immediate presentation");
+  }
   {
    var f=new SinkFixture(true,true,true);
    f.Output.EnqueuePendingSceneDialogueFeed(23,"old","old-pending",new Color(),true);

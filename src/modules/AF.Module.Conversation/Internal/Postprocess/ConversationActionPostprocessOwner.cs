@@ -391,7 +391,8 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 	internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(Hero targetHero, CharacterObject targetCharacter, int targetAgentIndex, string npcName, string playerText, string historyText, string replyText, bool duelRuleInjected, bool rewardRuleInjected, bool loanRuleInjected, bool kingdomServiceRuleInjected, bool kingdomVassalageRuleInjected, bool kingdomAnnexationRuleInjected, bool lordsHallRuleInjected, bool meetingReleaseRuleInjected, bool vanillaIssueRuleInjected, bool heroJoinPartyRuleInjected, bool sceneMechanismRuleInjected, bool partyTransferRuleInjected, bool voteDealRuleInjected, bool diplomacyRuleInjected, bool worldMapPartyCommandRuleInjected, bool marriageRuleInjected, List<RewardSystemBehavior.DuelStakeOption> duelStakeOptions, List<PostprocessRuleEntry> kingdomServiceRules, List<PostprocessRuleEntry> sceneMechanismRules, List<PostprocessSummonTarget> sceneSummonTargets, List<PostprocessGuideTarget> sceneGuideTargets, string entityPostprocessContext = null, bool siegeInterventionRuleInjected = false, bool replyIsDirectPlayerResponse = false, List<string> preprocessRuleHits = null, string chainName = null, bool relayRuleInjected = false, List<NpcDataPacket> relayCandidates = null, int relayPrimaryTargetAgentIndex = -1, bool relaySingleFramedNpc = false, bool customPolicyAgendaRuleInjected = false, DetachedPromptSections detachedMainPromptSections = null, bool offerSceneActionDirective = false, string relayConversationContext = null, GptSoVitsLanguage speechLanguage = null)
 	{
 		RequireMainThread();
-		string text = StripActionTagsForSceneSpeech(replyText ?? "");
+		string text = FieldCampOrderTags.StripOnly(replyText ?? "");
+		text = StripActionTagsForSceneSpeech(text);
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? ResolveScenePostprocessChainName() : chainName.Trim();
 		bool executionTopic = HasPreprocessRuleHit(preprocessRuleHits, PublicExecutionOrderPolicy.RuleId);
         bool executionNative = resolvedChainName == "native_conversation" || resolvedChainName == "meeting";
@@ -957,7 +958,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 		RequireMainThread();
 		workItem = null;
 		immediateResult = "";
-		string text = StripActionTagsForSceneSpeech(replyText ?? "");
+		string text = FieldCampOrderTags.StripOnly(replyText ?? "");
+		text = StripActionTagsForSceneSpeech(text);
 		string resolvedChainName = string.IsNullOrWhiteSpace(chainName) ? "courier" : chainName.Trim();
 		string runtimeTargetKingdomId = ResolveCourierRuntimeTargetKingdomId(targetHero, targetCharacter);
 		string runtimeTargetHeroId = (targetHero?.StringId ?? targetCharacter?.HeroObject?.StringId ?? "").Trim();
@@ -1103,6 +1105,11 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 					targetHero ?? targetCharacter?.HeroObject,
 					targetAgentIndex)
 				: new List<PostprocessRuleEntry>();
+			// Native replies share this entry with courier; letters must never authorize camp actions.
+			List<PostprocessRuleEntry> fieldCampOrderRules = (resolvedChainName == "native_conversation" || resolvedChainName == "meeting")
+				&& latestReplyHasPlayerInput && !string.IsNullOrWhiteSpace(playerText)
+				? FieldCampOrderTags.BuildRuntimePostprocessRules(true, targetAgentIndex)
+				: null;
 			List<PostprocessRuleEntry> partyTransferRules = partyTransferRuleInjected ? (AIConfigHandler.GetGuardrailRulePostprocessRules("party_transfer") ?? new List<PostprocessRuleEntry>()) : null;
 			List<PostprocessRuleEntry> voteDealRules = voteDealRuleInjected ? VoteDealBehavior.BuildAgendaVotePostprocessRulesForExternal() : null;
 			List<PostprocessRuleEntry> customPolicyAgendaRules = customPolicyAgendaRuleInjected ? TeamModuleServices.Policy.BuildRuntimePostprocessRulesForExternal(targetHero ?? targetCharacter?.HeroObject) : null;
@@ -1131,7 +1138,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			bool siegeInterventionExclusive = siegeInterventionRuleInjected && AfGcczShoutBridge.ShouldUseExclusivePostprocessRuleRouting(targetAgentIndex);
 			List<PostprocessRuleEntry> mergedRules = siegeInterventionExclusive
 				? MergePostprocessRulesForScene(siegeInterventionRules, nobleExecutionOrderRules)
-				: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, captivityReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
+				: MergePostprocessRulesForScene(duelRules, transactionRules, kingdomRules, royalRules, vassalageRules, lordsHallRules, meetingReleaseRules, captivityReleaseRules, vanillaIssueRules, heroJoinPartyRules, mechanismRules, nobleExecutionOrderRules, fieldCampOrderRules, partyTransferRules, voteDealRules, customPolicyAgendaRules, diplomacyRules, worldMapPartyCommandRules, nobleGatheringRules, marriageRules, proposeAgendaRules, npcSurrenderRules, siegeInterventionRules, intimacyRules);
 			bool captivitySession = resolvedChainName == "native_conversation" && PlayerCaptivityConversation.HasSession;
 			if (captivitySession) mergedRules.RemoveAll(rule => PlayerCaptivityConversation.IsRestrictedTag(rule?.Tag));
 			bool royalPostprocessRuleInjected = (royalRules ?? new List<PostprocessRuleEntry>()).Any((PostprocessRuleEntry x) => string.Equals((x?.Tag ?? "").Trim(), "[ACTION:KING_ABDICATE_TO_PLAYER]", StringComparison.OrdinalIgnoreCase));
@@ -1411,6 +1418,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			string heroJoinTags = heroJoinPartyRuleInjected ? NormalizeHeroJoinPartyPostprocessTagsForScene(content, heroJoinPartyRules) : "";
 			string sceneMechanismTags = sceneMechanismRuleInjected ? NormalizeSceneMechanismPostprocessTagsForScene(content, mechanismRules, new List<PostprocessSummonTarget>(), new List<PostprocessGuideTarget>()) : "";
 			string nobleExecutionOrderTags = NoblePrisonerExecutionOrderBehavior.NormalizePostprocessTags(content, nobleExecutionOrderRules);
+			string fieldCampOrderTags = FieldCampOrderTags.NormalizePostprocessTags(content, fieldCampOrderRules);
 			string partyTransferTags = partyTransferRuleInjected ? NormalizePartyTransferPostprocessTagsForScene(content, partyTransferTroopOptions, partyTransferPrisonerOptions, partyTransferAllTroopOptions, partyTransferAllPrisonerOptions) : "";
 			string voteDealTags = (voteDealRules != null && voteDealRules.Count > 0) ? NormalizeVoteDealPostprocessTagsForScene(content, voteDealRules) : "";
 			string customPolicyAgendaTags = customPolicyAgendaRuleInjected ? NormalizeCustomPolicyAgendaPostprocessTag(content, customPolicyAgendaRules) : "";
@@ -1427,7 +1435,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			string intimacyTags = SexualConceptionBehavior.NormalizePostprocessTags(content, intimacyRules);
 			string merged = siegeInterventionExclusive
 				? MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), siegeInterventionTags, nobleExecutionOrderTags)
-				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, captivityReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, nobleExecutionOrderTags, partyTransferTags, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
+				: MergeNormalizedPostprocessBlocksForScene(NormalizeMoodPostprocessTag(content), duelTags, rewardTags, kingdomTags, royalTags, vassalageTags, lordsHallTags, meetingReleaseTags, captivityReleaseTags, vanillaIssueTags, heroJoinTags, sceneMechanismTags, nobleExecutionOrderTags, fieldCampOrderTags, partyTransferTags, voteDealTags, customPolicyAgendaTags, diplomacyTags, worldMapPartyCommandTags, nobleGatheringTags, marriageTags, proposeAgendaTags, npcSurrenderTags, siegeInterventionTags, intimacyTags);
 			if (captivitySession) merged = PlayerCaptivityConversation.FilterRestrictedTags(merged);
 			merged = AfGcczShoutBridge.ValidateTownPostprocessDecision(merged);
 			if (string.IsNullOrWhiteSpace(merged))

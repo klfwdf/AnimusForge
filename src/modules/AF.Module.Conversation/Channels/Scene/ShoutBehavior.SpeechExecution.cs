@@ -59,6 +59,9 @@ public partial class ShoutBehavior
 
 private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsSpeech> pendingLocalSpeech = null) => _j17SceneSpeechEnqueueAdapter.EnqueueSpeechLineWithOptions(npc, content, allNpcData, commitHistory, suppressStare, allowPlayerDirectedActions, requiredConversationEpoch, sceneSummonTargets, sceneGuideTargets, afterSpeechInfoMessage, completionSource, interactionTimeoutSeconds, interactionParticipantCount, canStillPublish, playerDirectedActionText, playerDirectedNpcReplyText, pendingLocalSpeech);
 
+// Separate name preserves the reflected 17-parameter SceneActions compatibility entry.
+private void EnqueueSceneSpeechWithPresentation(NpcDataPacket npc, string content, List<NpcDataPacket> allNpcData, bool commitHistory, bool suppressStare, bool allowPlayerDirectedActions, int requiredConversationEpoch, List<SceneSummonPromptTarget> sceneSummonTargets = null, List<SceneGuidePromptTarget> sceneGuideTargets = null, string afterSpeechInfoMessage = null, TaskCompletionSource<bool> completionSource = null, float interactionTimeoutSeconds = -1f, int interactionParticipantCount = 1, Func<bool> canStillPublish = null, string playerDirectedActionText = null, string playerDirectedNpcReplyText = null, Task<LocalTtsSpeech> pendingLocalSpeech = null, Action<string, bool> onPresented = null) => _j17SceneSpeechEnqueueAdapter.EnqueueSpeechLineWithOptions(npc, content, allNpcData, commitHistory, suppressStare, allowPlayerDirectedActions, requiredConversationEpoch, sceneSummonTargets, sceneGuideTargets, afterSpeechInfoMessage, completionSource, interactionTimeoutSeconds, interactionParticipantCount, canStillPublish, playerDirectedActionText, playerDirectedNpcReplyText, pendingLocalSpeech, onPresented);
+
 	internal sealed class SceneSpeechQueueItem
 	{
 		public Mission SourceMission;
@@ -98,6 +101,7 @@ private void EnqueueSpeechLineWithOptions(NpcDataPacket npc, string content, Lis
 		public int InteractionParticipantCount = 1;
 
 		public Func<bool> CanStillPublish;
+		internal Action<string, bool> OnPresented;
 	}
 
 	private SceneSpeechExecutionRuntime<SceneSpeechQueueItem> _sceneSpeechExecution;

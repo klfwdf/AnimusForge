@@ -27,7 +27,7 @@ class Wiring(unittest.TestCase):
   self.assertEqual(sub.count('finally { RetireTtsPlaybackRequest(request); }'),2)
  def test_native_wait_registered_inside_acceptance_callback(self):
   m=ex.declaration(self.native,'internal void TrySpeakNativeConversationReplyWithTts(')
-  start=m.index('accepted = TtsEngine.Instance.SpeakAsync(');end=m.index('});',start)
+  start=m.index('accepted = TtsEngine.Instance.SpeakAsync(');end=m.index('}, localSpeech);',start)
   cb=m[start:end]
   self.assertIn('voiceId, request =>',cb);self.assertIn('RegisterNativeConversationTtsPlaybackWait(request,',cb);self.assertIn('StartTypewriterText(',cb)
   self.assertEqual(m.count('RegisterNativeConversationTtsPlaybackWait('),1)

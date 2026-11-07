@@ -901,6 +901,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		try
 		{
             if (CaptureNativeAidDecision(__instance, kingdomDecision)) return false;
+            if (VoteDealBehavior.IsFactionPeaceDecision(kingdomDecision)) return true;
 			if (_internalDiplomaticActionDepth > 0 || !IsWorldDiplomacyEnabled())
 			{
 				return true;

@@ -64,6 +64,7 @@ public sealed class ConfiguredChatGenerationExchange
     public string RequestBody { get; }
     public string ControlMode { get; }
     public LlmGenerateResult Result { get; }
+    internal Exception FailureException { get; set; }
 }
 
 /// <summary>
@@ -275,7 +276,7 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
             }
             catch (Exception exception)
             {
-                return CreateExchange(
+                ConfiguredChatGenerationExchange failed = CreateExchange(
                     0,
                     string.Empty,
                     string.Empty,
@@ -287,6 +288,8 @@ public sealed class LegacyConfiguredChatGateway : ILlmGateway, ILlmStreamingGate
                         0,
                         0,
                         "configured_gateway_" + exception.GetType().Name));
+                failed.FailureException = exception;
+                return failed;
             }
         }
     }

@@ -59,6 +59,7 @@ internal sealed partial class KingdomCivilWarOwner
 			_storage.Kingdoms[state.KingdomId] = state;
 			foreach (KingdomCivilWarFactionState faction in state.Factions)
 			{
+				if (faction.Fulfillment != null && live != null) NotifyPoliticalChange(live, "restore_fulfillment");
 				if (faction.PendingResponse != null && !faction.PendingResponse.Accepted) _hasPoliticalResponse = true;
 				if (faction.PlayerAnswerPending && !faction.PlayerPrompted) HasUnpromptedPlayerUltimatum = true;
 				// Saved before answering the follow prompt (or before it popped): ask again after loading.
@@ -359,6 +360,12 @@ internal sealed partial class KingdomCivilWarOwner
 			Dissolve(kingdom, state, faction, week, tuning, CivilWarUiText.T("AF_KINGDOM_CW_Core_FactionDissolvedInvalid", "{FACTION}'s demand target or leader is no longer valid; the faction dissolves", ("FACTION", FactionName(faction, demand))));
 			return;
 		}
+		if (faction.Fulfillment != null) return;
+		if (IsPlayerLed(faction))
+		{
+			faction.WaitingForOtherWar = false;
+			if (faction.Stage != KingdomCivilWarStage.Ultimatum) return;
+		}
 		// Single-war mode: an escalated faction waits for the other war to end, then rebels without a new roll.
 		if (faction.WaitingForOtherWar)
 		{
@@ -597,6 +604,11 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		if (!DuelSettings.IsCivilWarFactionsEnabled() || rebelKingdom == null) return;
 		KingdomCivilWarFactionState faction = FindFaction(factionId, out KingdomCivilWarKingdomState state);
+		if (faction?.Fulfillment?.Kind == "independence")
+		{
+			NoteIndependentKingdomCreated(factionId, faction.Fulfillment.OperationId, rebelKingdom);
+			return;
+		}
 		if (faction == null || faction.Stage != KingdomCivilWarStage.OpenWar || !string.IsNullOrWhiteSpace(faction.RebelKingdomId))
 		{
 			// The faction timed out or dissolved while the host was still naming the rebel kingdom.
@@ -694,8 +706,13 @@ internal sealed partial class KingdomCivilWarOwner
 	// dissolved, already has its rebel kingdom) and the queued request must be dropped.
 	internal bool IsRebellionRequestActive(string factionId)
 	{
-		KingdomCivilWarFactionState faction = FindFaction(factionId, out _);
-		return DuelSettings.IsCivilWarFactionsEnabled() && faction != null && faction.Stage == KingdomCivilWarStage.OpenWar && string.IsNullOrWhiteSpace(faction.RebelKingdomId);
+		KingdomCivilWarFactionState faction = FindFaction(factionId, out var owner);
+		if (IsPeacefulIndependenceRequest(factionId))
+		{
+			var p = faction.Fulfillment;
+			return IsIndependenceRequestCurrent(factionId, p.OperationId, owner.KingdomId, p.LeaderClanId);
+		}
+		return DuelSettings.IsCivilWarFactionsEnabled() && faction != null && faction.Fulfillment == null && faction.Stage == KingdomCivilWarStage.OpenWar && string.IsNullOrWhiteSpace(faction.RebelKingdomId);
 	}
 
 	// Host gave up (execution failed, naming skipped, immunity). Nothing was fought: dissolve without a result or penalty.
@@ -703,6 +720,15 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		_activeNamingRequests.Remove(factionId ?? "");
 		KingdomCivilWarFactionState faction = FindFaction(factionId, out KingdomCivilWarKingdomState state);
+		if (faction?.Fulfillment?.Kind == "independence")
+		{
+			faction.Fulfillment.Status = "failed";
+			faction.GovernanceUntilDay = CivilWarWorld.CurrentDay() + CivilWarPoliticalRules.ActionDays;
+			faction.ResolutionError = CivilWarUiText.T("AF_KINGDOM_CW_Fulfillment_FoundingFailed", "The independent kingdom could not be founded; the faction has been retained.");
+			Logger.Log("KingdomCivilWar", "independence failed faction=" + factionId + " reason=" + reason);
+			faction.Version++; Revision++;
+			return;
+		}
 		if (faction == null || faction.Stage != KingdomCivilWarStage.OpenWar || !string.IsNullOrWhiteSpace(faction.RebelKingdomId)) return;
 		Kingdom kingdom = CivilWarWorld.FindKingdom(state.KingdomId);
 		string name = FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId));
@@ -751,6 +777,7 @@ internal sealed partial class KingdomCivilWarOwner
 		string effectId = restoration && faction.RestorationVictoryConfirmed && outcome?.Id == "rebels_usurp"
 			? CivilWarEffectIds.RestoreDynasty : outcome?.EffectId;
 		bool applied = outcome != null && CivilWarEffects.TryApply(effectId, ctx, out reason);
+		if (applied && ctx.AwaitingCompletion) return;
 		string name = FactionName(faction, demand);
 		string text = applied ? KingdomCivilWarTexts.Tidy(name + KingdomCivilWarTexts.Raw("KW_Raw_124") + outcome.Name + KingdomCivilWarTexts.CloseParenColon + string.Join(KingdomCivilWarTexts.Semicolon, ctx.Notes)) : name + KingdomCivilWarTexts.Raw("KW_Raw_125") + (reason ?? KingdomCivilWarTexts.Raw("KW_Raw_123"));
 		// Panel projection of the same fact. `outcome.Name` and `ctx.Notes` are raw rule text, so both render
@@ -1246,7 +1273,8 @@ internal sealed partial class KingdomCivilWarOwner
 		DescribeDeadline(faction, panel, paused, playerLeader);
 		DescribeSteps(faction, panel, paused);
 		panel.Note = DescribeNote(faction, demand, kingdomPanel.Role, playerFaction);
-		if (IsPlayerLed(faction) && !war && faction.PendingResponse == null) panel.Note = CivilWarUiText.T("AF_KINGDOM_CW_Panel_PlayerLedNote", "A faction you lead never rebels automatically; you can change the demand and re-evaluate members, but a rebellion needs manual confirmation and must meet the strength threshold.");
+		if (IsPlayerLed(faction) && !war && faction.PendingResponse == null && faction.Fulfillment == null) panel.Note = CivilWarUiText.T("AF_KINGDOM_CW_Panel_PlayerLedManualNote", "A faction you lead sends ultimatums only when you choose to. Rebellion also requires manual confirmation and the strength threshold.");
+		if (faction.Fulfillment != null) panel.Note = FulfillmentText(faction);
 		foreach (string id in memberIds)
 		{
 			Clan clan = CivilWarWorld.FindClan(id);
@@ -1272,6 +1300,12 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		int day = CivilWarWorld.CurrentDay();
 		p.DeadlineUnit = CivilWarUiText.T("AF_KINGDOM_CW_Panel_UnitDays", "d");
+		if (f.Fulfillment != null)
+		{
+			p.DeadlineLabel = CivilWarUiText.T("AF_KINGDOM_CW_Panel_Settlement", "Settlement");
+			p.DeadlineValue = CivilWarUiText.T("AF_KINGDOM_CW_Fulfillment_ValuePending", "Pending"); p.DeadlineUnit = "";
+			p.DeadlineNote = FulfillmentText(f); return;
+		}
 		if (f.PendingResponse != null)
 		{
 			p.DeadlineLabel = f.PendingResponse.Dissolve ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DissolveOrder", "Dissolution order") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_RoyalLetter", "Royal letter");
@@ -1314,7 +1348,8 @@ internal sealed partial class KingdomCivilWarOwner
 			p.DeadlineLabel = CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliverUltimatum", "Deliver ultimatum");
 			p.DeadlineValue = left > 0 ? left.ToString() : CivilWarUiText.T("AF_KINGDOM_CW_Panel_ValueSoon", "Soon");
 			p.DeadlineUnit = left > 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_UnitDays", "d") : "";
-			p.DeadlineNote = left > 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum", "Will deliver an ultimatum to the king after that") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum", "About to deliver the ultimatum");
+			p.DeadlineNote = IsPlayerLed(f) ? CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_ManualNote", "Use Send ultimatum when ready; it will not be sent automatically.") : left > 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum", "Will deliver an ultimatum to the king after that") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum", "About to deliver the ultimatum");
+			if (IsPlayerLed(f) && left <= 0) p.DeadlineValue = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_ManualReady", "Awaiting you");
 		}
 	}
 
@@ -1333,6 +1368,7 @@ internal sealed partial class KingdomCivilWarOwner
 		{
 			int left = f.UltimatumDay - day;
 			string note = f.WaitingForOtherWar || paused ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_Paused", "Paused") : left > 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DaysLeft", "{DAYS} days left", ("DAYS", left.ToString())) : CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliveringSoon", "Delivering soon");
+			if (IsPlayerLed(f) && !paused) note = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_ManualNote", "Use Send ultimatum when ready; it will not be sent automatically.");
 			p.Steps.Add(Step(CivilWarUiText.T("AF_KINGDOM_CW_Panel_DeliverUltimatum", "Deliver ultimatum"), f.Refusals > 0 ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteRefusedRetry", "Refused {COUNT} times; raised again  ·  {NOTE}", ("COUNT", f.Refusals.ToString()), ("NOTE", note)) : note, 2));
 		}
 		if (pending) p.Steps.Add(Step(f.PendingResponse.Dissolve ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_DissolveOrder", "Dissolution order") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_RoyalTalks", "Royal talks"), CivilWarUiText.T("AF_KINGDOM_CW_Panel_DaysLeft", "{DAYS} days left", ("DAYS", Math.Max(0, f.PendingResponse.DeadlineDay - day).ToString())), 2));
@@ -1369,6 +1405,8 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private static string FactionStageText(KingdomCivilWarFactionState faction, int week, bool paused, CivilWarAftermath aftermath)
 	{
+		if (faction.Fulfillment != null) return FulfillmentText(faction);
+		if (IsPlayerLed(faction) && faction.Stage == KingdomCivilWarStage.FactionFormed && faction.PendingResponse == null) return CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_ManualStage", "Formed · awaiting your manual ultimatum");
 		if (faction.PendingResponse != null) return CivilWarUiText.T("AF_KINGDOM_CW_Panel_StageAwaitingResponse", "Awaiting faction response  ·  {DAYS} days left", ("DAYS", Math.Max(0, faction.PendingResponse.DeadlineDay - CivilWarWorld.CurrentDay()).ToString()));
 		switch (faction.Stage)
 		{
@@ -1605,7 +1643,7 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private CivilWarEffectContext BuildContext(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, CivilWarDemandDef demand, Clan leader, int week)
 	{
-		return new CivilWarEffectContext { Kingdom = kingdom, State = state, Faction = faction, Demand = demand, LeaderClan = leader, RebelKingdom = CivilWarWorld.FindKingdom(faction?.RebelKingdomId), Week = week, Host = Host };
+		return new CivilWarEffectContext { Kingdom = kingdom, State = state, Faction = faction, Demand = demand, LeaderClan = leader, RebelKingdom = CivilWarWorld.FindKingdom(faction?.RebelKingdomId), Week = week, Host = Host, FulfillIndependence = FulfillIndependence, FulfillPeaceAgenda = FulfillPeaceAgenda };
 	}
 
 	// ------------------------------------------------------------ storage helpers
@@ -1694,7 +1732,7 @@ internal sealed partial class KingdomCivilWarOwner
 		{
 			Clan clan = CivilWarWorld.FindClan(record.ClanId);
 			KingdomCivilWarFactionState faction = state.Factions.FirstOrDefault(x => x.Id == record.FactionId);
-			if (faction == null || (IsPreWar(faction) && (clan == null || clan.IsEliminated || clan.Kingdom != kingdom))) { record.Side = KingdomCivilWarSide.Middle; record.FactionId = ""; }
+			if (faction == null || (IsPreWar(faction) && faction.Fulfillment == null && (clan == null || clan.IsEliminated || clan.Kingdom != kingdom))) { record.Side = KingdomCivilWarSide.Middle; record.FactionId = ""; }
 		}
 	}
 
@@ -1803,6 +1841,13 @@ internal sealed partial class KingdomCivilWarOwner
 				Logger.Log("KingdomCivilWar", "[WARN] dropped faction with unknown demand " + (faction.DemandId ?? "null"));
 				state.Factions.Remove(faction);
 				continue;
+			}
+			if (faction.Fulfillment != null)
+			{
+				faction.Fulfillment.ClanIds ??= new List<string>();
+				faction.Fulfillment.StructuralWarIds ??= new List<string>();
+				if ((faction.Fulfillment.Kind != "independence" && faction.Fulfillment.Kind != "peace") || string.IsNullOrEmpty(faction.Fulfillment.OperationId))
+				{ faction.ResolutionNeedsReview = true; faction.ResolutionError = "Invalid saved faction fulfillment identity."; }
 			}
 			if (faction.WarClanIds == null) faction.WarClanIds = new List<string>();
 			if (faction.Stage == KingdomCivilWarStage.None || faction.Stage == KingdomCivilWarStage.Discontent || faction.Stage == KingdomCivilWarStage.Cooldown) faction.Stage = KingdomCivilWarStage.FactionFormed;

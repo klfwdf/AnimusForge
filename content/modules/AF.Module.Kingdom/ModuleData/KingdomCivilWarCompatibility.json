@@ -10,6 +10,8 @@
   "CW_Catalog_Source_broken_pledge": "国王背诺",
   "CW_Catalog_Source_demand_refused": "诉求被拒",
   "CW_Catalog_Source_royal_suppression": "王室打压",
+  "CW_Catalog_Demand_autonomy_founding": "准许本派携封地脱离王国，并可选择由LLM命名共同建国独立",
+  "CW_Catalog_Demand_make_peace_agenda": "提交与{target}的和平议程，经双方投票通过后议和",
   "CW_Catalog_Demand_make_peace": "停止与{target}的战争并议和",
   "CW_Catalog_Demand_continue_war": "对{target}战事不许议和",
   "CW_Catalog_Demand_revoke_policy": "废除{target}",

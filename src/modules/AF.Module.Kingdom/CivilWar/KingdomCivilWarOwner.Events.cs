@@ -198,13 +198,20 @@ internal sealed partial class KingdomCivilWarOwner
 		foreach (var record in s.Clans.Values.ToArray())
 		{
 			var clan = CivilWarWorld.FindClan(record.ClanId); var own = FactionOfClan(s, clan);
-			if (record.Side != KingdomCivilWarSide.Middle && (own == null || IsPreWar(own)) && !PoliticalClan(clan, k)) { record.Side = KingdomCivilWarSide.Middle; record.FactionId = ""; }
+			if (record.Side != KingdomCivilWarSide.Middle && own?.Fulfillment == null && (own == null || IsPreWar(own)) && !PoliticalClan(clan, k)) { record.Side = KingdomCivilWarSide.Middle; record.FactionId = ""; }
 			yield return true;
 		}
 		foreach (bool ignored in RebuildPoliticalCaches(s)) yield return true;
 		foreach (var f in s.Factions.ToArray())
 		{
 			if (!s.Factions.Contains(f) || f.ResolutionNeedsReview) continue;
+			if (f.Fulfillment != null)
+			{
+				try { AdvancePendingFulfillment(k, s, f, week, tuning); }
+				catch (CivilWarRetryableEffectException ex) { f.ResolutionError = ex.Message; }
+				catch (Exception ex) { f.ResolutionNeedsReview = true; f.ResolutionError = ex.Message; }
+				f.Version++; yield return true; continue;
+			}
 			if (IsPreWar(f) && ResolveInvalidPoliticalTarget(k, s, f)) { yield return true; continue; }
 			EnsurePoliticalLeader(k, s, f);
 			if (!s.Factions.Contains(f)) continue;
@@ -275,7 +282,7 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private void EvaluatePoliticalMembership(Kingdom k, KingdomCivilWarKingdomState s, Clan clan, KingdomCivilWarClanState record, int day, CivilWarTuning tuning)
 	{
-		if (clan == Clan.PlayerClan || clan == k.RulingClan || record.Side == KingdomCivilWarSide.Crown || s.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar || x.LeaderClanId == clan.StringId)
+		if (clan == Clan.PlayerClan || clan == k.RulingClan || record.Side == KingdomCivilWarSide.Crown || s.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar || x.LeaderClanId == clan.StringId || x.Fulfillment != null && x.Fulfillment.ClanIds.Contains(clan.StringId))
 			|| day < record.MembershipEvaluationDay + 7 || _storage.ClanExitUntilDay.TryGetValue(clan.StringId, out int until) && day < until) return;
 		record.MembershipEvaluationDay = day;
 		var own = FactionOfClan(s, clan);

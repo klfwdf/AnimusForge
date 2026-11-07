@@ -23,7 +23,7 @@ public sealed partial class KingdomFactionPanelVM
 		return DeveloperUiText.Format(id, fallback, variables);
 	}
 
-	private enum Act { Suppress, Negotiate, Concede, Dissolve, JoinCrown, JoinFaction, Leave, Found, Detonate, Accept, Refuse, DissolveOwn, ChangeDemand }
+	private enum Act { Suppress, Negotiate, Concede, Dissolve, JoinCrown, JoinFaction, Leave, Found, Detonate, Accept, Refuse, DissolveOwn, ChangeDemand, SendUltimatum }
 	private const string TintPrimary = "#6E523380", TintDanger = "#5E2A2280", TintGold = "#4A3C2280", TintNeutral = "#3A2E2266";
 	private bool _open;
 	private int _generation;
@@ -71,6 +71,7 @@ public sealed partial class KingdomFactionPanelVM
 					Add(Act.Accept, own.PendingDissolve ? L("AF_DIP_UI_CivilWar_ActionAcceptDissolve", "Accept dissolution") : L("AF_DIP_UI_CivilWar_ActionAcceptCompensation", "Accept compensation"), TintGold);
 					Add(Act.Refuse, own.PendingDissolve ? L("AF_DIP_UI_CivilWar_ActionRefuseDissolve", "Refuse and rebel") : L("AF_DIP_UI_CivilWar_ActionRefuseCompensation", "Refuse compensation"), own.PendingDissolve ? TintDanger : TintNeutral);
 				}
+				Add(Act.SendUltimatum, L("AF_DIP_UI_CivilWar_ActionSendUltimatum", "Send ultimatum"), TintGold);
 				if (own?.PendingDissolve != true) Add(Act.Detonate, L("AF_DIP_UI_CivilWar_ActionImmediateRebellion", "Rebel now"), TintDanger);
 				Add(Act.Leave, L("AF_DIP_UI_CivilWar_ActionLeaveFaction", "Leave faction"), TintNeutral);
 				Add(Act.DissolveOwn, L("AF_DIP_UI_CivilWar_ActionDissolveOwn", "Dissolve faction"), TintDanger);
@@ -118,6 +119,7 @@ public sealed partial class KingdomFactionPanelVM
 			case Act.Detonate: return CivilWarAction.Detonate;
 			case Act.DissolveOwn: return CivilWarAction.DissolveOwn;
 			case Act.ChangeDemand: return CivilWarAction.ChangeDemand;
+			case Act.SendUltimatum: return CivilWarAction.SendUltimatum;
 			default: return CivilWarAction.Respond;
 		}
 	}

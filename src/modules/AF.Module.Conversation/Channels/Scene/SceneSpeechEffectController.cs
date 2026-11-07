@@ -861,6 +861,14 @@ internal void Publish(SceneSpeechQueueItem item)
 								sceneSpeechPlaybackInfo = _ports.ShowNpcSpeechOutput(matchedNpc, agent, historyText, allowTts: true, attachTtsToSceneAgent: true, suppressInteractionTimeoutArm, item.LocalSpeech, item.PendingLocalSpeech);
 
 								speechPublished = !string.IsNullOrWhiteSpace(historyText);
+								if (sceneSpeechPlaybackInfo != null && item.OnPresented != null)
+								{
+									// The actual bubble/feed dispatch invokes this on the game thread.
+									sceneSpeechPlaybackInfo.OnPresented = item.OnPresented;
+									sceneSpeechPlaybackInfo.CanNotifyPresented = item.CanStillPublish;
+									if (!string.IsNullOrWhiteSpace(sceneSpeechPlaybackInfo.ImmediatePresentedText))
+										sceneSpeechPlaybackInfo.NotifyPresented(sceneSpeechPlaybackInfo.ImmediatePresentedText, true, int.MaxValue);
+								}
 
 								if (!string.IsNullOrWhiteSpace(afterSpeechInfoMessage))
 

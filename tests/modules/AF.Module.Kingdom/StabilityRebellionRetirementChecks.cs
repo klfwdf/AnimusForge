@@ -27,13 +27,28 @@ internal static class StabilityRebellionRetirementChecks
         }
         object[] oldExecute={null,null,10,true,null,null};
         Check(!(bool)Call(runtime,owner,"TryExecuteKingdomRebellion",oldExecute) && !string.IsNullOrEmpty((string)oldExecute[5]),"old direct executor stops before naming");
-        object[] physical={null,null,10,true,0,1,0,null,null,null,null};
+        object[] physical={null,null,10,true,0,1,0,null,null,null,null,null};
         Check(!(bool)Call(runtime,owner,"TryExecuteKingdomRebellionWithNaming",physical) && !string.IsNullOrEmpty((string)physical[9]),"physical founding rejects missing faction authority before touching game state");
         foreach(string id in new[]{null,""," "}) Call(runtime,owner,"QueueAutomaticKingdomRebellion",null,id);
         Check(true,"old untracked queues rejected before pump access");
         Check((bool)Call(runtime,null,"IsStaleCivilWarRebellion",new object[]{null}),"null pending request retired");
         object pending=Activator.CreateInstance(product.GetType("AnimusForge.MyBehavior+PendingAutomaticKingdomRebellionContext",true),true);
         Check((bool)Call(runtime,null,"IsStaleCivilWarRebellion",pending),"old pending naming result without a faction cannot found a kingdom");
+        FieldInfo operation=pending.GetType().GetField("IndependenceOperationId",All);
+        Check(operation!=null && operation.FieldType==typeof(string),"peaceful request carries its original operation identity");
+        Check(!(bool)Call(runtime,null,"IsPeacefulIndependence",new object[]{null}),"null context is not peaceful authority");
+        foreach(string id in new[]{null,""," "})
+        {
+            operation.SetValue(pending,id);
+            Check(!(bool)Call(runtime,null,"IsPeacefulIndependence",pending),"missing operation cannot bypass rebellion guards");
+        }
+        operation.SetValue(pending,"independence-operation-1");
+        Check((bool)Call(runtime,null,"IsPeacefulIndependence",pending),"queued peaceful operation is identified without game reads");
+        operation.SetValue(pending,null);
+        Check(!(bool)Call(runtime,owner,"EnsureIndependenceChoice",pending),"war request bypasses independence inquiry before pump access");
+        Check(!(bool)Call(runtime,owner,"RestoreIndependenceNaming",pending),"war request does not read persisted independence naming");
+        var parameters=runtime.GetMethod("TryExecuteKingdomRebellionWithNaming",All).GetParameters();
+        Check(parameters.Length==12 && parameters[11].Name=="independenceOperationId" && parameters[11].IsOptional,"physical founding accepts original operation rather than re-fetching current identity");
         Call(product.GetType("AnimusForge.MyBehavior",true),null,"QueueCivilWarSplitForExternal",null,null);
         Check(true,"historical external split signature remains a no-op");
         Console.WriteLine("PASS standalone rebellion retirement: "+checks+" actual DLL assertions; no Campaign, founding or model request.");

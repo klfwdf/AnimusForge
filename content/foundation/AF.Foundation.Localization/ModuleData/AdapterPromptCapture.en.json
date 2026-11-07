@@ -1,4 +1,5 @@
 {
+  "kingdom_peaceful_independence_naming": "The former kingdom's ruler has authorized this founding as peaceful independence, not an uprising or war. Name the new kingdom, provide its short name and founding description for the clans jointly leaving with their fiefs. Describe a peaceful separation without inventing a civil war, victory or battle. Preserve the existing JSON output protocol.",
   "AF_PCAP_Army_Head": "[Current army facts] ",
   "AF_PCAP_Army_HeroLeads": "You are leading {ARMY}",
   "AF_PCAP_Army_HeroBelongs": "You now belong to {ARMY}, commanded by {LEADER}",

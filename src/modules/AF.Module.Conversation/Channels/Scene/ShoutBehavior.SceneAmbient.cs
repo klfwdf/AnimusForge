@@ -25,8 +25,8 @@ namespace AnimusForge;
 //   stage of the chat checks; the approach state machine is ticked only while a session exists.
 // - Named and unnamed characters may take part; native usable seats stay occupied. Camp
 //   action-only seated poses are released transactionally by its conversation owner.
-// - No postprocess or action tags: chat cannot change game state. Persistence is one local
-//   summary line per named participant (no extra model call, no AFEF).
+// - No postprocess or action tags: chat cannot change game state. Spoken lines use shared
+//   personal history; the confirmed witness note is separate from NPC dialogue (no model call).
 public partial class ShoutBehavior
 {
     private const float AmbientProbeIntervalSeconds = 5f;
@@ -669,7 +669,8 @@ public partial class ShoutBehavior
             canStillPublish: () => CanPublishAmbientOpening(session),
             onCompleted: presented => CompleteAmbientPlayerOpening(session, presented),
             ownerCancellationToken: session.OpeningLifetime.Token,
-            onRequestRegistered: requestId => session.OpeningRequestId = requestId);
+            onRequestRegistered: requestId => session.OpeningRequestId = requestId,
+            onPresented: () => MarkAmbientOpeningPresented(session));
         ApplyInteractionGraceAndGroupCooldown(0f, ScenePassiveInteractionController.ACTIVE_CHAT_COOLDOWN, new[] { session.Initiator });
         if (!started && ReferenceEquals(_ambientSession, session)) EndAmbientSession("opening_failed", applyCooldown: true);
     }
@@ -853,12 +854,23 @@ public partial class ShoutBehavior
         _j17SceneAttentionController.AddAgentToStareList(partner, interruptCurrentUse: false);
         _j17SceneAttentionController.ApplyRelaySpeechGaze(initiator, partner, new[] { partner.Index });
         AmbientSession owner = session;
-        string place = Settlement.CurrentSettlement?.Name?.ToString() ?? "";
+        string place = FieldCampMissionLogic.Current != null ? FieldCampText.MenuTitle().ToString()
+            : Settlement.CurrentSettlement?.Name?.ToString() ?? "";
         float playerRadius = settings.AmbientScenePlayerRadius;
+        var audience = new List<NpcDataPacket>(speakers);
+        foreach (Agent listener in ShoutUtils.GetNearbyNPCAgents() ?? new List<Agent>())
+        {
+            if (!CanAgentParticipateInSceneSpeech(listener) || listener == initiator || listener == partner
+                || listener.Position.DistanceSquared(initiator.Position) > playerRadius * playerRadius) continue;
+            NpcDataPacket datum = ShoutUtils.ExtractNpcData(listener);
+            if (datum != null) audience.Add(datum);
+        }
+        ApplySceneLocalDisambiguatedNames(audience);
+        bool playerWitnessRecorded = false;
         var request = new SceneConversationSessionRuntime.AmbientChatRequest
         {
             Speakers = speakers,
-            Audience = speakers,
+            Audience = audience,
             Heroes = heroes,
             Topic = session.Topic,
             MaxLines = settings.AmbientSceneMaxLines,
@@ -867,14 +879,16 @@ public partial class ShoutBehavior
                 && !ExecutionSceneConflictBridge.IsSceneControlled(owner.Mission)
                 && IsAmbientWithinAbortRange(DuelSettings.LoadedForSceneRuntime() ?? settings, owner),
             RegisterAddressee = RegisterRelaySpeechAddressee,
+            OnLinePresented = () =>
+            {
+                if (!playerWitnessRecorded && Agent.Main != null && initiator.Position.Distance(Agent.Main.Position) <= playerRadius)
+                {
+                    playerWitnessRecorded = true;
+                    PersistAmbientWitness(speakers, heroes, place);
+                }
+            },
             OnFinished = result =>
             {
-                bool sameScene = ReferenceEquals(Mission.Current, owner.Mission)
-                    && SaveRuntimeGuard.IsCurrentGeneration(owner.RuntimeGeneration)
-                    && owner.HistorySessionId == Volatile.Read(ref SceneConversationHistoryOwner.SessionId);
-                bool overheard = sameScene && Agent.Main != null && result.Spoken.Count > 0
-                    && initiator.Position.Distance(Agent.Main.Position) <= playerRadius;
-                if (sameScene) PersistAmbientSummaries(speakers, heroes, result, place, session.Topic, overheard);
                 if (ReferenceEquals(_ambientSession, owner))
                 {
                     EndAmbientSession(result.Interrupted ? "interrupted" : "finished", applyCooldown: true, releaseAgents: !result.Interrupted);
@@ -884,26 +898,18 @@ public partial class ShoutBehavior
         _ = _sceneConversation.RunSceneGroupOnMainThreadAsync(() => _sceneConversation.RunAmbientChatAsync(request));
     }
 
-    // One local summary line per named participant; the overheard line records the player as witness.
-    private static void PersistAmbientSummaries(List<NpcDataPacket> speakers, Dictionary<int, Hero> heroes,
-        SceneConversationSessionRuntime.AmbientChatResult result, string place, string topic, bool overheard)
+    // Speech is already persisted per line. This note only retains the player-as-witness context.
+    private static void PersistAmbientWitness(List<NpcDataPacket> speakers, Dictionary<int, Hero> heroes, string place)
     {
-        if (result == null || result.Spoken.Count == 0) return;
-        string lastLine = result.Spoken[result.Spoken.Count - 1].Line;
-        if (lastLine.Length > 80) lastLine = lastLine.Substring(0, 80) + "…";
-        int session = System.Threading.Volatile.Read(ref SceneConversationHistoryOwner.SessionId);
+        int session = Volatile.Read(ref SceneConversationHistoryOwner.SessionId);
         foreach (NpcDataPacket speaker in speakers)
         {
             if (speaker == null || heroes == null || !heroes.TryGetValue(speaker.AgentIndex, out Hero hero) || hero == null) continue;
             if (!AfGcczShoutBridge.ShouldUsePersistentPersonalMemory(hero, hero.CharacterObject, speaker.AgentIndex)) continue;
             string others = string.Join(", ", speakers.Where(s => s != null && s.AgentIndex != speaker.AgentIndex).Select(GetSceneNpcHistoryNameForPrompt));
-            string summary = ConversationRuntimeTexts.FormatPrompt("AF_CONV_Ambient_SummaryNpc", ("PLACE", place), ("OTHERS", others), ("LINE", lastLine));
-            if (overheard)
-            {
-                summary += " " + ConversationRuntimeTexts.FormatPrompt("AF_CONV_Ambient_SummaryOverheard", ("PLACE", place), ("OTHERS", others),
-                    ("PLAYER", GetPlayerDisplayNameForShout()));
-            }
-            MyBehavior.AppendExternalSceneDialogueHistory(hero, null, summary, null, session);
+            string witness = ConversationRuntimeTexts.FormatPrompt("AF_CONV_Ambient_SummaryOverheard", ("PLACE", place), ("OTHERS", others),
+                ("PLAYER", GetPlayerDisplayNameForShout()));
+            MyBehavior.AppendExternalSceneDialogueHistory(hero, null, null, witness, session);
         }
     }
 

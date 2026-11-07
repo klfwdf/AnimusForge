@@ -4,6 +4,34 @@
     <tag language="简体中文" />
   </tags>
   <strings>
+    <string id="AF_UI_KingdomIndependence_NotAuthorized" text="本次和平独立建国授权已经失效或不允许建国。" />
+    <string id="AF_UI_KingdomIndependence_CreatedPending" text="新王国已经建立；约定家族迁入与和平状态仍需确认。" />
+    <string id="AF_UI_KingdomIndependence_CreationPending" text="尚未确认独立王国建立，已授权的操作仍在等待处理。" />
+    <string id="AF_UI_KingdomIndependence_NamingTitle" text="准备和平建国" />
+    <string id="AF_UI_KingdomIndependence_NamingBody" text="LLM正在为已获准的和平建国生成国名和介绍。只有结果生成并通过校验后才会建立王国。" />
+    <string id="AF_UI_KingdomIndependence_ChoiceTitle" text="选择独立方式" />
+    <string id="AF_UI_KingdomIndependence_ChoiceBody" text="君主已经同意和平独立。你可以让约定家族携封地脱离王国，不建立新国；也可以调用LLM拟定国名并让这些家族共同建国。只有选择“LLM建国”才会建立王国。" />
+    <string id="AF_UI_KingdomIndependence_Found" text="LLM建国" />
+    <string id="AF_UI_KingdomIndependence_Leave" text="脱离王国" />
+    <string id="AF_DIP_UI_CivilWar_ActionSendUltimatum" text="发送最后通牒" />
+    <string id="AF_KINGDOM_CW_Ultimatum_LeaderOnly" text="只有玩家领袖能为自己已成立的派系发送最后通牒。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_NotReady" text="最后通牒可在{A}之后发送。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_WarPaused" text="其他内战进行期间，最后通牒暂停发送。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_Consequence" text="立即向国王发送本派诉求。国王可能接受、拖延或拒绝；此操作不会自动发动叛乱。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_Sent" text="你已向国王发送本派的最后通牒。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualNote" text="准备好后点击“发送最后通牒”；不会自动发送。" />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualReady" text="等待你发送" />
+    <string id="AF_KINGDOM_CW_Ultimatum_ManualStage" text="已成立 · 等待你手动发送最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedManualNote" text="你领导的派系只会在你主动操作时发送最后通牒。叛乱同样需要手动确认并满足军力门槛。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Choice" text="已接受 · 等待弹窗选择脱离王国或LLM建国" />
+    <string id="AF_KINGDOM_CW_Fulfillment_PeaceRejected" text="和平议程遭到拒绝或已取消，派系仍然保留。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_FoundingFailed" text="独立王国未能建立，派系已保留。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Pending" text="已接受诉求，正在等待建国或和平投票；实际履约确认前，派系仍然保留。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Locked" text="已接受的诉求正在等待履约；结算前暂时锁定派系操作。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_ValuePending" text="等待履约" />
+    <string id="AF_KINGDOM_CW_Fulfillment_RetryManual" text="履约失败或投票遭拒，派系仍保留；冷却结束后，君主可再次主动让步。" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Founding" text="已接受 · 等待LLM命名与建国独立确认" />
+    <string id="AF_KINGDOM_CW_Fulfillment_Voting" text="已接受 · 等待双方王国议和投票，尚未确认和平" />
     <string id="AF_DIP_UI_LobbyistRegistered_DeclareWar" text="{KINGDOM}君主{RULER}已承诺向{TARGET}宣战。" />
     <string id="AF_DIP_UI_LobbyistRegistered_Peace" text="{KINGDOM}君主{RULER}已承诺向{TARGET}提出议和。" />
     <string id="AF_DIP_UI_LobbyistRegistered_Alliance" text="{KINGDOM}君主{RULER}已承诺向{TARGET}提出结盟。" />
@@ -700,9 +728,9 @@
     <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="政变叛军被消灭，叛乱平定。" />
     <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="原王室家族未加入叛军，或复辟身份/原王国名称缺失，暂缓登记。" />
     <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="原统治者王国被消灭，确认政变结果。" />
-    <string id="AF_KINGDOM_CW_Demand_autonomy" text="承认本派系封地自主" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="准许本派携封地脱离王国，并可选择LLM命名建国独立" />
     <string id="AF_KINGDOM_CW_Demand_continue_war" text="不与{TARGET}议和" />
-    <string id="AF_KINGDOM_CW_Demand_make_peace" text="结束与{TARGET}的战争并议和" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="提交与{TARGET}的和平议程，经双方投票通过后议和" />
     <string id="AF_KINGDOM_CW_Demand_redress" text="支付赔偿并追究当事人责任" />
     <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="废除{TARGET}" />
     <string id="AF_KINGDOM_CW_Demand_unknown" text="贯彻派系诉求" />

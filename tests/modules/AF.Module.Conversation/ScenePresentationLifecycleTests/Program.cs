@@ -177,7 +177,7 @@ var port = new SceneAudioLipSyncPort {
  Finished=i=>finished++, Cancelled=r=>cancelled++, CompleteNativeWait=(r,e)=>false,
  IsNativeWait=r=>false, QueueMapPlayback=(r,w,x,d)=>false, UseMapPlayback=()=>false,
  CanParticipate=i=>true, CanLipSync=(Agent a,out string r)=>{r="";return true;}, CanLipSyncIndex=(int i,out string r)=>{r="";return true;},
- FailureOutput=i=>failureOutput, UnmarkPlaybackStarted=i=>started.Remove(i), ConvertDialogueFeed=(i,d)=>{}, FlushFailedSpeechEffects=(i,d)=>{}, ShowBubble=(a,t,d)=>failed++, ScheduleInteractionTimeout=(i,t,d)=>timeoutArms++, EstimateTypingDuration=t=>1,
+ FailureOutput=i=>failureOutput, UnmarkPlaybackStarted=i=>started.Remove(i), ConvertDialogueFeed=(i,d)=>{}, FlushFailedSpeechEffects=(i,d)=>{}, ShowBubble=(a,t,d)=>{failed++;return true;}, ScheduleInteractionTimeout=(i,t,d)=>timeoutArms++, EstimateTypingDuration=t=>1,
  AudioDuration=(i,d)=>{}, DispatchBubble=(i,f)=>true, ClearOrphanDuration=i=>{}, ScheduleBubbleFallback=r=>{},
  HasPlaybackStarted=i=>started.Contains(i), MarkPlaybackStarted=i=>started.Add(i), ClearAgentPending=i=>{}, ClearAgentInteraction=i=>{},
  PauseTyping=p=>{}, StopTyping=fadeSoon=>typingFadeRequests.Add(fadeSoon), ClearPending=()=>{}, SpeechBusy=()=>false, ClearSpeechQueue=()=>{}, ClearMeetingControl=()=>{}, SuppressMeetingControl=()=>false, Report=(s,i,e)=>{}

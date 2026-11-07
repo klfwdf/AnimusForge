@@ -118,8 +118,21 @@ internal static class FieldCampText
 			("OTHER", SubjectName(issue, issue.Subject2)));
 	}
 
+	internal static string HandledCompanionPrompt(FieldCampIssues.State state, bool legacy, string self, string other)
+	{
+		string key = legacy ? "AF_FC_HandledCompanion_Legacy" : "AF_FC_HandledCompanion_" + state;
+		return ConversationRuntimeTexts.FormatPrompt(key, ("SELF", self), ("OTHER", other));
+	}
+
 	internal static string ResolutionFact(FieldCampIssues.Issue issue, FieldCampIssues.Resolution resolution, float morale, int cost, int dismissed)
 	{
+		if (issue.IsCompanionIssue)
+		{
+			return AdapterPromptCaptureTexts.PcapCompat("Host_AfefPlayerPrefix")
+				+ ConversationRuntimeTexts.FormatPrompt("AF_FC_Fact_Companion_" + resolution,
+					("SELF", SubjectName(issue, issue.Subject)), ("OTHER", SubjectName(issue, issue.Subject2)),
+					("MORALE", SignedMorale(morale)));
+		}
 		string issueText = IssuePromptText(issue).Trim().TrimEnd('。', '.');
 		string costText = cost > 0 ? ConversationRuntimeTexts.FormatPrompt("AF_FC_Fact_Cost", ("GOLD", cost)) : "";
 		string dismissedText = dismissed > 0 ? ConversationRuntimeTexts.FormatPrompt("AF_FC_Fact_Dismissed", ("COUNT", dismissed)) : "";

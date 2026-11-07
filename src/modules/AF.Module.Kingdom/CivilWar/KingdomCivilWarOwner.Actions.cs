@@ -73,6 +73,8 @@ internal sealed partial class KingdomCivilWarOwner
 		else if (actor?.Leader == null || !actor.Leader.IsAlive) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_ClanLeaderIneligible", "The clan leader is not eligible.");
 		else if (r.Version >= 0 && r.Version != q.Version) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_StateChanged", "The faction state changed; please confirm again.");
 		else if (f?.ResolutionNeedsReview == true) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_PreviousOperationPendingReview", "A previous operation is still awaiting review; no further operation is possible yet.");
+		else if (f?.Fulfillment != null && (r.Action != CivilWarAction.Concede || f.Fulfillment.Status == "pending")) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Fulfillment_Locked", "An accepted demand is awaiting fulfillment; faction actions are locked until it is settled.");
+		else if (f?.Fulfillment != null && CivilWarWorld.CurrentDay() < f.GovernanceUntilDay) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_GovernanceCooldown", "Political actions are on cooldown until {A}.", ("A", CivilWarUiText.Date(f.GovernanceUntilDay)));
 		else if (r.Action == CivilWarAction.Respond)
 		{
 			if (f?.PendingResponse == null || f.LeaderClanId != actor.StringId || f.PendingResponse.LeaderClanId != actor.StringId) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_NothingToRespond", "There is nothing for this clan to respond to.");
@@ -118,6 +120,14 @@ internal sealed partial class KingdomCivilWarOwner
 			else if (actor == k.RulingClan) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_KingCannotJoin", "The king cannot join, leave, or found an opposition faction on their own.");
 			else if (own?.Stage == KingdomCivilWarStage.OpenWar || (r.Action != CivilWarAction.Detonate && s?.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar) == true)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_MembershipLocked", "Membership management is locked during a founding request or civil war.");
 			else if (own?.ResolutionNeedsReview == true) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_MembershipPendingReview", "A faction operation result is still awaiting review; membership and factions cannot be changed yet.");
+			else if (r.Action == CivilWarAction.SendUltimatum)
+			{
+				if (actor != Clan.PlayerClan || f == null || own != f || !IsPlayerLed(f) || f.Stage != KingdomCivilWarStage.FactionFormed) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_LeaderOnly", "Only the player leader can send an ultimatum for their formed faction.");
+				else if (f.PendingResponse != null || !string.IsNullOrEmpty(f.PendingConcessionOperationId)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_DemandChangeLocked", "A royal negotiation or agreement settlement is in progress; the demand cannot be changed yet.");
+				else if (CivilWarWorld.CurrentDay() < f.UltimatumDay) { q.CooldownUntilDay = f.UltimatumDay; q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_NotReady", "The ultimatum can be sent after {A}.", ("A", CivilWarUiText.Date(f.UltimatumDay))); }
+				else if (IsPausedByOtherWar(s, f, DuelSettings.BuildCivilWarTuning())) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_WarPaused", "Ultimatums are paused while another civil war is in progress.");
+				q.Consequence = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_Consequence", "Send the faction's demand to the king now. The king may accept, delay or refuse; this does not start a rebellion automatically.");
+			}
 			else if (r.Action == CivilWarAction.ChangeDemand)
 			{
 				if (actor != Clan.PlayerClan || f == null || f != own || f.LeaderClanId != actor.StringId || !IsPreWar(f)) q.Reason = CivilWarUiText.T("AF_KINGDOM_CW_Action_ChangeOwnDemandOnly", "You can only change the demand of a pre-war faction you lead.");
@@ -311,6 +321,13 @@ internal sealed partial class KingdomCivilWarOwner
 			result.Message = KingdomCivilWarTexts.Raw("KW_Raw_089");
 			Project(result, "DissolvedOwn");
 		}
+		else if (r.Action == CivilWarAction.SendUltimatum)
+		{
+			f.Stage = KingdomCivilWarStage.Ultimatum; f.StageWeek = week; f.DemandLocked = true;
+			f.WaitingForOtherWar = f.EscalationPending = false;
+			AdvanceUltimatum(k, s, f, week, Host.GetStability(k), tuning, HostStability);
+			result.Message = CivilWarUiText.T("AF_KINGDOM_CW_Ultimatum_Sent", "You sent the faction's ultimatum to the king.");
+		}
 		else if (r.Action == CivilWarAction.Detonate)
 		{
 			var leader = CivilWarWorld.FindClan(f.LeaderClanId);
@@ -367,6 +384,16 @@ internal sealed partial class KingdomCivilWarOwner
 		}
 		else if (r.Action == CivilWarAction.Concede)
 		{
+			if (f.Fulfillment != null && (f.Fulfillment.Status == "failed" || f.Fulfillment.Status == "rejected") && r.OperationId != f.Fulfillment.OperationId)
+			{
+				if (!string.IsNullOrEmpty(f.Fulfillment.KingdomId)) throw new InvalidOperationException("A partially founded kingdom requires reconciliation.");
+				if (f.Fulfillment.Kind == "independence" && f.Fulfillment.FormalName.Length > 0)
+				{
+					f.Fulfillment.Status = "pending"; f.Fulfillment.OperationId = r.OperationId;
+				}
+				else f.Fulfillment = null;
+				f.PendingConcessionOperationId = ""; f.ResolutionError = "";
+			}
 			if (string.IsNullOrEmpty(f.PendingConcessionOperationId)) { f.PendingConcessionRulerId = actor.StringId; f.PendingConcessionLeaderId = f.LeaderClanId; }
 			if (f.PendingConcessionRulerId != actor.StringId || f.PendingConcessionLeaderId != f.LeaderClanId) throw new InvalidOperationException(KingdomCivilWarTexts.Raw("KW_Raw_097"));
 			f.PendingConcessionOperationId = r.OperationId;
@@ -380,6 +407,13 @@ internal sealed partial class KingdomCivilWarOwner
 				else CivilWarEffects.ReturnRebels(ctx, ctx.WarClans(), 0, true);
 			}
 			if (!CivilWarEffects.TryApply(effect, ctx, out string reason)) { f.ResolutionError = reason; f.ResolutionNeedsReview = !ctx.RetryableFailure; result.Status = CivilWarActionStatus.PartialFailure; result.Message = KingdomCivilWarTexts.Raw("KW_Raw_098") + reason; string failure = CivilWarUiText.FailureText(ctx.FailureCode, ctx.FailureArg, ctx.FailureArg2); if (failure != null) Project(result, "ConcessionPending", failure); return result; }
+			if (ctx.AwaitingCompletion)
+			{
+				result.Status = CivilWarActionStatus.AwaitingKingdom;
+				result.Message = CivilWarUiText.T("AF_KINGDOM_CW_Fulfillment_Pending", "The demand has been accepted and is awaiting kingdom founding or the peace vote. The faction remains until fulfillment is confirmed.");
+				return result;
+			}
+			f.ResolutionError = "";
 			result.Message = KingdomCivilWarTexts.Tidy(KingdomCivilWarTexts.W("KW_Raw_099") + FactionName(f, demand) + KingdomCivilWarTexts.Raw("KW_Raw_100") + string.Join(KingdomCivilWarTexts.Semicolon, ctx.Notes));
 			Project(result, "Conceded", CivilWarUiText.DemandTag(demand), CivilWarUiText.NoteText(ctx.Notes, ctx.NoteProjections));
 			f.PendingConcessionOperationId = "";

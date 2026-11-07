@@ -102,6 +102,14 @@ namespace AnimusForge
 			public bool CounterpartCreated;
 			public string FirstDecisionBasicKey;
 			public string ParticipantHeroIds;
+			// Persist exact native decision references, never infer identity from titles/pairs.
+			public string OperationId;
+			public string FactionId;
+			public string OperationState;
+			public string OperationReason;
+			public string OperationProposerId;
+			public KingdomDecision FirstDecision;
+			public KingdomDecision CounterpartDecision;
 		}
 
 		private sealed class BilateralDiplomacyMemoryMarker
@@ -445,6 +453,9 @@ namespace AnimusForge
 						KingdomAgendaVM._snapshots.Clear();
 					}
 					_agendaDeadlineReminderShown.Clear();
+					_factionPeacePersistenceAvailable = false;
+					_factionPeaceOperations.Clear();
+					_factionPeaceDecisions.Clear();
 					s_pendingRequiredAgendaDecision = null;
 					ResetAgendaMapNotificationRuntime();
 				}
@@ -455,6 +466,9 @@ namespace AnimusForge
 				if (_dialogueProposalDecisionKeys == null) _dialogueProposalDecisionKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 				if (_shownRequiredAgendaVoteKeys == null) _shownRequiredAgendaVoteKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+				if (dataStore.IsSaving && !_factionPeacePersistenceAvailable)
+					throw new CampaignSaveChunkHelper.PersistenceIntegrityException("_vdBilateralDiplomacy", "faction_peace_load_failed");
+				List<KingdomDecision> factionPeaceDecisionRefs = new List<KingdomDecision>();
 				if (dataStore.IsSaving)
 				{
 					CleanupRequiredAgendaVotePromptKeys();
@@ -496,7 +510,15 @@ namespace AnimusForge
 							d.CreatedDay.ToString("F6"),
 							d.CounterpartCreated ? "1" : "0",
 							d.FirstDecisionBasicKey ?? "",
-							d.ParticipantHeroIds ?? "");
+							d.ParticipantHeroIds ?? "",
+							d.OperationId ?? "",
+							d.FactionId ?? "",
+							d.OperationState ?? "",
+							d.OperationReason ?? "",
+							d.OperationProposerId ?? "");
+						// Same row order as bd_i; List<KingdomDecision> is a native save container.
+						factionPeaceDecisionRefs.Add(d.FirstDecision);
+						factionPeaceDecisionRefs.Add(d.CounterpartDecision);
 					}
 				}
 
@@ -505,6 +527,7 @@ namespace AnimusForge
 
 				Dictionary<string, string> serializedBilateralDiplomacyForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_serializedBilateralDiplomacy, "_vdBilateralDiplomacy", "VoteDeal") : _serializedBilateralDiplomacy;
 				dataStore.SyncData("_vdBilateralDiplomacy", ref serializedBilateralDiplomacyForSync);
+				dataStore.SyncData("_vdFactionPeaceDecisionRefs", ref factionPeaceDecisionRefs);
 
 				Dictionary<string, string> dialogueProposalKeysForSync = dataStore.IsSaving ? CampaignSaveChunkHelper.FlattenStringDictionary(_dialogueProposalDecisionKeys, "_vdDialogueProposalKeys", "VoteDeal") : _dialogueProposalDecisionKeys;
 				dataStore.SyncData("_vdDialogueProposalKeys", ref dialogueProposalKeysForSync);
@@ -552,8 +575,9 @@ namespace AnimusForge
 					_bilateralDiplomacyRecords.Clear();
 					if (_serializedBilateralDiplomacy != null && _serializedBilateralDiplomacy.Count > 0)
 					{
-						foreach (string val in _serializedBilateralDiplomacy.Values)
+						foreach (var savedRow in _serializedBilateralDiplomacy)
 						{
+							string val = savedRow.Value;
 							if (string.IsNullOrEmpty(val)) continue;
 							string[] parts = val.Split(RecordDelimiter);
 							if (parts.Length < 7) continue;
@@ -568,16 +592,32 @@ namespace AnimusForge
 								CreatedDay = float.TryParse(parts[6], out float createdDay) ? createdDay : 0f,
 								CounterpartCreated = parts.Length > 7 && parts[7] == "1",
 								FirstDecisionBasicKey = parts.Length > 8 ? parts[8] ?? "" : "",
-								ParticipantHeroIds = parts.Length > 9 ? parts[9] ?? "" : ""
+								ParticipantHeroIds = parts.Length > 9 ? parts[9] ?? "" : "",
+								OperationId = parts.Length > 10 ? parts[10] : "",
+								FactionId = parts.Length > 11 ? parts[11] : "",
+								OperationState = parts.Length > 12 ? parts[12] : "",
+								OperationReason = parts.Length > 13 ? parts[13] : "",
+								OperationProposerId = parts.Length > 14 ? parts[14] : ""
 							};
-							if (!string.IsNullOrWhiteSpace(record.Kind)
-								&& !string.IsNullOrWhiteSpace(record.FirstKingdomId)
-								&& !string.IsNullOrWhiteSpace(record.SecondKingdomId))
+							if (savedRow.Key.StartsWith("bd_", StringComparison.Ordinal)
+								&& int.TryParse(savedRow.Key.Substring(3), out int rowIndex)
+								&& rowIndex >= 0 && factionPeaceDecisionRefs != null
+								&& rowIndex < factionPeaceDecisionRefs.Count / 2)
+							{
+								record.FirstDecision = factionPeaceDecisionRefs[rowIndex * 2];
+								record.CounterpartDecision = factionPeaceDecisionRefs[rowIndex * 2 + 1];
+							}
+							if (!string.IsNullOrEmpty(record.OperationId)
+								|| (!string.IsNullOrWhiteSpace(record.Kind)
+									&& !string.IsNullOrWhiteSpace(record.FirstKingdomId)
+									&& !string.IsNullOrWhiteSpace(record.SecondKingdomId)))
 							{
 								_bilateralDiplomacyRecords.Add(record);
 							}
 						}
 					}
+					RestoreFactionPeaceOperations();
+					_factionPeacePersistenceAvailable = true;
 					CleanupBilateralDiplomacyRecords();
 					_dialogueProposalDecisionKeys = CampaignSaveChunkHelper.RestoreStringDictionary(dialogueProposalKeysForSync, "VoteDeal")
 						?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -591,6 +631,9 @@ namespace AnimusForge
 				Logger.Log("VoteDeal", $"[SyncData Error] {ex.Message}");
 				// A failed save must not wipe the live session's deals; only a failed load resets.
 				if (dataStore == null || dataStore.IsSaving) return;
+				_factionPeacePersistenceAvailable = false;
+				_factionPeaceOperations.Clear();
+				_factionPeaceDecisions.Clear();
 				_activeDeals = new List<VoteDealRecord>();
 				_serializedDeals = new Dictionary<string, string>();
 				_bilateralDiplomacyRecords = new List<BilateralDiplomacyRecord>();
@@ -608,6 +651,18 @@ namespace AnimusForge
 			try
 			{
 				UnregisterDialogueProposedDecision(decision);
+				BilateralDiplomacyRecord operation = FindFactionPeaceOperation(decision);
+				if (operation?.OperationState == "pending"
+					&& !(ReferenceEquals(operation.FirstDecision, decision) && operation.CounterpartCreated))
+				{
+					if (!TryGetBilateralDiplomacyApproval(decision, chosenOutcome, out bool approved))
+						SetFactionPeaceTerminal(operation, "failed", "outcome_unresolved");
+					else if (!approved)
+						SetFactionPeaceTerminal(operation, "rejected", ReferenceEquals(operation.FirstDecision, decision) ? "first_rejected" : "counterpart_rejected");
+					else if (ReferenceEquals(operation.CounterpartDecision, decision)
+						|| !operation.CounterpartCreated)
+						SetFactionPeaceTerminal(operation, "failed", "bilateral_outcome_not_applied");
+				}
 				if (_activeDeals == null || _activeDeals.Count == 0) return;
 				if (decision?.Kingdom == null) return;
 
@@ -1433,7 +1488,14 @@ namespace AnimusForge
 				if (behavior == null
 					|| ((behavior._dialogueProposalDecisionKeys == null || behavior._dialogueProposalDecisionKeys.Count == 0)
 						&& (behavior._bilateralDiplomacyRecords == null || behavior._bilateralDiplomacyRecords.Count == 0))) return true;
-				if (behavior.IsDialogueProposedDecision(__instance))
+					BilateralDiplomacyRecord factionOperation = behavior.FindFactionPeaceOperation(__instance);
+					if (factionOperation != null)
+					{
+						__result = factionOperation.OperationState != "pending"
+							|| !IsBilateralCounterpartDecisionHardValid(__instance, out _);
+						return false;
+					}
+					if (behavior.IsDialogueProposedDecision(__instance))
 				{
 					__result = !IsDialogueProposedDecisionHardValid(__instance, out string hardFailureReason);
 					if (__result)
@@ -1584,11 +1646,15 @@ namespace AnimusForge
 			{
 				if (!TryGetBilateralDiplomacyDecisionDetails(__instance, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
 				{
-					return true;
+					var operation = Instance?.FindFactionPeaceOperation(__instance);
+					SetFactionPeaceTerminal(operation, "failed", "outcome_details_unresolved");
+					return operation == null;
 				}
 				if (!TryGetBilateralDiplomacyApproval(__instance, chosenOutcome, out bool approved))
 				{
-					return true;
+					var operation = Instance?.FindFactionPeaceOperation(__instance);
+					SetFactionPeaceTerminal(operation, "failed", "outcome_unresolved");
+					return operation == null;
 				}
 
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
@@ -1599,12 +1665,31 @@ namespace AnimusForge
 			catch (Exception ex)
 			{
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] ApplyChosenOutcome prefix error: {ex.Message}");
+				var behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				var operation = behavior?.FindFactionPeaceOperation(__instance);
+				if (operation != null)
+				{
+					SetFactionPeaceTerminal(operation, "failed", "outcome_exception");
+					return false; // Never fall through to unilateral native peace on a tracked failure.
+				}
 				return true;
 			}
 		}
 
 		private bool HandleBilateralDiplomacyOutcome(KingdomDecision decision, BilateralDiplomacyKind kind, Kingdom source, Kingdom target, int tribute, int duration, bool approved)
 		{
+			BilateralDiplomacyRecord operation = FindFactionPeaceOperation(decision);
+			if (operation != null)
+			{
+				if (operation.OperationState != "pending" || operation.OperationReason == "applying") return true;
+				// A replayed first-side outcome must not create/recharge another review.
+				if (ReferenceEquals(operation.FirstDecision, decision) && operation.CounterpartCreated) return true;
+				if (!IsBilateralCounterpartDecisionHardValid(decision, out _))
+				{
+					SetFactionPeaceTerminal(operation, "failed", "decision_invalidated");
+					return true;
+				}
+			}
 			BilateralDiplomacyRecord counterpartRecord = FindCounterpartRecordForDecision(decision);
 			if (counterpartRecord != null)
 			{
@@ -1612,9 +1697,11 @@ namespace AnimusForge
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				if (approved)
 				{
+					if (operation != null) operation.OperationReason = "applying";
 					bool applied = ApplyFinalBilateralDiplomacyEffect(counterpartRecord);
+					SetFactionPeaceTerminal(operation, applied ? "completed" : "failed", applied ? "bilateral_peace_applied" : "peace_not_applied");
 					RecordBilateralDiplomacyMemory(counterpartRecord, decision, applied ? "effective" : "invalid");
-					_bilateralDiplomacyRecords.Remove(counterpartRecord);
+					if (operation == null) _bilateralDiplomacyRecords.Remove(counterpartRecord);
 					if (applied)
 					{
 						DisplayBilateralDiplomacyMessage(
@@ -1636,8 +1723,9 @@ namespace AnimusForge
 				}
 				else
 				{
+					SetFactionPeaceTerminal(operation, "rejected", "counterpart_rejected");
 					RecordBilateralDiplomacyMemory(counterpartRecord, decision, "rejected");
-					_bilateralDiplomacyRecords.Remove(counterpartRecord);
+					if (operation == null) _bilateralDiplomacyRecords.Remove(counterpartRecord);
 					DisplayBilateralDiplomacyMessage(
 						DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralRejected", "Bilateral diplomacy agenda: {SECOND} rejected {FIRST}'s {KIND} proposal, no diplomatic effect took place.",
 							("FIRST", GetKingdomName(counterpartRecord.FirstKingdomId)),
@@ -1651,12 +1739,14 @@ namespace AnimusForge
 
 			if (!approved)
 			{
+				SetFactionPeaceTerminal(operation, "rejected", "first_rejected");
 				return true;
 			}
 
 			if (!CanCreateBilateralCounterpart(kind, source, target))
 			{
-				BilateralDiplomacyRecord failedRecord = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
+				SetFactionPeaceTerminal(operation, "failed", "counterpart_unavailable");
+				BilateralDiplomacyRecord failedRecord = operation ?? CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				RecordBilateralDiplomacyMemory(failedRecord, decision, "creation_failed");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cannot create counterpart, original effect blocked. kind={kind} source={source?.StringId} target={target?.StringId}");
@@ -1665,8 +1755,9 @@ namespace AnimusForge
 			}
 
 			BilateralDiplomacyRecord existing = FindExistingBilateralRecord(kind, source, target);
-			if (existing != null)
+			if (existing != null && existing != operation)
 			{
+				SetFactionPeaceTerminal(operation, "failed", "duplicate_bilateral_review");
 				MergeBilateralDiplomacyParticipants(existing, decision);
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				RecordBilateralDiplomacyMemory(existing, decision, "pending");
@@ -1680,19 +1771,26 @@ namespace AnimusForge
 				return true;
 			}
 
-			BilateralDiplomacyRecord record = CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
-
-			_bilateralDiplomacyRecords.Add(record);
+			BilateralDiplomacyRecord record = operation ?? CreateBilateralDiplomacyRecord(decision, kind, source, target, tribute, duration);
+			if (operation == null) _bilateralDiplomacyRecords.Add(record);
+			else
+			{
+				record.TributeFromFirstToSecond = tribute;
+				record.TributeDurationDays = duration;
+				MergeBilateralDiplomacyParticipants(record, decision);
+			}
 			if (!CreateBilateralCounterpartDecision(record, out string creationFailureReason))
 			{
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				RecordBilateralDiplomacyMemory(record, decision, "creation_failed");
-				_bilateralDiplomacyRecords.Remove(record);
+				SetFactionPeaceTerminal(operation, "failed", "counterpart_creation_failed");
+				if (operation == null) _bilateralDiplomacyRecords.Remove(record);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId} reason={creationFailureReason}");
 				DisplayBilateralDiplomacyMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralCounterpartCreateFailed", "Bilateral diplomacy agenda: creating the reciprocal review agenda failed, no diplomatic effect took place."), 0xFFD166);
 				return true;
 			}
 
+			if (operation != null && operation.OperationState == "pending") operation.OperationReason = "counterpart_pending";
 			MarkBilateralDiplomacyMemoryHandled(decision);
 			RecordBilateralDiplomacyMemory(record, decision, "pending");
 			DisplayBilateralDiplomacyMessage(
@@ -1765,6 +1863,11 @@ namespace AnimusForge
 				if (!IsBilateralCounterpartDecisionHardValid(counterpart, out failureReason))
 				{
 					return false;
+				}
+				if (!string.IsNullOrEmpty(record.OperationId))
+				{
+					record.CounterpartDecision = counterpart;
+					_factionPeaceDecisions[counterpart] = record;
 				}
 				if (!QueueBilateralCounterpartDecision(second, counterpart, record, out failureReason))
 				{
@@ -1919,8 +2022,12 @@ namespace AnimusForge
 				switch (kind)
 				{
 					case BilateralDiplomacyKind.Peace:
-						MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_peace", () =>
+						Action applyPeace = () => MeetingBattleRuntime.RunWithDiplomaticSideEffectsUnlocked("bilateral_diplomacy_peace", () =>
 							MakePeaceAction.ApplyByKingdomDecision(first, second, record.TributeFromFirstToSecond, record.TributeDurationDays));
+						if (!string.IsNullOrEmpty(record.OperationId))
+							WorldDiplomacyBehavior.RunAuthorizedEventPeace(first, second, applyPeace);
+						else applyPeace();
+						if (FactionManager.IsAtWarAgainstFaction(first, second)) return false;
 						DiplomacyRecentPeaceBridge.RegisterPeace(first, second, "bilateral_diplomacy_peace");
 						return true;
 					case BilateralDiplomacyKind.Alliance:
@@ -2026,12 +2133,21 @@ namespace AnimusForge
 			ForgetAgendaMapNotification(decision);
 			try
 			{
+				BilateralDiplomacyRecord operation = FindFactionPeaceOperation(decision);
 				BilateralDiplomacyRecord record = FindCounterpartRecordForDecision(decision);
+				if (operation != null)
+				{
+					// Late cancellation of the already-approved first agenda is not a review cancellation.
+					if (ReferenceEquals(operation.FirstDecision, decision) && operation.CounterpartCreated) return;
+					if (operation.OperationState != "pending") return;
+					SetFactionPeaceTerminal(operation, "failed", ReferenceEquals(operation.FirstDecision, decision) ? "first_cancelled" : "counterpart_cancelled");
+					UnregisterDialogueProposedDecision(decision);
+				}
 				if (record == null) return;
 				MergeBilateralDiplomacyParticipants(record, decision);
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				RecordBilateralDiplomacyMemory(record, decision, "cancelled");
-				_bilateralDiplomacyRecords.Remove(record);
+				if (operation == null) _bilateralDiplomacyRecords.Remove(record);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart agenda cancelled: id={record.RecordId} decision={GetSafeDecisionTitle(decision)} playerInvolved={isPlayerInvolved}.");
 			}
 			catch (Exception ex)
@@ -2187,6 +2303,10 @@ namespace AnimusForge
 		private BilateralDiplomacyRecord FindCounterpartRecordForDecision(KingdomDecision decision)
 		{
 			if (_bilateralDiplomacyRecords == null || decision == null) return null;
+			BilateralDiplomacyRecord operation = FindFactionPeaceOperation(decision);
+			if (operation != null)
+				return operation.OperationState == "pending" && operation.CounterpartCreated
+					&& ReferenceEquals(operation.CounterpartDecision, decision) ? operation : null;
 			return _bilateralDiplomacyRecords.FirstOrDefault(r => DoesDecisionMatchCounterpartRecord(r, decision));
 		}
 
@@ -2196,7 +2316,8 @@ namespace AnimusForge
 			string firstId = first.StringId;
 			string secondId = second.StringId;
 			return _bilateralDiplomacyRecords.FirstOrDefault(r =>
-				ParseKind(r.Kind) == kind
+				(string.IsNullOrEmpty(r.OperationId) || r.OperationState == "pending")
+				&& ParseKind(r.Kind) == kind
 				&& ((string.Equals(r.FirstKingdomId, firstId, StringComparison.OrdinalIgnoreCase)
 						&& string.Equals(r.SecondKingdomId, secondId, StringComparison.OrdinalIgnoreCase))
 					|| (string.Equals(r.FirstKingdomId, secondId, StringComparison.OrdinalIgnoreCase)
@@ -2208,6 +2329,7 @@ namespace AnimusForge
 			try
 			{
 				if (_bilateralDiplomacyRecords == null || _bilateralDiplomacyRecords.Count == 0) return false;
+				if (IsFactionPeaceDecision(decision)) return false;
 				if (FindCounterpartRecordForDecision(decision) != null) return false;
 				if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
 				{
@@ -2226,7 +2348,8 @@ namespace AnimusForge
 		{
 			try
 			{
-				if (_bilateralDiplomacyRecords == null || _bilateralDiplomacyRecords.Count == 0) return;
+				if (_bilateralDiplomacyRecords == null || !_bilateralDiplomacyRecords.Any(r =>
+					r != null && (string.IsNullOrEmpty(r.OperationId) || r.OperationState == "pending"))) return;
 				List<Kingdom> kingdoms = Kingdom.All?.ToList();
 				if (kingdoms == null) return;
 
@@ -2254,6 +2377,8 @@ namespace AnimusForge
 		private static bool DoesDecisionMatchCounterpartRecord(BilateralDiplomacyRecord record, KingdomDecision decision)
 		{
 			if (record == null || !record.CounterpartCreated) return false;
+			if (!string.IsNullOrEmpty(record.OperationId))
+				return record.OperationState == "pending" && ReferenceEquals(record.CounterpartDecision, decision);
 			if (!TryGetBilateralDiplomacyDecisionDetails(decision, out BilateralDiplomacyKind kind, out Kingdom source, out Kingdom target, out int tribute, out int duration))
 			{
 				return false;
@@ -2483,10 +2608,11 @@ namespace AnimusForge
 			{
 				if (_bilateralDiplomacyRecords == null) return;
 				_bilateralDiplomacyRecords.RemoveAll(r =>
-					r == null
-					|| ParseKind(r.Kind) == BilateralDiplomacyKind.None
-					|| ResolveKingdom(r.FirstKingdomId) == null
-					|| ResolveKingdom(r.SecondKingdomId) == null);
+						r == null
+						|| (string.IsNullOrEmpty(r.OperationId)
+							&& (ParseKind(r.Kind) == BilateralDiplomacyKind.None
+								|| ResolveKingdom(r.FirstKingdomId) == null
+								|| ResolveKingdom(r.SecondKingdomId) == null)));
 			}
 			catch (Exception ex)
 			{
@@ -3372,6 +3498,12 @@ namespace AnimusForge
 			{
 				if (clan == null || string.IsNullOrEmpty(clan.StringId)) return true;
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (behavior?.IsFactionPeaceRoyalProposer(__instance, clan) == true && __instance is MakePeaceKingdomDecision
+					&& TryGetBilateralDiplomacyApproval(__instance, possibleOutcome, out bool acceptsPeace))
+				{
+					__result = acceptsPeace ? GetForcedVoteDealSupportScore((int)Supporter.SupportWeights.SlightlyFavor) : -1000f;
+					return false;
+				}
 				if (behavior != null && behavior.TryGetDialogueProposalSupport(__instance, clan, possibleOutcome, out int dialogueWeight, out bool isPromisedOutcome))
 				{
 					__result = isPromisedOutcome ? GetForcedVoteDealSupportScore(dialogueWeight) : -1000f;
@@ -3427,6 +3559,17 @@ namespace AnimusForge
 				Clan clan = supporter?.Clan;
 				if (clan == null || string.IsNullOrWhiteSpace(clan.StringId) || __instance == null) return true;
 				VoteDealBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<VoteDealBehavior>();
+				if (possibleOutcomes != null && behavior?.IsFactionPeaceRoyalProposer(__instance, clan) == true)
+				{
+					DecisionOutcome peaceOutcome = possibleOutcomes.FirstOrDefault(outcome =>
+						TryGetBilateralDiplomacyApproval(__instance, outcome, out bool acceptsPeace) && acceptsPeace);
+					if (peaceOutcome != null)
+					{
+						supportWeightOfSelectedOutcome = AffordableSupportWeight(__instance, clan, Supporter.SupportWeights.SlightlyFavor);
+						__result = peaceOutcome;
+						return false;
+					}
+				}
 				if (possibleOutcomes != null && behavior?.IsDialogueProposedDecision(__instance) == true && __instance.ProposerClan == clan)
 				{
 					DecisionOutcome dialoguePromisedOutcome = possibleOutcomes.FirstOrDefault(outcome =>

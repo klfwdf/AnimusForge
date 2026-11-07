@@ -293,6 +293,10 @@ public sealed partial class FieldCampBehavior : CampaignBehaviorBase
 		_healCarry.Clear();
 		_lastRestHours = -1;
 		_lastDefeatHours = -1;
+		_handledCompanionRelations.Clear();
+		_handledCompanionStates.Clear();
+		_handledPairsByHero = null;
+		_companionIssueRulesVersion = 1;
 		ClearIssueState();
 		_visuals.Forget();
 	}

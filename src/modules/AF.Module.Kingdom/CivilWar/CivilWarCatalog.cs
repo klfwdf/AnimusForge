@@ -170,7 +170,7 @@ internal static class CivilWarCatalog
 	{
 		new CivilWarDemandDef
 		{
-			Id = "make_peace", FactionNameKey = "CW_Catalog_FactionName_make_peace", TextKey = "CW_Catalog_Demand_make_peace", Color = "#1E6B4AFF",
+			Id = "make_peace", FactionNameKey = "CW_Catalog_FactionName_make_peace", TextKey = "CW_Catalog_Demand_make_peace_agenda", Color = "#1E6B4AFF",
 			BaseWeight = 0.05f, Target = CivilWarDemandTarget.EnemyKingdom,
 			Affinity = A(("lands_raided", 0.9f), ("war_imposed", 1.0f), ("fief_lost", 0.6f)),
 			AcceptEffectId = CivilWarEffectIds.MakePeaceWithTarget,
@@ -210,7 +210,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "autonomy", FactionNameKey = "CW_Catalog_FactionName_autonomy", TextKey = "CW_Catalog_Demand_autonomy", Color = "#8C5A12FF",
+			Id = "autonomy", FactionNameKey = "CW_Catalog_FactionName_autonomy", TextKey = "CW_Catalog_Demand_autonomy_founding", Color = "#8C5A12FF",
 			BaseWeight = 0.02f, MinFortifications = 1, MaxLeaderRelationToKing = -5,
 			Affinity = A(("royal_suppression", 0.8f), ("fief_denied", 0.6f), ("lands_raided", 0.5f), ("demand_refused", 0.5f), ("broken_pledge", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.GrantPrivileges,

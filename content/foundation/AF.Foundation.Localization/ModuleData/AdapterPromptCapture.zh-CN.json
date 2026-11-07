@@ -1,4 +1,5 @@
 {
+  "kingdom_peaceful_independence_naming": "本次建国已经获得原王国君主同意，属于和平独立，不是起义或战争。请为获准携封地共同独立的家族拟定国名、简称和建国介绍；介绍应符合和平分离事实，不得虚构内战、胜利或战斗。保持原有JSON输出协议。",
   "AF_PCAP_Army_Head": "【当前军团事实】",
   "AF_PCAP_Army_HeroLeads": "你正在率领{ARMY}",
   "AF_PCAP_Army_HeroBelongs": "你现在属于{LEADER}统率的{ARMY}",

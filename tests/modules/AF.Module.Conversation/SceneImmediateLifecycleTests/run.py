@@ -19,6 +19,7 @@ module=(base/'ShoutBehavior.ModuleSceneSubmission.cs').read_text(encoding='utf-8
 members.append(ex.declaration(module,'private sealed class SceneMainThreadSynchronizationContext'))
 unified=(ROOT/'src/modules/AF.Module.Conversation/Internal/Postprocess/ShoutBehavior.UnifiedActionPostprocess.cs').read_text(encoding='utf-8-sig')
 header=ex.declaration(unified,'internal static SceneActionPostprocessWorkItem PrepareSceneUnifiedActionPostprocess(').split('{',1)[0]
+header=header.replace('GptSoVitsLanguage speechLanguage = null','AnimusForge.GptSoVitsLanguage speechLanguage = null')
 members.append(header+'{ return new SceneActionPostprocessWorkItem("system", "detached prompt", replyText); }')
 gate=(base/'ShoutBehavior.ScenePostprocessGate.cs').read_text(encoding='utf-8-sig')
 members += [m.group(0) for m in re.finditer(r'^\s*private (?:readonly )?[^\n;{}]+_[a-zA-Z]\w*[^\n;{}]*;',gate,re.M)]

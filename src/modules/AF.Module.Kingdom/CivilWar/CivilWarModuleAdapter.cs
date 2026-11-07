@@ -153,6 +153,14 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 	}
 
 	public bool IsRebellionRequestActive(string factionId) => _owner.IsRebellionRequestActive(factionId);
+	public bool IsPeacefulIndependenceRequest(string factionId) => _owner.IsPeacefulIndependenceRequest(factionId);
+	public bool IsIndependenceRequestCurrent(string factionId, string operationId, string kingdomId, string leaderClanId) => _owner.IsIndependenceRequestCurrent(factionId, operationId, kingdomId, leaderClanId);
+	public string GetIndependenceOperationId(string factionId) => _owner.GetIndependenceOperationId(factionId);
+	public string GetIndependenceChoice(string factionId, string operationId) => _owner.GetIndependenceChoice(factionId, operationId);
+	public bool AnswerIndependenceChoice(string factionId, string operationId, bool found) => _owner.AnswerIndependenceChoice(factionId, operationId, found);
+	public void NoteIndependentKingdomCreated(string factionId, string operationId, Kingdom kingdom) => _owner.NoteIndependentKingdomCreated(factionId, operationId, kingdom);
+	public void NoteIndependenceNamingReady(string factionId, string operationId, string formal, string shortName, string lore) => _owner.NoteIndependenceNamingReady(factionId, operationId, formal, shortName, lore);
+	public bool GetIndependenceNaming(string factionId, string operationId, out string formal, out string shortName, out string lore) => _owner.GetIndependenceNaming(factionId, operationId, out formal, out shortName, out lore);
 
 	public void NotifyRebellionFailed(string factionId, string reason) => _owner.NotifyRebellionFailed(factionId, reason);
 

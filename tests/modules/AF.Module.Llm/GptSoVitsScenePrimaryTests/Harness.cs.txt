@@ -15,7 +15,7 @@ foreach(bool local in new[]{true,false})foreach(bool primary in new[]{true,false
   IsHostile=a=>false,IsTtsEnabled=()=>true,IsLocalProvider=()=>local,PrimaryTtsAllowed=a=>primary&&ReferenceEquals(a,agent),
   CanLipSync=(Agent a,out string reason)=>{reason="fixture";return true;},ResolveHero=i=>null,ExternalHeroVoice=h=>"voice",
   EstimateTypingDuration=t=>1,Audio=()=>new(),RemoveHostileInteraction=i=>{},ClearPendingFeed=i=>{},CaptureInteractionToken=i=>9,
-  Report=(s,i,d)=>{},ClearPendingBubble=(i,c)=>{},EnqueueCompletionToken=(i,t)=>{},EnqueueBubble=(i,a,t,n,d)=>{},
+  Report=(s,i,d)=>{},ClearPendingBubble=(i,c)=>{},EnqueueCompletionToken=(i,t)=>{},EnqueueBubble=(i,a,t,n,d,info,final,index)=>{},
   ScheduleFeed=(i,n,t,info)=>trace.Add("scheduled"),PublishFeedImmediately=(i,n,t,info)=>trace.Add("feed:"+t),
   ShowBubble=(a,t,d)=>{trace.Add("bubble:"+t);return true;},ArmInteractionTimeout=(i,t,d)=>trace.Add("timeout")};
  var subject=new ScenePresentationController();
@@ -41,7 +41,7 @@ namespace AnimusForge {
  internal static class Logger{internal static void Log(string owner,string message){}}
  internal static class VoiceMapper{internal static string ResolveVoiceId(Hero h)=>"hero";internal static string ResolveVoiceIdForNonHero(bool f,float a,int i)=>"unnamed";}
  internal static class MeetingBattleLockMissionBehavior{internal static void ReapplyMeetingLockForAgentIfNeeded(Agent a,bool recaptureAnchor,bool preserveFacing){}}
- internal static class ShoutBehavior{internal sealed class SceneSpeechPlaybackInfo{internal bool TtsEnabled,TtsAccepted,WaitForPlaybackFinished;internal float VisualDurationSeconds;}}
+ internal static class ShoutBehavior{internal sealed class SceneSpeechPlaybackInfo{internal bool TtsEnabled,TtsAccepted,WaitForPlaybackFinished;internal float VisualDurationSeconds;internal int QueuedSegmentIndex;internal bool QueuedFinalSegment=true,QueuedNotify=true;internal string ImmediatePresentedText;internal Func<bool> CanNotifyPresented;}}
  internal sealed class TtsEngine{
   internal static TtsEngine Instance=new();internal int Calls;
   internal sealed class PlaybackRequest{internal int SegmentCount=1;}

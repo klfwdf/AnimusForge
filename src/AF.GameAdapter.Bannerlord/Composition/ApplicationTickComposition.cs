@@ -69,6 +69,7 @@ internal static class ApplicationTickComposition
 		SiegeAiInterventionBehavior.OnEngineTickForExternal();
 		ModOnboardingBehavior.Instance?.OnEngineTick();
 		MyBehavior.Instance?.OnEngineTick();
+		PlayerNotorietyBehavior.Instance?.OnEngineTick();
 		CourierDeliveryBehavior.Instance?.OnEngineTick();
 		DuelBehavior.Instance?.OnEngineTick();
 		RewardSystemBehavior.Instance?.OnEngineTick();
@@ -115,6 +116,7 @@ internal static class ApplicationTickComposition
 			RunWatchedTickPhase("SubModule.SiegeAiInterventionBehavior.OnEngineTick", () => SiegeAiInterventionBehavior.OnEngineTickForExternal());
 			RunWatchedTickPhase("SubModule.ModOnboardingBehavior.OnEngineTick", () => ModOnboardingBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.MyBehavior.OnEngineTick", () => MyBehavior.Instance?.OnEngineTick());
+			RunWatchedTickPhase("SubModule.PlayerNotorietyBehavior.OnEngineTick", () => PlayerNotorietyBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.CourierDeliveryBehavior.OnEngineTick", () => CourierDeliveryBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.DuelBehavior.OnEngineTick", () => DuelBehavior.Instance?.OnEngineTick());
 			RunWatchedTickPhase("SubModule.RewardSystemBehavior.OnEngineTick", () => RewardSystemBehavior.Instance?.OnEngineTick());

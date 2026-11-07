@@ -78,8 +78,8 @@ check('TryPrepareCampNavigation(agent)' in life and 'AddBehaviorGroup<DailyBehav
       'camp movement reuses resident native navigator and attaches daily behavior only on demand')
 check('ScriptBehavior.AddAgentTarget(envoy.Agent, Agent.Main)' in envoys and 'private void WalkEnvoy()' not in envoys,
       'envoy follows the player Agent, not repeated coordinate guesses')
-check('_envoyVisits[issue]' in envoys and '_envoyVisits[index] =' not in envoys,
-      'visits counted by presentation callback, not departure')
+check('FieldCampBehavior.Instance?.MarkEnvoyPresented(issue);' in envoys and '_envoyVisits' not in envoys,
+      'visits counted by presentation callback in the persistent camp owner, not departure')
 check('MarkEnvoyPresented(openingEnvoy, openingIssue)' in envoys and 'shout._ambientSession.OnPresented = onPresented' in field_chat,
       'actual presentation callback reaches envoy accounting')
 check('CancelFieldCampEnvoyForExternal(entry.Agent)' in envoys and '!_envoyQueue.Contains(index)' in envoys,
@@ -187,4 +187,111 @@ role_en = json.loads(read('content/foundation/AF.Foundation.Localization/ModuleD
 check('士兵' in role_cn and 'soldier' in role_en and
       set(re.findall(r'\{\w+\}', role_cn)) == set(re.findall(r'\{\w+\}', role_en)),
       'camp spectator role has matching CN/EN semantics and variables')
+# Companion issue lifecycle: source/resource contracts, not a C# or savegame replay.
+issues = read(CAMP + 'FieldCampIssues.cs')
+issue_owner = read(CAMP + 'Host/FieldCampBehavior.Issues.cs')
+behavior = read(CAMP + 'Host/FieldCampBehavior.cs')
+orders = read(CAMP + 'FieldCampOrderTags.cs')
+chat = read(SCENE + 'ShoutBehavior.SceneAmbientChat.cs')
+chains = read(SCENE + 'ShoutBehavior.SceneConversationChains.cs')
+native = read('src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs')
+queue = read('src/AF.GameAdapter.Bannerlord/Scene/SceneSpeechOutputQueueController.cs')
+messages = read('src/AF.GameAdapter.Bannerlord/Prompt/SceneHistoryPromptCaptureAdapter.cs')
+playback = shout.split('internal sealed class SceneSpeechPlaybackInfo', 1)[1].split('internal sealed class PendingSceneDialogueFeedEntry', 1)[0]
+check('TraitsClash' not in issues and 'DefaultTraits' not in issues,
+      'traits alone no longer manufacture companion feuds')
+check('relation <= FeudRelation && (!handledRelation.HasValue || relation <= handledRelation.Value - FeudRenewalRelationLoss)' in issues
+      and 'FeudRelation = -10' in issues and 'FeudRenewalRelationLoss = 5' in issues,
+      'feud eligibility requires actual bad relation and new deterioration after handling')
+check('CompanionPairKey(first.StringId, second.StringId)' in issue_owner and 'string.CompareOrdinal(first, second)' in issues,
+      'same unordered hero pair uses one stable handling identity')
+for key in ['_afFieldCamp_issues_v1', '_afFieldCamp_moraleGained_v1', '_afFieldCamp_suppressed_v1', '_afFieldCamp_lastDefeatHours_v1',
+            '_afFieldCamp_handledCompanionRelations_v1', '_afFieldCamp_handledCompanionStates_v1',
+            '_afFieldCamp_issueEnvoyVisits_v1', '_afFieldCamp_companionIssueRulesVersion_v1']:
+    check('SyncData("' + key + '"' in issue_owner, 'save identity wired: ' + key)
+clear = issue_owner.split('private void ClearIssueState()', 1)[1].split('internal int EnvoyVisits', 1)[0]
+check('_issueEnvoyVisits.Clear()' in clear and '_handledCompanionRelations.Clear()' not in clear,
+      'striking camp resets visits but retains handled companion pairs')
+reset = behavior.split('private void ResetAll()', 1)[1].split('// ---------- campaign ticks', 1)[0]
+check('_handledCompanionRelations.Clear()' in reset and '_handledPairsByHero = null' in reset,
+      'new campaign clears persistent handling and its prompt index')
+restore = issue_owner.split('private void RestoreCompanionIssueState()', 1)[1].split('private void RememberCompanionResolution', 1)[0]
+check('if (_companionIssueRulesVersion >= 1) return;' in restore and 'State.Withdrawn' in restore
+      and 'ApplyGrantEffect' not in restore and 'ChangeRelationAction' not in restore,
+      'legacy compatibility is one-shot and withdraws obsolete requests without replaying effects')
+check('RestoreCompanionIssueState();' in read(CAMP + 'Host/FieldCampBehavior.Menu.cs'),
+      'legacy migration runs after campaign objects are available')
+check('behavior.EnvoyVisits(i) < FieldCampBehavior.MaxEnvoyVisitsPerIssue' in envoys
+      and 'FieldCampBehavior.Instance.EnvoyVisits(index) < FieldCampBehavior.MaxEnvoyVisitsPerIssue' in envoys,
+      'initial visit and retry use the same persistent limit')
+resolve = issue_owner.split('internal string Resolve(', 1)[1].split('private static float LeadershipFactor', 1)[0]
+check(resolve.index('ApplyGrantEffect(issue, main)') < resolve.index('RememberCompanionResolution(issue)') < resolve.index('FlushIssues()'),
+      'handling baseline is captured after the real effect and before save flush')
+check('!FieldCampOrderTags.CanSpeakerMediate(issue, speakerAgentIndex)' in resolve
+      and 'allowed.Remove("GRANT")' in orders and 'speaker == first || speaker == second' in orders,
+      'bystanders cannot accept companion mediation in either rules or execution')
+check('RecordHeroFact(issue.Subject, fact)' in orders and 'RecordHeroFact(issue.Subject2, fact)' in orders,
+      'confirmed handling is recorded to both companion memories')
+handled = issue_owner.split('internal string BuildHandledCompanionPrompt(', 1)[1].split('/// <summary>Strike or encounter', 1)[0]
+check('if (reopened) continue;' in handled and 'issue.IsOpen && issue.IsCompanionIssue' in handled
+      and '_handledPairsByHero.TryGetValue(speaker.StringId' in handled,
+      'handled context stays until an actual new issue exists and uses cached per-hero index')
+check(identity.count('FieldCampOrderTags.BuildIssuePromptBlock(npc?.AgentIndex ?? -1, hero)') == 2,
+      'full and compact scene prompts both contain pending and handled camp state')
+core = native.split('internal NativeConversationGameActionResult ApplyNativeConversationGameActionsLegacyCore(', 1)[1]
+check(core.index('IsNativeConversationResponseTargetAvailableForActionDispatch')
+      < core.index('FieldCampOrderTags.Consume(!string.IsNullOrWhiteSpace(playerText), targetAgentIndex, ref result)'),
+      'native camp tags execute only after current-target validation and real player input')
+action_postprocess = read('src/modules/AF.Module.Conversation/Internal/Postprocess/ConversationActionPostprocessOwner.cs')
+shared_postprocess = action_postprocess.split('internal static bool TryPrepareCourierActionPostprocessForExternal(', 1)[1]
+check('string text = FieldCampOrderTags.StripOnly(replyText ?? "");' in action_postprocess
+      and 'string text = FieldCampOrderTags.StripOnly(replyText ?? "");' in shared_postprocess,
+      'camp tags in main replies stripped before scene/courier/native postprocess')
+check('(resolvedChainName == "native_conversation" || resolvedChainName == "meeting")'
+      in shared_postprocess and 'latestReplyHasPlayerInput && !string.IsNullOrWhiteSpace(playerText)' in shared_postprocess,
+      'shared postprocess exposes camp rules only to real native/meeting player turns')
+check('fieldCampOrderRules, partyTransferRules' in shared_postprocess
+      and 'fieldCampOrderTags = FieldCampOrderTags.NormalizePostprocessTags(content, fieldCampOrderRules)' in shared_postprocess
+      and 'nobleExecutionOrderTags, fieldCampOrderTags, partyTransferTags' in shared_postprocess,
+      'native camp tags require allowlisted normalization before execution')
+strip_only = orders.split('internal static string StripOnly(', 1)[1].split('/// <summary>', 1)[0]
+check('AssembleTag' in strip_only and 'DismissTag' in strip_only and 'ResolveTagRegex' in strip_only
+      and 'Consume(' not in strip_only and 'FieldCampMissionLogic' not in strip_only,
+      'camp reply stripping is text-only and never executes actions')
+check('PersistAmbientSummaries' not in ambient and 'lastLine.Substring(0, 80)' not in ambient,
+      'ambient dialogue no longer replaces the conversation with its last eighty characters')
+check('onPresented: (visible, finalSegment)' in chat and 'PrepareSceneHistorySpeechText(visible)' in chat
+      and '_ports.PersistNpcSpeechToNamedHeroes' in chat and 'request.OnLinePresented?.Invoke()' in chat,
+      'actually presented ambient lines and segments reach shared personal history')
+check(queue.index('TryShowNpcBubble(bubble.Agent') < queue.index('bubble.PlaybackInfo?.NotifyPresented')
+      and 'segmentIndex <= _lastPresentedSegment' in playback,
+      'history callback follows actual bubble dispatch with duplicate-segment protection')
+check('SourceMission = Mission.Current' in queue and 'bubble.ConversationEpoch' in queue
+      and 'SaveRuntimeGuard.IsCurrentGeneration(bubble.RuntimeGeneration)' in queue,
+      'presentation callbacks cannot cross mission save or conversation ownership')
+check('onPresented: () => MarkAmbientOpeningPresented(session)' in ambient and 'request.OnPresented?.Invoke()' in chains,
+      'actual envoy presentation immediately reaches persistent visit accounting')
+check('MyBehavior.AppendExternalSceneDialogueHistory(hero, null, null, witness, session)' in ambient
+      and 'PersistAmbientWitness(speakers, heroes, place)' in ambient,
+      'player witness is a confirmed context fact rather than invented NPC dialogue')
+check('nearbyDatum.AgentIndex == speakerAgentIndex ? ownLine : OverheardLine' in messages
+      and 'SceneHistory_AddressedToTarget' in messages,
+      'persistent relay speech preserves its actual NPC addressee')
+speech_entry = read(SCENE + 'ShoutBehavior.SpeechExecution.cs')
+legacy_enqueue = speech_entry.split('private void EnqueueSpeechLineWithOptions(', 1)[1].split(') =>', 1)[0]
+check('onPresented' not in legacy_enqueue and 'EnqueueSpeechLineWithOptions = EnqueueSceneSpeechWithPresentation' in read(SCENE + 'ShoutBehavior.SceneSessionComposition.cs'),
+      'new presentation callback preserves the exact reflected SceneActions enqueue signature')
+cn_values = json.loads(read(prompt + '.json'))
+en_values = json.loads(read(prompt + '.en.json'))
+check(set(cn_values) == set(en_values), 'runtime prompt CN/EN key parity')
+for key in sorted(k for k in cn_values if k.startswith('AF_FC_') or k.startswith('AF_CONV_Ambient_')):
+    check(set(re.findall(r'\{\w+\}', cn_values[key])) == set(re.findall(r'\{\w+\}', en_values[key])), key + ' variable parity')
+for state in ['Encouraged', 'Granted', 'Refused', 'Disciplined']:
+    check('AF_FC_HandledCompanion_' + state in cn_values, state + ' handled context has both languages')
+for resolution in ['Encourage', 'Grant', 'Refuse', 'Discipline']:
+    check('AF_FC_Fact_Companion_' + resolution in cn_values, resolution + ' confirmed fact has both languages')
+check('亲密关系' in cn_values['AF_FC_IssuePromptHeader'] and 'do not invent intimacy' in en_values['AF_FC_IssuePromptHeader'],
+      'both languages forbid unsupported specific accusations')
+check('以后再谈不输出' in cn_values['AF_FC_Rule_Resolve'] and 'merely putting the discussion off' in en_values['AF_FC_Rule_Resolve'],
+      'deferring the discussion is not falsely resolved')
 print(f'{checks} source/resource contracts passed. C# execution, builds and native game/provider behavior NOT RUN.')

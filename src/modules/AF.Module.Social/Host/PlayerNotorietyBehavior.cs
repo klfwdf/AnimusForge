@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Refactor.Adapters;
 using Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -70,13 +74,19 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private string _currentSettlementStayName = "";
 	private double _currentSettlementStayStartDays = -1.0;
 	private int _currentSettlementStayStartDay = -1;
-	private bool _summaryProcessing;
+	private PlayerSummaryRun _summaryRun;
+	// 0 = idle, 1 = recheck the normal interval, 2 = drain the already-due backlog next Tick.
+	private int _summaryQueuedMode;
+	private string _summarySchedulePhase = "idle";
+	private int _summaryScheduleLogDay = -1;
 
 	public static PlayerNotorietyBehavior Instance { get; private set; }
 
 	public override void RegisterEvents()
 	{
+		if (Instance != null && Instance != this) Instance.ResetSummaryProcessing("owner_replaced");
 		Instance = this;
+		_summaryQueuedMode = 1;
 		CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, OnSessionLaunchedForStartingHistory);
 		CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, OnDailyTick);
 		CampaignEvents.ConversationEnded.AddNonSerializedListener(this, OnNativeConversationEnded);
@@ -115,6 +125,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
+		ResetSummaryProcessing("load");
+		_summaryQueuedMode = 1;
 		try
 		{
 			storageJson = CampaignSaveChunkHelper.LoadChunkedString(dataStore, StorageKey, "PlayerNotoriety");
@@ -140,6 +152,11 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			int recent = state.RecentActions?.Count ?? 0;
 			int materials = state.MajorMaterials?.Count ?? 0;
 			int pending = state.MajorMaterials?.Count(x => x != null && !x.Summarized) ?? 0;
+			int eligible = state.MajorMaterials?.Count(IsEligibleSummaryMaterial) ?? 0;
+			var run = _summaryRun;
+			long now = Stopwatch.GetTimestamp();
+			int elapsedSeconds = run == null ? 0 : (int)Math.Max(0, (now - run.AttemptStartedAt) / Stopwatch.Frequency);
+			int retryInSeconds = run == null ? 0 : (int)Math.Max(0, (run.RetryAt - now) / Stopwatch.Frequency);
 			int summaryBytes = CampaignSaveChunkHelper.GetUtf8ByteCountForDiagnostics(state.MajorSummary ?? "");
 			int maxMaterialBytes = state.MajorMaterials?.Select(x => CampaignSaveChunkHelper.GetUtf8ByteCountForDiagnostics(x?.Text ?? "")).DefaultIfEmpty(0).Max() ?? 0;
 			return "recentActions=" + recent
@@ -150,7 +167,15 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				+ " conversationOutcomeReceipts=" + (state.ConversationOutcomeReceipts?.Count ?? 0)
 				+ " cultures=" + (state.CultureNotoriety?.Count ?? 0)
 				+ " summaryBytes=" + summaryBytes
-				+ " maxMaterialBytes=" + maxMaterialBytes;
+				+ " maxMaterialBytes=" + maxMaterialBytes
+				+ " eligiblePendingMaterials=" + eligible + " excludedPendingMaterials=" + (pending - eligible)
+				+ " summaryPhase=" + _summarySchedulePhase + " summaryProcessing=" + (run != null)
+				+ " summaryRequestCompleted=" + (run?.Request?.IsCompleted == true)
+				+ " summaryAttempt=" + (run?.Attempts ?? 0) + " summaryElapsedSeconds=" + elapsedSeconds
+				+ " summaryRetryInSeconds=" + retryInSeconds + " summaryRetryCount=" + state.SummaryRetryCount
+				+ " lastSummaryDay=" + state.LastSummaryDay + " currentDay=" + GetCurrentGameDayIndex()
+				+ " summaryIntervalDays=" + GetSummaryIntervalDays()
+				+ " lastSummaryError=" + SummaryErrorForDiagnostics(state.LastSummaryError);
 		}
 		catch
 		{
@@ -1086,20 +1111,38 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private void TryStartSummaryProcessing(bool force = false)
 	{
-		if (_summaryProcessing)
+		if (Instance != this) return;
+		try
 		{
-			return;
+			if (_summaryRun != null || _summarySchedulePhase == "faulted")
+			{
+				LogSummarySchedule(_summarySchedulePhase);
+				return;
+			}
+			if (!force && !HasSummaryWorkDue())
+			{
+				LogSummarySchedule(HasPendingMajorMaterials() ? "waiting_interval" : "no_eligible_materials");
+				return;
+			}
+			if (force && !HasPendingMajorMaterials() && !IsMajorSummaryOverPromptLimit()) return;
+			_state = NormalizeState(_state);
+			var materials = _state.MajorMaterials.Where(IsEligibleSummaryMaterial)
+				.OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks).Take(SummaryBatchSize).ToList();
+			string playerName = BuildSummaryPlayerDisplayName();
+			_summaryRun = new PlayerSummaryRun
+			{
+				State = _state, Generation = SaveRuntimeGuard.CaptureGeneration(),
+				OriginalSummary = _state.MajorSummary, OriginalSummaryDay = _state.LastSummaryDay,
+				OriginalUpdatedTicks = _state.UpdatedUtcTicks, PlayerName = playerName,
+				RenderingIdentity = CaptureMemorySummaryHistoryRenderingIdentity(),
+				IsChinese = PromptLanguage.IsChinese, PromptChars = GetMajorPromptChars(),
+				Sources = materials, Materials = materials.Select(CloneSummaryMaterial).ToList(),
+				SystemPrompt = BuildSummarySystemPrompt(playerName), UserPrompt = BuildSummaryUserPrompt(materials, playerName),
+				Attempts = Math.Max(0, Math.Min(MaxSummaryRetries - 1, _state.SummaryRetryCount))
+			};
+			StartSummaryAttempt(_summaryRun);
 		}
-		if (!force && !HasSummaryWorkDue())
-		{
-			return;
-		}
-		if (force && !HasPendingMajorMaterials() && !IsMajorSummaryOverPromptLimit())
-		{
-			return;
-		}
-		_summaryProcessing = true;
-		_ = ProcessSummaryAsync();
+		catch (Exception ex) { FaultSummaryProcessing("capture", ex); }
 	}
 
 	private bool HasSummaryWorkDue()
@@ -1121,81 +1164,204 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		return GetCurrentGameDayIndex() - _state.LastSummaryDay >= interval;
 	}
 
-	private bool HasPendingMajorMaterials()
+	private static bool IsEligibleSummaryMaterial(PlayerHistoryMaterial material) => material != null && !material.Summarized
+		&& !ActionHistoryVisibilityPolicy.IsPrivateContract(material.SourceKind, material.StableKey);
+
+	private bool HasPendingMajorMaterials() => _state?.MajorMaterials?.Any(IsEligibleSummaryMaterial) == true;
+
+	private sealed class PlayerSummaryRun
 	{
-		return _state?.MajorMaterials != null && _state.MajorMaterials.Any(x => x != null && !x.Summarized
-			&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.SourceKind, x.StableKey));
+		internal PlayerNotorietyState State;
+		internal long Generation, OriginalUpdatedTicks, AttemptStartedAt, RetryAt;
+		internal int OriginalSummaryDay, PromptChars, Attempts;
+		internal bool IsChinese;
+		internal string OriginalSummary, PlayerName, RenderingIdentity, SystemPrompt, UserPrompt;
+		internal List<PlayerHistoryMaterial> Sources, Materials;
+		internal readonly CancellationTokenSource Cancellation = new CancellationTokenSource();
+		internal Task<MyBehavior.ApiCallResult> Request;
 	}
 
-	private async Task ProcessSummaryAsync()
+	private static PlayerHistoryMaterial CloneSummaryMaterial(PlayerHistoryMaterial material) => new PlayerHistoryMaterial
 	{
-		bool continueAfterBatch = false;
+		Day = material.Day, GameDate = material.GameDate, Text = material.Text, SourceKind = material.SourceKind,
+		StableKey = material.StableKey, CultureIds = new List<string>(material.CultureIds), CreatedUtcTicks = material.CreatedUtcTicks
+	};
+
+	private bool IsSummaryOwnerCurrent(PlayerSummaryRun run) => ReferenceEquals(_summaryRun, run) && Instance == this
+		&& ReferenceEquals(_state, run.State) && SaveRuntimeGuard.IsCurrentGeneration(run.Generation);
+
+	private bool IsSummarySourceCurrent(PlayerSummaryRun run)
+	{
+		if (!IsSummaryOwnerCurrent(run) || _state.MajorSummary != run.OriginalSummary
+			|| _state.LastSummaryDay != run.OriginalSummaryDay || _state.UpdatedUtcTicks != run.OriginalUpdatedTicks
+			|| PromptLanguage.IsChinese != run.IsChinese || GetMajorPromptChars() != run.PromptChars
+			|| CaptureMemorySummaryHistoryRenderingIdentity() != run.RenderingIdentity) return false;
+		for (int i = 0; i < run.Sources.Count; i++)
+		{
+			var source = run.Sources[i]; var captured = run.Materials[i];
+			if (!_state.MajorMaterials.Contains(source) || !IsEligibleSummaryMaterial(source)
+				|| source.StableKey != captured.StableKey || source.Text != captured.Text || source.Day != captured.Day
+				|| source.GameDate != captured.GameDate || source.SourceKind != captured.SourceKind
+				|| source.CreatedUtcTicks != captured.CreatedUtcTicks || !source.CultureIds.SequenceEqual(captured.CultureIds)) return false;
+		}
+		return true;
+	}
+
+	private void StartSummaryAttempt(PlayerSummaryRun run)
+	{
+		if (!IsSummarySourceCurrent(run)) { DiscardSummaryRun("source_changed"); return; }
+		run.Attempts++;
+		run.AttemptStartedAt = Stopwatch.GetTimestamp();
+		run.RetryAt = 0;
+		_summarySchedulePhase = "requesting";
+		Logger.Log("PlayerNotoriety", "summary_attempt attempt=" + run.Attempts + " materials=" + run.Materials.Count + " generation=" + run.Generation);
 		try
 		{
-			_state = NormalizeState(_state);
-			List<PlayerHistoryMaterial> sourceMaterials = _state.MajorMaterials
-				.Where(x => x != null && !x.Summarized
-					&& !ActionHistoryVisibilityPolicy.IsPrivateContract(x.SourceKind, x.StableKey))
-				.OrderBy(x => x.Day)
-				.ThenBy(x => x.CreatedUtcTicks)
-				.Take(SummaryBatchSize)
-				.ToList();
-			bool compactOnly = sourceMaterials.Count == 0 && IsMajorSummaryOverPromptLimit();
-			if (sourceMaterials.Count == 0 && !compactOnly)
+			// The gateway captures configuration synchronously; only detached HTTP data crosses await.
+			using (LlmNonStreamingTransport.PushOwnerCancellation(run.Cancellation.Token))
+				run.Request = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(
+					run.SystemPrompt, run.UserPrompt, "PlayerNotorietySummary", 0, true);
+		}
+		catch (HttpRequestException ex) { RecordSummaryAttemptFailure(run, ex.GetType().Name, null); }
+		catch (OperationCanceledException) { RecordSummaryAttemptFailure(run, "request_cancelled", null); }
+	}
+
+	// Application Tick also runs while the campaign is paused. Idle/in-flight work is O(1);
+	// accept at most one completed batch (24 materials) per frame.
+	internal void OnEngineTick()
+	{
+		if (Instance != this) return;
+		var run = _summaryRun;
+		if (run == null)
+		{
+			int mode = _summaryQueuedMode;
+			if (mode != 0) { _summaryQueuedMode = 0; TryStartSummaryProcessing(mode == 2); }
+			return;
+		}
+		if (!IsSummaryOwnerCurrent(run)) { ResetSummaryProcessing("owner_or_generation_changed"); return; }
+		try
+		{
+			if (run.Request == null)
 			{
+				if (Stopwatch.GetTimestamp() >= run.RetryAt) StartSummaryAttempt(run);
 				return;
 			}
-			string playerDisplayName = BuildSummaryPlayerDisplayName();
-			string sys = BuildSummarySystemPrompt(playerDisplayName);
-			string user = BuildSummaryUserPrompt(sourceMaterials, playerDisplayName);
-			string response = await MyBehavior.CallAuxiliaryApiTextForExternal(sys, user, "PlayerNotorietySummary");
-			if (TryParseSummaryResponse(response, out string summary, out double delta, out string error))
+			if (!run.Request.IsCompleted) return;
+			var request = run.Request;
+			run.Request = null;
+			if (!IsSummarySourceCurrent(run)) { DiscardSummaryRun("source_changed"); return; }
+			MyBehavior.ApiCallResult response;
+			try { response = request.GetAwaiter().GetResult(); }
+			catch (HttpRequestException ex) { RecordSummaryAttemptFailure(run, ex.GetType().Name, null); return; }
+			catch (OperationCanceledException) { RecordSummaryAttemptFailure(run, "request_cancelled", null); return; }
+			string error = string.IsNullOrWhiteSpace(response?.ErrorMessage) ? "request_failed" : response.ErrorMessage;
+			if (response?.Success == true)
 			{
-				summary = RenderPlayerHistoryTextForPrompt(summary, playerDisplayName);
-				ApplySummarySuccess(sourceMaterials, summary, delta);
-				continueAfterBatch = HasPendingMajorMaterials();
+				if (TryParseSummaryResponse(response.Content, out string summary, out double delta, out error))
+				{
+					summary = RenderPlayerHistoryTextForPrompt(summary, run.PlayerName);
+					ApplySummarySuccess(run.Sources, summary, delta);
+					FinishSummaryRun("completed");
+					return;
+				}
+				RecordSummaryAttemptFailure(run, error, response.RetryAfterSeconds);
 				return;
 			}
-			_state.SummaryRetryCount++;
-			_state.LastSummaryError = error;
-			Logger.Log("PlayerNotoriety", "summary parse failed: " + error);
-			if (_state.SummaryRetryCount >= MaxSummaryRetries)
+			if (response?.IsRequestFailure == true)
 			{
-				if (compactOnly)
-				{
-					// Compaction failed three times: keep the newest history, not the head.
-					_state.MajorSummary = TrimMajorSummaryKeepNewest(RenderPlayerHistoryTextForPrompt(_state.MajorSummary, playerDisplayName), _state.MajorSummary, playerDisplayName, GetMajorPromptChars());
-				}
-				else
-				{
-					_state.MajorSummary = BuildFallbackMajorSummary(_state.MajorSummary, sourceMaterials, playerDisplayName);
-					foreach (PlayerHistoryMaterial material in sourceMaterials)
-					{
-						if (material != null)
-						{
-							material.Summarized = true;
-							RememberSummarizedMaterialKey(material);
-						}
-					}
-					PruneSummarizedMajorMaterials();
-				}
-				_state.SummaryRetryCount = 0;
-				continueAfterBatch = HasPendingMajorMaterials();
+				RecordSummaryAttemptFailure(run, error, response.RetryAfterSeconds);
+				return;
 			}
+			FaultSummaryProcessing("gateway", new InvalidOperationException(error));
 		}
-		catch (Exception ex)
+		catch (Exception ex) { FaultSummaryProcessing("process", ex); }
+	}
+
+	private void RecordSummaryAttemptFailure(PlayerSummaryRun run, string error, int? retryAfterSeconds)
+	{
+		_state.SummaryRetryCount = run.Attempts;
+		_state.LastSummaryError = error;
+		Logger.Log("PlayerNotoriety", "summary_attempt_failed attempt=" + run.Attempts + " error=" + SummaryErrorForDiagnostics(error));
+		if (run.Attempts >= MaxSummaryRetries)
 		{
-			_state.LastSummaryError = ex.Message;
-			Logger.Log("PlayerNotoriety", "summary failed: " + ex);
+			ApplySummaryFallback(run);
+			FinishSummaryRun("fallback");
+			return;
 		}
-		finally
-		{
-			_summaryProcessing = false;
-			if (continueAfterBatch)
-			{
-				TryStartSummaryProcessing(force: true);
-			}
-		}
+		int delaySeconds = Math.Max(2 * run.Attempts, Math.Max(0, retryAfterSeconds ?? 0));
+		run.RetryAt = Stopwatch.GetTimestamp() + (long)delaySeconds * Stopwatch.Frequency;
+		_summarySchedulePhase = "retry_wait";
+		Logger.Log("PlayerNotoriety", "summary_retry_scheduled attempt=" + (run.Attempts + 1) + " delaySeconds=" + delaySeconds);
+	}
+
+	private void ApplySummaryFallback(PlayerSummaryRun run)
+	{
+		string summary = run.Materials.Count == 0
+			? TrimMajorSummaryKeepNewest(RenderPlayerHistoryTextForPrompt(run.OriginalSummary, run.PlayerName), run.OriginalSummary, run.PlayerName, run.PromptChars)
+			: BuildFallbackMajorSummary(run.OriginalSummary, run.Materials, run.PlayerName);
+		_state.MajorSummary = summary;
+		_state.LastSummaryDay = GetCurrentGameDayIndex();
+		_state.UpdatedUtcTicks = DateTime.UtcNow.Ticks;
+		_state.SummaryRetryCount = 0;
+		foreach (var source in run.Sources) { source.Summarized = true; RememberSummarizedMaterialKey(source); }
+		PruneSummarizedMajorMaterials();
+		Logger.Log("PlayerNotoriety", "summary_fallback materials=" + run.Materials.Count + " notorietyDelta=0 lastError=" + SummaryErrorForDiagnostics(_state.LastSummaryError));
+	}
+
+	internal void RetireCampaignRuntime(string reason)
+	{
+		try { ResetSummaryProcessing(reason); }
+		finally { if (ReferenceEquals(Instance, this)) Instance = null; }
+	}
+
+	private void ResetSummaryProcessing(string reason)
+	{
+		var run = _summaryRun;
+		_summaryRun = null;
+		_summaryQueuedMode = 0;
+		_summarySchedulePhase = "idle";
+		_summaryScheduleLogDay = -1;
+		if (run == null) return;
+		try { run.Cancellation.Cancel(); }
+		finally { run.Cancellation.Dispose(); }
+		Logger.Log("PlayerNotoriety", "summary_retired reason=" + reason + " attempt=" + run.Attempts);
+	}
+
+	private void DiscardSummaryRun(string reason)
+	{
+		ResetSummaryProcessing(reason);
+		_state.SummaryRetryCount = 0;
+		_summaryQueuedMode = 1;
+	}
+
+	private void FinishSummaryRun(string reason)
+	{
+		ResetSummaryProcessing(reason);
+		_summaryQueuedMode = HasPendingMajorMaterials() ? 2 : 0;
+	}
+
+	private void FaultSummaryProcessing(string stage, Exception error)
+	{
+		ResetSummaryProcessing("fault");
+		_state.LastSummaryError = stage + ":" + error.GetType().Name + ":" + error.Message;
+		_summarySchedulePhase = "faulted";
+		Logger.Log("PlayerNotoriety", "summary_fault stage=" + stage + " materials_preserved=true error=" + error);
+	}
+
+	private static string SummaryErrorForDiagnostics(string error)
+	{
+		string text = NormalizeLine(error);
+		return text.Length <= 240 ? text : text.Substring(0, 240);
+	}
+
+	private void LogSummarySchedule(string phase)
+	{
+		int day = GetCurrentGameDayIndex();
+		if (_summarySchedulePhase == phase && _summaryScheduleLogDay == day) return;
+		_summarySchedulePhase = phase; _summaryScheduleLogDay = day;
+		LogDebug("summary_schedule phase=" + phase + " day=" + day + " lastSummaryDay=" + _state.LastSummaryDay
+			+ " intervalDays=" + GetSummaryIntervalDays() + " eligiblePending=" + _state.MajorMaterials.Count(IsEligibleSummaryMaterial)
+			+ " excludedPending=" + _state.MajorMaterials.Count(x => x != null && !x.Summarized && !IsEligibleSummaryMaterial(x)));
 	}
 
 	public static bool TryGetLatestPlayerRecentActionForExternal(Hero observer, int maxAgeDays, out string stableKey, out string actionText, out int day)
@@ -2609,6 +2775,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
+			ResetSummaryProcessing("history_edited");
 			_state = NormalizeState(_state);
 			_state.MajorSummary = BuildEditedMajorHistoryForStorage(input, _state.MajorSummary, BuildPlayerHistoryDisplayName());
 			_state.LastSummaryDay = GetCurrentGameDayIndex();

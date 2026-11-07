@@ -5,7 +5,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace AnimusForge.Refactor.Modules;
 
-internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond, DissolveOwn, ChangeDemand }
+internal enum CivilWarAction { JoinCrown, JoinOpposition, Leave, Found, Detonate, Suppress, Negotiate, Concede, ForceDissolve, Respond, DissolveOwn, ChangeDemand, SendUltimatum }
 internal enum CivilWarActionStatus { Applied, Rejected, AwaitingPlayer, AwaitingKingdom, PartialFailure }
 internal sealed class CoupCivilWarRegistration
 {
@@ -220,6 +220,14 @@ internal interface ICivilWarModulePort
 	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
 	// Host asks before naming/executing a queued civil-war rebellion; false means the faction moved on.
 	bool IsRebellionRequestActive(string factionId);
+	bool IsPeacefulIndependenceRequest(string factionId);
+	bool IsIndependenceRequestCurrent(string factionId, string operationId, string kingdomId, string leaderClanId);
+	string GetIndependenceOperationId(string factionId);
+	string GetIndependenceChoice(string factionId, string operationId);
+	bool AnswerIndependenceChoice(string factionId, string operationId, bool found);
+	void NoteIndependentKingdomCreated(string factionId, string operationId, Kingdom kingdom);
+	void NoteIndependenceNamingReady(string factionId, string operationId, string formal, string shortName, string lore);
+	bool GetIndependenceNaming(string factionId, string operationId, out string formal, out string shortName, out string lore);
 	// Host gave up on a queued civil-war rebellion (failed, skipped, immunity).
 	void NotifyRebellionFailed(string factionId, string reason);
 	void RecordPeace(Kingdom kingdom, IFaction other, int week);

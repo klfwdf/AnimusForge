@@ -19,6 +19,7 @@ public sealed partial class FieldCampBehavior
 
 	private void OnSessionLaunched(CampaignGameStarter starter)
 	{
+		RestoreCompanionIssueState();
 		starter.AddGameMenu(MenuId, "{=!}{AF_FC_STATUS}", OnCampMenuInit);
 		starter.AddGameMenuOption(MenuId, "af_fc_patrol", "{=AF_FC_Menu_Patrol}Walk the camp", OnPatrolCondition, OnPatrolConsequence);
 		starter.AddGameMenuOption(MenuId, "af_fc_rest", "{=AF_FC_Menu_Rest}Rest and wait", OnRestCondition, OnRestConsequence);

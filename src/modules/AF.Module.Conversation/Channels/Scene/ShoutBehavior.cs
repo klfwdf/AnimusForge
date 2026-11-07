@@ -159,6 +159,12 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public string NpcName;
 
 		public float FallbackDurationSeconds;
+		internal SceneSpeechPlaybackInfo PlaybackInfo;
+		internal bool IsFinalSegment = true;
+		internal int SegmentIndex;
+		internal Mission SourceMission;
+		internal long RuntimeGeneration;
+		internal int ConversationEpoch;
 	}
 
 
@@ -291,6 +297,37 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public bool WaitForPlaybackFinished;
 
 		public float VisualDurationSeconds;
+		internal Action<string, bool> OnPresented;
+		internal string ImmediatePresentedText;
+		internal Func<bool> CanNotifyPresented;
+		private string _presentedText = "";
+		internal int QueuedSegmentIndex;
+		internal bool QueuedFinalSegment = true;
+		internal bool QueuedNotify = true;
+		private int _lastPresentedSegment = -1;
+
+		internal void NotifyPresented(string text, bool finalSegment = true, int segmentIndex = 0)
+		{
+			Action<string, bool> callback = OnPresented;
+			if (callback == null || segmentIndex <= _lastPresentedSegment || CanNotifyPresented?.Invoke() == false) return;
+			string newlyPresented = text ?? "";
+			if (segmentIndex == int.MaxValue && _presentedText.Length > 0)
+			{
+				// Full-text failure fallback may redisplay earlier segments: commit only its new suffix.
+				int previous = 0, current = 0;
+				while (previous < _presentedText.Length)
+				{
+					if (char.IsWhiteSpace(_presentedText[previous])) { previous++; continue; }
+					while (current < newlyPresented.Length && char.IsWhiteSpace(newlyPresented[current])) current++;
+					if (current >= newlyPresented.Length || _presentedText[previous++] != newlyPresented[current++]) return;
+				}
+				newlyPresented = newlyPresented.Substring(current).TrimStart();
+			}
+			_lastPresentedSegment = segmentIndex;
+			_presentedText += newlyPresented;
+			if (finalSegment) OnPresented = null;
+			callback.Invoke(newlyPresented, finalSegment);
+		}
 	}
 
 	internal sealed class PendingSceneDialogueFeedEntry
@@ -307,6 +344,9 @@ public partial class ShoutBehavior : CampaignBehaviorBase
 		public bool WaitForPlaybackFinished;
 
 		public float ExecuteAtMissionTime = -1f;
+		internal SceneSpeechPlaybackInfo PlaybackInfo;
+		internal int SegmentIndex;
+		internal bool FinalSegment = true;
 	}
 
 
@@ -1561,7 +1601,7 @@ internal static bool CanAgentParticipateInSceneSpeech(Agent agent) => SceneShout
 
 	private void EnsureTtsPlaybackEventsSubscribedForNativeConversation() => _j17NativeConversationSpeechAdapter.EnsureTtsPlaybackEventsSubscribedForNativeConversation();
 
-private void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f) => _j17SceneSpeechOutputQueueController.EnqueuePendingNpcBubble(agentIndex, liveAgent, uiContent, npcName, fallbackDurationSeconds);
+private void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f, SceneSpeechPlaybackInfo playbackInfo = null, bool finalSegment = true, int segmentIndex = 0) => _j17SceneSpeechOutputQueueController.EnqueuePendingNpcBubble(agentIndex, liveAgent, uiContent, npcName, fallbackDurationSeconds, playbackInfo, finalSegment, segmentIndex);
 
 private void EnqueuePendingAudioDuration(int agentIndex, float durationSeconds) => _j17SceneSpeechOutputQueueController.EnqueuePendingAudioDuration(agentIndex, durationSeconds);
 

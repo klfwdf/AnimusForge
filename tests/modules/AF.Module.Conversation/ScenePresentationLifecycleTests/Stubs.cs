@@ -9,6 +9,7 @@ namespace TaleWorlds.CampaignSystem {
  public sealed class Text { readonly string _value; public Text(string value) { _value = value; } public override string ToString() => _value; }
 }
 namespace TaleWorlds.Core { }
+namespace Helpers {public static class CharacterHelper {public static string GetDefaultFaceIdle(TaleWorlds.CampaignSystem.CharacterObject character)=>"";}}
 namespace TaleWorlds.InputSystem { public enum InputKey { Invalid, T, Y } }
 namespace TaleWorlds.Library {
  public struct Vec2 { public float X;public float DistanceSquared(Vec2 other)=>(X-other.X)*(X-other.X); }
@@ -23,8 +24,8 @@ namespace TaleWorlds.Engine {
 }
 namespace TaleWorlds.MountAndBlade {
  public sealed class Mission { public static Mission Current; public bool MissionEnded; public float CurrentTime; public string SceneName = "fixture"; public TaleWorlds.Engine.Scene Scene = new(); public List<Agent> Agents = new(); }
- public sealed class Agent { public static Agent Main; public Mission Mission; public int Index; public bool Hostile;public bool Active = true, IsHuman = true; public float Health = 100; public TaleWorlds.Library.Vec3 Position; public TaleWorlds.CampaignSystem.CharacterObject Character = new(); public TaleWorlds.CampaignSystem.Text Name = new("NPC"); public AgentVisuals AgentVisuals = new(); public bool IsMainAgent => ReferenceEquals(this,Main); public bool IsActive() => Active; public enum FacialAnimChannel { Mid, High } public void SetAgentFacialAnimation(FacialAnimChannel channel,string value,bool active) { } }
- public sealed class AgentVisuals { public int Starts, Ends; public void StartRhubarbRecord(string path,int soundId) { if (soundId<0) Ends++; else Starts++; } }
+ public sealed class Agent { public static Agent Main; public Mission Mission; public int Index; public bool Hostile;public bool Active = true, IsHuman = true; public float Health = 100; public TaleWorlds.Library.Vec3 Position; public TaleWorlds.CampaignSystem.CharacterObject Character = new(); public TaleWorlds.CampaignSystem.Text Name = new("NPC"); public MBAgentVisuals AgentVisuals = new(); public bool IsMainAgent => ReferenceEquals(this,Main); public bool IsActive() => Active; public enum FacialAnimChannel { Mid, High } public void SetAgentFacialAnimation(FacialAnimChannel channel,string value,bool active) { } }
+ public sealed class MBAgentVisuals { public int Starts, Ends; public bool IsValid()=>true; public void StartRhubarbRecord(string path,int soundId) { if (soundId<0) Ends++; else Starts++; } }
 }
 namespace AnimusForge {
  internal static class ConversationActionBoundaryBannerlordAdapter {internal static bool NativeMapContext;internal static bool IsNativeConversationWorldMapContext()=>NativeMapContext;}
@@ -32,26 +33,33 @@ namespace AnimusForge {
  public sealed class ScenePresentationTradeOption {public int Index,UnitValue;public long FlowRevision;public string Category;internal ShoutBehavior.ShoutTradeResourceOption HostOption; public string Name, ValidationName; public int Available; internal bool IsSettlement; }
  public sealed class ScenePresentationParticipantInfo { public int AgentIndex { get; internal set; } public string Name { get; internal set; } public string Role { get; internal set; } public ScenePresentationParticipantState State { get; internal set; } public bool IsAddressee { get; internal set; } public bool IsInRange { get; internal set; } public TaleWorlds.CampaignSystem.CharacterObject Character { get; internal set; } }
  public static class FreezeWatchdog { public static void Mark(string stage,string message,bool immediate) { } }
+ public static class EncyclopediaEntityLinkFormatter {public static string SanitizeUntrustedRichText(string text)=>text;}
+ public static class WorldDiplomacyBehavior {public static void ObserveSponsorPayment(string id,string hero,int amount) {}}
  public static class Logger { public static void Log(string kind,string message) { } public static void LogVerbose(string category,string key,Func<string> message,double interval) { } }
  public static class BannerlordExceptionSentinel { public static void ReportObservedException(string category,Exception error,string context) { } }
  public static class SaveRuntimeGuard { public static long Generation; public static long CaptureGeneration() => Generation; public static bool IsCurrentGeneration(long generation) => generation==Generation; }
- public static class ConversationHelper { public static void AdjustTypewriterDuration(float duration) { } public static void StartTypewriterPlaybackIfWaiting(float duration=0) { } }
+ public static class ConversationHelper { public static void StartTypewriterText(string text,float durationSeconds,bool waitForPlayback=false,bool holdUntilReplaced=false) {} public static void AdjustTypewriterDuration(float duration) { } public static void StartTypewriterPlaybackIfWaiting(float duration=0) { } }
  public sealed partial class DuelSettings { public float SceneConversationTimeoutSecondsPerVisibleCharacter=1;public bool TtsSceneUseWinmmAudible = true; public float TtsLipSyncSoundEventVolume; public static DuelSettings Current = new(); public static DuelSettings GetSettings() => Current; }
+ public sealed class LocalTtsSpeech {}
+ public sealed class TtsSpeechSegment {public string Text;public int Index,Count;public float DurationSeconds;public bool PreserveOriginalText;}
  public sealed class TtsEngine {
   public static TtsEngine Instance = new();
-  public sealed class PlaybackRequest { public bool StreamingPlayback; public int AudioChunkCount; public float StreamingDurationSeconds; public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
+  public sealed class PlaybackRequest { public int SegmentCount=1; public bool StreamingPlayback; public int AudioChunkCount; public float StreamingDurationSeconds; public long RequestId; public int AgentIndex; public bool IsCancellationRequested; }
   public event Action<PlaybackRequest,string,string,float> OnRequestAudioFileReady;
   public event Action<PlaybackRequest> OnRequestPlaybackStarted, OnRequestPlaybackFinished, OnRequestPlaybackCancelled;
   public event Action<PlaybackRequest,string> OnRequestPlaybackFailed;
+  public event Action<PlaybackRequest,TtsSpeechSegment> OnRequestSpeechSegmentReady;
+  public void Segment(PlaybackRequest request,TtsSpeechSegment segment)=>OnRequestSpeechSegmentReady?.Invoke(request,segment);
   public void Ready(PlaybackRequest request) => OnRequestAudioFileReady?.Invoke(request,null,null,1);
   public void Start(PlaybackRequest request) => OnRequestPlaybackStarted?.Invoke(request);
   public void Finish(PlaybackRequest request) => OnRequestPlaybackFinished?.Invoke(request);
   public void Fail(PlaybackRequest request) => OnRequestPlaybackFailed?.Invoke(request,"fixture");
   public void Cancel(PlaybackRequest request) => OnRequestPlaybackCancelled?.Invoke(request);
+  public void CancelRequests(HashSet<long> requests,bool keepCurrent) {}
   public void PausePlayback() { } public void ResumePlayback() { } public void StopPlayback() { }
   public bool InterruptCurrentPlaybackForAgent(int index,string reason) => false;
   public bool SpeakAccepted=true, InvokeAccept=true, ThrowAfterAccept; public Action AcceptSideEffect; public PlaybackRequest LastRequest; private long _nextRequestId=100; public Action<string> Trace;
-  public bool SpeakAsync(string text,int speaker=-1,float volume=-1f,int agentIndex=-1,string voiceId="",Action<PlaybackRequest> accepted=null) {
+  public bool SpeakAsync(string text,int speaker=-1,float volume=-1f,int agentIndex=-1,string voiceId="",Action<PlaybackRequest> accepted=null,LocalTtsSpeech localSpeech=null,System.Threading.Tasks.Task<LocalTtsSpeech> pendingLocalSpeech=null) {
    Trace?.Invoke("tts:"+text+":"+agentIndex+":"+voiceId);LastRequest=new(){RequestId=++_nextRequestId,AgentIndex=agentIndex};
    if(InvokeAccept) accepted?.Invoke(LastRequest); AcceptSideEffect?.Invoke(); if(ThrowAfterAccept)throw new Exception("fixture speak error");return SpeakAccepted;
   }

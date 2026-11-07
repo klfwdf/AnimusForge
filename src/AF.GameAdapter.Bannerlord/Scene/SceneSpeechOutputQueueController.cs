@@ -69,7 +69,7 @@ internal sealed class SceneSpeechOutputQueueController
 
 	internal readonly Dictionary<int, Queue<PendingSceneDialogueFeedEntry>> _pendingSceneDialogueFeedQueues = new Dictionary<int, Queue<PendingSceneDialogueFeedEntry>>();
 
-	internal void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f)
+	internal void EnqueuePendingNpcBubble(int agentIndex, Agent liveAgent, string uiContent, string npcName, float fallbackDurationSeconds = -1f, SceneSpeechPlaybackInfo playbackInfo = null, bool finalSegment = true, int segmentIndex = 0)
 	{
 		if (agentIndex < 0 || liveAgent == null || string.IsNullOrWhiteSpace(uiContent))
 		{
@@ -87,7 +87,13 @@ internal sealed class SceneSpeechOutputQueueController
 				Agent = liveAgent,
 				UiContent = uiContent,
 				NpcName = npcName,
-				FallbackDurationSeconds = fallbackDurationSeconds
+				FallbackDurationSeconds = fallbackDurationSeconds,
+				PlaybackInfo = playbackInfo,
+				IsFinalSegment = finalSegment,
+				SegmentIndex = segmentIndex,
+				SourceMission = Mission.Current,
+				RuntimeGeneration = SaveRuntimeGuard.CaptureGeneration(),
+				ConversationEpoch = _ports.CaptureConversationEpoch()
 			});
 		}
 	}
@@ -180,17 +186,20 @@ internal sealed class SceneSpeechOutputQueueController
 		{
 			return false;
 		}
+		if (bubble.PlaybackInfo != null && (!ReferenceEquals(Mission.Current, bubble.SourceMission)
+			|| !SaveRuntimeGuard.IsCurrentGeneration(bubble.RuntimeGeneration)
+			|| bubble.ConversationEpoch != _ports.CaptureConversationEpoch())) return false;
 		if (typingDurationSeconds <= 0f || float.IsNaN(typingDurationSeconds) || float.IsInfinity(typingDurationSeconds))
 		{
 			typingDurationSeconds = EstimateBubbleTypingDurationSeconds(bubble.UiContent);
 		}
 		LogTtsReport("PlaybackStarted.BubbleDispatchStart", agentIndex, $"bubbleAgent={(bubble.Agent?.Index ?? -1)};typingDuration={typingDurationSeconds:F2};fallback={(typingDurationSeconds == bubble.FallbackDurationSeconds)}");
-        if (!TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDurationSeconds))
+		if (!TryShowNpcBubble(bubble.Agent, bubble.UiContent, typingDurationSeconds))
         {
-            // Consume the already queued message now; playback completion then
-            // cannot publish it a second time.
+            // The feed entry owns the presentation receipt if the bubble cannot be shown.
             FlushPendingSceneDialogueFeedAfterSpeech(agentIndex);
         }
+        else bubble.PlaybackInfo?.NotifyPresented(bubble.UiContent, bubble.IsFinalSegment, bubble.SegmentIndex);
 		LogTtsReport("PlaybackStarted.BubbleDispatchEnd", agentIndex, $"typingDuration={typingDurationSeconds:F2}");
 		return true;
 	}
@@ -295,7 +304,7 @@ internal sealed class SceneSpeechOutputQueueController
 		}
 	}
 
-	internal void EnqueuePendingSceneDialogueFeed(int agentIndex, string speakerLabel, string content, Color color, bool waitForPlaybackFinished, float executeAtMissionTime = -1f)
+	internal void EnqueuePendingSceneDialogueFeed(int agentIndex, string speakerLabel, string content, Color color, bool waitForPlaybackFinished, float executeAtMissionTime = -1f, SceneSpeechPlaybackInfo playbackInfo = null)
 	{
 		if (agentIndex < 0)
 		{
@@ -327,7 +336,10 @@ internal sealed class SceneSpeechOutputQueueController
 				Content = text,
 				Color = color,
 				WaitForPlaybackFinished = waitForPlaybackFinished,
-				ExecuteAtMissionTime = executeAtMissionTime
+				ExecuteAtMissionTime = executeAtMissionTime,
+				PlaybackInfo = playbackInfo?.QueuedNotify == true ? playbackInfo : null,
+				SegmentIndex = playbackInfo?.QueuedSegmentIndex ?? 0,
+				FinalSegment = playbackInfo?.QueuedFinalSegment ?? true
 			});
 		}
 	}
@@ -368,6 +380,7 @@ internal sealed class SceneSpeechOutputQueueController
 			return;
 		}
 		RecordSceneDialogueToMessageFeed(entry.SpeakerLabel, entry.Content, entry.Color);
+		entry.PlaybackInfo?.NotifyPresented(entry.Content, entry.FinalSegment, entry.SegmentIndex);
 	}
 
 	internal void ConvertPendingSceneDialogueFeedToTimedFlush(int agentIndex, float delaySeconds)
@@ -516,6 +529,7 @@ internal sealed class SceneSpeechOutputQueueController
     {
         if (agentIndex < 0 || Mission.Current == null || string.IsNullOrWhiteSpace(content)) return;
         RecordSceneDialogueToMessageFeed(npcDisplayName, content, new Color(1f, 0.8f, 0.2f));
+        if (playbackInfo != null) playbackInfo.ImmediatePresentedText = content;
         LogTtsReport("ShowNpcSpeechOutput.ImmediateTextFeed", agentIndex, "contentLen=" + content.Length);
     }
 
@@ -529,7 +543,7 @@ internal sealed class SceneSpeechOutputQueueController
 		float num = Math.Max(0f, playbackInfo?.VisualDurationSeconds ?? 0f);
 		bool flag = playbackInfo != null && playbackInfo.TtsAccepted && playbackInfo.WaitForPlaybackFinished;
 		float executeAtMissionTime = flag ? (-1f) : (mission.CurrentTime + num);
-		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime);
+		EnqueuePendingSceneDialogueFeed(agentIndex, npcDisplayName, content, new Color(1f, 0.8f, 0.2f), flag, executeAtMissionTime, playbackInfo);
 	}
 
 	internal void PublishBattleSpeechMessageFeed(NpcDataPacket npc, Agent liveAgent, string content)
@@ -612,7 +626,8 @@ internal sealed class SceneSpeechOutputQueueController
   PendingNpcBubbleEntry bubble = null; float duration = -1f;
   bool hasBubble = index >= 0 && TryDequeuePendingNpcBubble(index, out bubble, out duration);
   return new SceneAudioFailureOutput { HasInteractionToken = hasToken, InteractionToken = token, HasBubble = hasBubble,
-   Agent = bubble?.Agent, UiContent = bubble?.UiContent, TypingDuration = duration };
+   Agent = bubble?.Agent, UiContent = bubble?.UiContent, TypingDuration = duration,
+   PlaybackInfo = bubble?.PlaybackInfo, FinalSegment = bubble?.IsFinalSegment ?? true, SegmentIndex = bubble?.SegmentIndex ?? 0 };
  }
 
  internal void ClearSceneAudioPendingForAgent(int index)

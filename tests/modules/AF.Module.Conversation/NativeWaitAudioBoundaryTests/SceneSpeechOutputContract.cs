@@ -20,7 +20,7 @@ internal sealed class SpeechFixture {
  IsHostile=a=>c.Hostile,IsTtsEnabled=()=>c.Tts,CanLipSync=(Agent a,out string reason)=>{reason=c.LipSafe?"safe":"unsafe";return c.LipSafe;},ResolveHero=i=>new(),ExternalHeroVoice=MyBehavior.GetNpcVoiceIdForExternal,
  EstimateTypingDuration=t=>c.Duration,Audio=()=>Audio,RemoveHostileInteraction=i=>{Sessions.Remove(i);Timeouts.Remove(i);Tokens.Remove(i);},CaptureInteractionToken=i=>Sessions.TryGetValue(i,out var s)?s.InteractionToken:0,
  Report=(stage,i,detail)=>Trace.Add(stage+":"+detail),ClearPendingBubble=(i,clear)=>Trace.Add("clear-bubble:"+clear),ClearPendingFeed=i=>Trace.Add("clear-feed"),EnqueueCompletionToken=(i,token)=>Trace.Add("token:"+token),
- EnqueueBubble=(i,a,text,name,duration)=>Trace.Add("queue-bubble:"+i+":"+text+":"+duration),ScheduleFeed=(i,name,text,info)=>Trace.Add("feed:"+i+":"+text+":"+info.TtsAccepted+":"+info.WaitForPlaybackFinished),
+ EnqueueBubble=(i,a,text,name,duration,playback,final,index)=>Trace.Add("queue-bubble:"+i+":"+text+":"+duration),ScheduleFeed=(i,name,text,info)=>Trace.Add("feed:"+i+":"+text+":"+info.TtsAccepted+":"+info.WaitForPlaybackFinished),
  PublishFeedImmediately=(i,name,text,info)=>Trace.Add("feed:"+i+":"+text+":"+info.TtsAccepted+":"+info.WaitForPlaybackFinished),
  ShowBubble=(a,text,duration)=>{Trace.Add("bubble:"+text+":"+duration);return false;},ArmInteractionTimeout=(i,token,duration)=>Trace.Add("timeout:"+token+":"+duration)};
  Presentation=new(a=>a!=null&&a.Active,()=>0,m=>null,()=>10,()=>0,i=>{},()=>{},()=>{});
